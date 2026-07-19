@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# AI Geopolitic generated output
+output/*
+!output/.gitkeep
+
+# Additional environment files
+.env.*
+!.env.example
+
+# Operating-system files
+.DS_Store
+Thumbs.db
