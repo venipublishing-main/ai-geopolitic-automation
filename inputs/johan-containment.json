@@ -1,0 +1,43 @@
+{
+  "slide_number": 6,
+  "total_slides": 20,
+  "layout": "character_analysis",
+  "speaker": "johan_vosloo",
+  "headline": "KOEBERG TRUST IS BUILT BY CONTAINMENT.",
+  "deck": "Technical safety becomes public confidence when monitoring, disclosure and containment all work.",
+  "quote": "Safety earns trust when the state discloses quickly and contains decisively.",
+  "facts": [
+    "Eskom said there was no radiation leak at Koeberg Unit 2.",
+    "Brief detections occurred inside a controlled maintenance area.",
+    "The event was rated INES Level 0 with no safety significance.",
+    "Monitoring, filtration and radiation-protection systems worked as designed."
+  ],
+  "diagram": {
+    "type": "chain",
+    "title": "THE CONTAINMENT–TO–TRUST CHAIN",
+    "strap": "CONTAINMENT IS THE MECHANISM. TRANSPARENCY IS THE MULTIPLIER.",
+    "steps": [
+      {
+        "label": "CONTROLLED AREA",
+        "description": "Routine maintenance remains inside defined safety boundaries."
+      },
+      {
+        "label": "DETECTION",
+        "description": "Airborne radioactivity is briefly detected and measured."
+      },
+      {
+        "label": "MONITORING",
+        "description": "Continuous checks confirm a localised, contained event."
+      },
+      {
+        "label": "CONTAINMENT",
+        "description": "Filtration and protection systems remove and isolate the hazard."
+      },
+      {
+        "label": "DISCLOSURE",
+        "description": "Operators and regulators disclose quickly and clearly."
+      }
+    ]
+  },
+  "takeaway": "Technical competence and transparent disclosure are part of public order."
+}
