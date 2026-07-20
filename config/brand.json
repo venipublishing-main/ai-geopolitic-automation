@@ -1,0 +1,36 @@
+{
+  "canvas": {
+    "width": 1080,
+    "height": 1080,
+    "critical_safe_margin_px": 76
+  },
+  "paper_rgb": [
+    245,
+    241,
+    231
+  ],
+  "ink_rgb": [
+    23,
+    25,
+    28
+  ],
+  "muted_ink_rgb": [
+    74,
+    73,
+    68
+  ],
+  "footer_line": "The event is factual. The interpretation ideological.",
+  "header_rules": {
+    "slides_1_and_20": "Full episode header with date and episode title.",
+    "slides_2_to_19": "No date and no full episode header bar."
+  },
+  "style": [
+    "off-white textured editorial paper",
+    "monochrome etched ink illustration",
+    "one ideological accent colour",
+    "distressed condensed uppercase headlines",
+    "serif editorial body and quotes",
+    "thin rules, boxes, maps, icons, process diagrams",
+    "serious premium geopolitical briefing"
+  ]
+}

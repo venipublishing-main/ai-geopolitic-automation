@@ -1,0 +1,85 @@
+{
+  "nora": {
+    "name": "NORA",
+    "role": "Neutral AI moderator",
+    "accent": "#1769AA",
+    "portrait": "assets/characters/nora.png",
+    "functions": [
+      "opening",
+      "transition",
+      "synthesis",
+      "closing",
+      "systems framing"
+    ]
+  },
+  "diane_sterling": {
+    "name": "Diane Sterling",
+    "role": "Neoliberal economist",
+    "accent": "#176B4A",
+    "portrait": "assets/characters/diane_sterling.png",
+    "functions": [
+      "markets",
+      "trade",
+      "budgets",
+      "supply chains",
+      "investment",
+      "pricing"
+    ]
+  },
+  "johan_vosloo": {
+    "name": "Johan Vosloo",
+    "role": "Conservative pragmatist",
+    "accent": "#173C68",
+    "portrait": "assets/characters/johan_vosloo.png",
+    "functions": [
+      "law",
+      "order",
+      "state authority",
+      "oversight",
+      "legality",
+      "security"
+    ]
+  },
+  "kai_patel": {
+    "name": "Kai Patel",
+    "role": "Techno-libertarian futurist",
+    "accent": "#6540A4",
+    "portrait": "assets/characters/kai_patel.png",
+    "functions": [
+      "technology",
+      "AI",
+      "data",
+      "networks",
+      "feedback loops",
+      "infrastructure"
+    ]
+  },
+  "thabo_mokoena": {
+    "name": "Thabo Mokoena",
+    "role": "Marxist trade unionist",
+    "accent": "#A73528",
+    "portrait": "assets/characters/thabo_mokoena.png",
+    "functions": [
+      "workers",
+      "wages",
+      "class",
+      "grants",
+      "households",
+      "material burden"
+    ]
+  },
+  "amari_ndlovu": {
+    "name": "Amari Ndlovu",
+    "role": "Pan-African cultural analyst",
+    "accent": "#A47B19",
+    "portrait": "assets/characters/amari_ndlovu.png",
+    "functions": [
+      "African dignity",
+      "migration",
+      "memory",
+      "solidarity",
+      "healing",
+      "regional framing"
+    ]
+  }
+}

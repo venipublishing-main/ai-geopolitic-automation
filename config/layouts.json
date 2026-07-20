@@ -1,0 +1,86 @@
+{
+  "opener": {
+    "slides": [
+      1
+    ],
+    "required": [
+      "full_header",
+      "date",
+      "episode_title",
+      "slide_number",
+      "nora",
+      "core_question",
+      "opening_quote",
+      "systems_overview",
+      "footer"
+    ]
+  },
+  "standard_character_analysis": {
+    "slides": "2-19",
+    "required": [
+      "slide_number",
+      "headline",
+      "deck",
+      "speaker_portrait",
+      "speaker_quote",
+      "facts_or_system_points",
+      "visual_argument",
+      "ideological_takeaway",
+      "branding",
+      "footer"
+    ],
+    "forbidden": [
+      "full_date_header"
+    ]
+  },
+  "data_infographic": {
+    "slides": "2-19",
+    "required": [
+      "slide_number",
+      "headline",
+      "metrics_or_process",
+      "speaker_or_nora",
+      "takeaway",
+      "footer"
+    ]
+  },
+  "map_systems": {
+    "slides": "2-19",
+    "required": [
+      "slide_number",
+      "headline",
+      "map_or_network",
+      "routes_or_nodes",
+      "interpretive_quote",
+      "footer"
+    ]
+  },
+  "synthesis": {
+    "slides": [
+      10,
+      15,
+      20
+    ],
+    "required": [
+      "pattern_statement",
+      "linked_story_elements",
+      "nora_preferred",
+      "footer"
+    ]
+  },
+  "closer": {
+    "slides": [
+      20
+    ],
+    "required": [
+      "full_header",
+      "date",
+      "episode_title",
+      "slide_number",
+      "nora",
+      "final_synthesis",
+      "systems_loop",
+      "footer"
+    ]
+  }
+}
