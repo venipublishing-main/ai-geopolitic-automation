@@ -1,4 +1,4 @@
-name: Render Milestone 2 prototype
+name: Render Milestone 3.1 prototypes
 
 on:
   workflow_dispatch:
@@ -24,16 +24,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Render prototype slide
+      - name: Render NORA prototype
         run: |
           python src/render_prototype_slide.py \
             --input inputs/prototype-slide.json \
             --output output/prototype-slide.png
 
-      - name: Upload prototype
+      - name: Render Johan prototype
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/johan-containment.json \
+            --output output/johan-containment.png
+
+      - name: Upload rendered prototypes
         uses: actions/upload-artifact@v4
         with:
-          name: ai-geopolitic-milestone-2-prototype
-          path: output/prototype-slide.png
+          name: ai-geopolitic-milestone-3_1-prototypes
+          path: |
+            output/prototype-slide.png
+            output/johan-containment.png
           if-no-files-found: error
           retention-days: 14
