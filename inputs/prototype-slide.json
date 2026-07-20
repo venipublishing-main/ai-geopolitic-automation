@@ -13,6 +13,7 @@
     "Claims and support must continue beyond the headline."
   ],
   "diagram": {
+    "type": "loop",
     "centre": "TRUST",
     "steps": [
       "PROMISE",
