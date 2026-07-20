@@ -1,34 +1,40 @@
-name: Render Milestone 3 Slides
+name: Render Milestone 3 slides
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   render:
+    name: Render two character tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create output folder
-        run: mkdir -p output
-
-      - name: Render Milestone 3 slides
-        run: python scripts/render_milestone_3.py
+      - name: Render NORA and Johan slides
+        run: python src/render_milestone_3.py
 
       - name: Upload rendered slides
         uses: actions/upload-artifact@v4
         with:
           name: ai-geopolitic-milestone-3
-          path: output/
+          path: |
+            output/test_nora_slide.png
+            output/test_johan_slide.png
+          if-no-files-found: error
+          retention-days: 14
