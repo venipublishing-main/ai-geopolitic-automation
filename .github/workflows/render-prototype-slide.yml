@@ -1,0 +1,39 @@
+name: Render Milestone 2 prototype
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Render prototype slide
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/prototype-slide.json \
+            --output output/prototype-slide.png
+
+      - name: Upload prototype
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-geopolitic-milestone-2-prototype
+          path: output/prototype-slide.png
+          if-no-files-found: error
+          retention-days: 14
