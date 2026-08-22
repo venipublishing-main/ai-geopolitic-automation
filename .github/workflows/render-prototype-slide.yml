@@ -36,7 +36,7 @@ jobs:
             --input inputs/johan-containment.json \
             --output output/johan-containment.png
 
-      - name: Upload rendered prototypes
+      - name: Upload rendered prototypes to GitHub artifact
         uses: actions/upload-artifact@v4
         with:
           name: ai-geopolitic-milestone-3_1-prototypes
@@ -45,3 +45,26 @@ jobs:
             output/johan-containment.png
           if-no-files-found: error
           retention-days: 14
+
+      - name: Install rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Configure rclone
+        env:
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > ~/.config/rclone/rclone.conf
+
+      - name: Upload renders to Google Drive
+        run: |
+          rclone mkdir ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration"
+          rclone copy output/prototype-slide.png ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration" --progress
+          rclone copy output/johan-containment.png ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration" --progress
