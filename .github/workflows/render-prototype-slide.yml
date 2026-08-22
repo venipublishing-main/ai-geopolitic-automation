@@ -1,4 +1,4 @@
-name: Render Milestone 3.1 prototypes
+name: Render Milestone 3.2 portrait calibration
 
 on:
   workflow_dispatch:
@@ -36,13 +36,41 @@ jobs:
             --input inputs/johan-containment.json \
             --output output/johan-containment.png
 
+      - name: Render Diane calibration
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/diane-portrait-calibration.json \
+            --output output/diane-portrait-calibration.png
+
+      - name: Render Kai calibration
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/kai-portrait-calibration.json \
+            --output output/kai-portrait-calibration.png
+
+      - name: Render Thabo calibration
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/thabo-portrait-calibration.json \
+            --output output/thabo-portrait-calibration.png
+
+      - name: Render Amari calibration
+        run: |
+          python src/render_prototype_slide.py \
+            --input inputs/amari-portrait-calibration.json \
+            --output output/amari-portrait-calibration.png
+
       - name: Upload rendered prototypes to GitHub artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ai-geopolitic-milestone-3_1-prototypes
+          name: ai-geopolitic-milestone-3_2-portrait-calibration
           path: |
             output/prototype-slide.png
             output/johan-containment.png
+            output/diane-portrait-calibration.png
+            output/kai-portrait-calibration.png
+            output/thabo-portrait-calibration.png
+            output/amari-portrait-calibration.png
           if-no-files-found: error
           retention-days: 14
 
@@ -51,6 +79,8 @@ jobs:
 
       - name: Configure rclone
         env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
           RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
           AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
         run: |
@@ -58,6 +88,8 @@ jobs:
           printf '%s\n' \
             '[ai_geopolitic_drive]' \
             'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
             'scope = drive' \
             "token = ${RCLONE_DRIVE_TOKEN}" \
             "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
@@ -65,6 +97,11 @@ jobs:
 
       - name: Upload renders to Google Drive
         run: |
-          rclone mkdir ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration"
-          rclone copy output/prototype-slide.png ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration" --progress
-          rclone copy output/johan-containment.png ai_geopolitic_drive:"Automation - Temporary Artifacts/Portrait Calibration" --progress
+          DEST='Automation - Temporary Artifacts/Portrait Calibration'
+          rclone mkdir ai_geopolitic_drive:"${DEST}"
+          rclone copyto output/prototype-slide.png ai_geopolitic_drive:"${DEST}/prototype-slide.png" --progress
+          rclone copyto output/johan-containment.png ai_geopolitic_drive:"${DEST}/johan-containment.png" --progress
+          rclone copyto output/diane-portrait-calibration.png ai_geopolitic_drive:"${DEST}/diane-portrait-calibration.png" --progress
+          rclone copyto output/kai-portrait-calibration.png ai_geopolitic_drive:"${DEST}/kai-portrait-calibration.png" --progress
+          rclone copyto output/thabo-portrait-calibration.png ai_geopolitic_drive:"${DEST}/thabo-portrait-calibration.png" --progress
+          rclone copyto output/amari-portrait-calibration.png ai_geopolitic_drive:"${DEST}/amari-portrait-calibration.png" --progress
