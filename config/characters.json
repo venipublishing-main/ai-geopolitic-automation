@@ -4,6 +4,12 @@
     "role": "Neutral AI moderator",
     "accent": "#1769AA",
     "portrait": "assets/characters/nora.png",
+    "crop_box": [
+      144,
+      20,
+      1392,
+      1300
+    ],
     "functions": [
       "opening",
       "transition",
@@ -31,6 +37,12 @@
     "role": "Conservative pragmatist",
     "accent": "#173C68",
     "portrait": "assets/characters/johan_vosloo.png",
+    "crop_box": [
+      118,
+      0,
+      1480,
+      1396
+    ],
     "functions": [
       "law",
       "order",
