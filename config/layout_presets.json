@@ -1,0 +1,38 @@
+{
+  "nora": {
+    "identity_grammar": "system_axis",
+    "visual_logic": "symmetry, central framing, balanced quadrants, calm systems synthesis",
+    "avoid": ["heavy burden blocks", "organic regional arcs", "market dashboard styling"],
+    "approved_families": ["system_axis", "feedback_loop", "diagnostic_matrix", "episode_opener", "episode_closer"]
+  },
+  "johan_vosloo": {
+    "identity_grammar": "institutional_spine",
+    "visual_logic": "rectilinear order, numbered institutional stages, authority and containment",
+    "avoid": ["distributed mesh", "soft organic arcs", "financial dashboard"],
+    "approved_families": ["institutional_spine", "containment_chain", "oversight_gate", "order_corridor", "principle_test"]
+  },
+  "diane_sterling": {
+    "identity_grammar": "market_grid",
+    "visual_logic": "economic dashboard, measurable transmission, columns, rails and performance flows",
+    "avoid": ["protest/burden blocks", "soft memory arcs", "institutional shield spine"],
+    "approved_families": ["market_grid", "transmission_chain", "fiscal_flow", "portfolio_pipeline", "regional_economy"]
+  },
+  "kai_patel": {
+    "identity_grammar": "network_mesh",
+    "visual_logic": "distributed nodes, circular systems, feedback paths, repair and monitoring",
+    "avoid": ["heavy stacked ledger", "formal institutional hierarchy", "organic heritage framing"],
+    "approved_families": ["network_mesh", "feedback_system", "monitoring_loop", "decentralised_pathway", "repair_network"]
+  },
+  "thabo_mokoena": {
+    "identity_grammar": "burden_ledger",
+    "visual_logic": "material hierarchy, stacked pressure, asymmetry, who-pays framing, worker/household burden",
+    "avoid": ["neutral symmetry", "market dashboard polish", "soft regional arcs"],
+    "approved_families": ["burden_ledger", "material_chain", "structural_gap", "continuity_pressure"]
+  },
+  "amari_ndlovu": {
+    "identity_grammar": "regional_memory",
+    "visual_logic": "human-centred geography, continuity, curved regional arcs, memory, dignity and solidarity",
+    "avoid": ["cold dashboard grids", "rigid enforcement spine", "heavy material ledger"],
+    "approved_families": ["regional_memory", "dignity_pathway", "humanitarian_map", "cross_border_bridge", "cultural_landscape"]
+  }
+}

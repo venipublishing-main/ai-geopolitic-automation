@@ -1,0 +1,21 @@
+{
+  "slide_number": 8,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "headline": "DELIVERY FAILS WHEN THE TRANSMISSION MECHANISM BREAKS.",
+  "deck": "Budgets and contracts only matter if capital moves through execution into a usable service.",
+  "quote": "Measure the chain from allocation to delivery, not the announcement to the headline.",
+  "facts": [
+    "Inputs need a funded, priced delivery path.",
+    "Contracts convert budgets into executable obligations.",
+    "Services are the measurable output of the chain.",
+    "Households feel the final performance result."
+  ],
+  "metrics": [
+    {"label": "INPUT", "value": "BUDGET"},
+    {"label": "CHANNEL", "value": "CONTRACT"},
+    {"label": "OUTCOME", "value": "SERVICE"}
+  ],
+  "mechanism": ["CAPITAL", "CONTRACT", "SERVICE", "HOUSEHOLD"],
+  "takeaway": "Economic credibility is the ability to convert allocated resources into repeatable delivery."
+}

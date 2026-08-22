@@ -1,0 +1,16 @@
+{
+  "slide_number": 10,
+  "total_slides": 20,
+  "speaker": "kai_patel",
+  "headline": "RESILIENCE LIVES IN THE NETWORK, NOT THE FRONT END.",
+  "deck": "A robust service can detect failure, route around it, learn from it and repair itself.",
+  "quote": "The interface is visible. The feedback architecture is what determines whether it survives.",
+  "facts": [
+    "Sensors reveal the real state of the system.",
+    "Models help classify and route failures.",
+    "Distributed nodes reduce single-point dependence.",
+    "Repair loops turn incidents into system learning."
+  ],
+  "mechanism": ["SENSOR", "MODEL", "NODE", "USER", "REPAIR"],
+  "takeaway": "Resilience comes from distributed feedback and fast repair, not from a polished interface alone."
+}

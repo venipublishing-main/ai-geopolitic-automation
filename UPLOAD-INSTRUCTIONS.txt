@@ -1,29 +1,46 @@
-Milestone 3.2B — Portrait Calibration Pack
+AI GEOPOLITIC — MILESTONE 4.1 IDENTITY PROOF
 
-Upload these files to the SAME paths in the GitHub repository:
+Purpose:
+Prove that each panelist has a recognisably different slide STRUCTURE, not merely a different accent colour.
 
-REPLACE
-- config/characters.json
-- .github/workflows/render-prototype-slide.yml
+ADD these normal repo files:
+- src/editorial_primitives.py
+- src/render_identity_slide.py
+- config/layout_presets.json
+- inputs/identity-nora.json
+- inputs/identity-johan.json
+- inputs/identity-diane.json
+- inputs/identity-kai.json
+- inputs/identity-thabo.json
+- inputs/identity-amari.json
+- tests/test_identity_renderer.py
 
-ADD
-- inputs/diane-portrait-calibration.json
-- inputs/kai-portrait-calibration.json
-- inputs/thabo-portrait-calibration.json
-- inputs/amari-portrait-calibration.json
+DO NOT replace or remove:
+- src/render_prototype_slide.py
+- the Milestone 3.2 workflow
+- existing portrait assets/config
 
-Do not change src/render_prototype_slide.py for this pass.
+WORKFLOW — upload separately because GitHub browser batch upload has been unreliable for .github:
+- .github/workflows/render-layout-identity-proof.yml
 
 After commit:
-Actions → Render Milestone 3.2 portrait calibration → Run workflow
+Actions -> Render Milestone 4.1 identity proof -> Run workflow
 
 Expected Drive destination:
-AI-Geopolitical / Automation - Temporary Artifacts / Portrait Calibration
+AI-Geopolitical / Automation - Temporary Artifacts / Layout Identity Proof
 
 Expected outputs:
-- prototype-slide.png
-- johan-containment.png
-- diane-portrait-calibration.png
-- kai-portrait-calibration.png
-- thabo-portrait-calibration.png
-- amari-portrait-calibration.png
+- identity-nora.png
+- identity-johan.png
+- identity-diane.png
+- identity-kai.png
+- identity-thabo.png
+- identity-amari.png
+
+Visual identity grammars under test:
+- NORA: system_axis
+- Johan: institutional_spine
+- Diane: market_grid
+- Kai: network_mesh
+- Thabo: burden_ledger
+- Amari: regional_memory
