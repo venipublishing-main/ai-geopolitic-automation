@@ -1,0 +1,29 @@
+Milestone 3.2B — Portrait Calibration Pack
+
+Upload these files to the SAME paths in the GitHub repository:
+
+REPLACE
+- config/characters.json
+- .github/workflows/render-prototype-slide.yml
+
+ADD
+- inputs/diane-portrait-calibration.json
+- inputs/kai-portrait-calibration.json
+- inputs/thabo-portrait-calibration.json
+- inputs/amari-portrait-calibration.json
+
+Do not change src/render_prototype_slide.py for this pass.
+
+After commit:
+Actions → Render Milestone 3.2 portrait calibration → Run workflow
+
+Expected Drive destination:
+AI-Geopolitical / Automation - Temporary Artifacts / Portrait Calibration
+
+Expected outputs:
+- prototype-slide.png
+- johan-containment.png
+- diane-portrait-calibration.png
+- kai-portrait-calibration.png
+- thabo-portrait-calibration.png
+- amari-portrait-calibration.png

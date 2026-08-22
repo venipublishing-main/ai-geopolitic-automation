@@ -23,6 +23,12 @@
     "role": "Neoliberal economist",
     "accent": "#176B4A",
     "portrait": "assets/characters/diane_sterling.png",
+    "crop_box": [
+      100,
+      20,
+      1450,
+      1404
+    ],
     "functions": [
       "markets",
       "trade",
@@ -57,6 +63,12 @@
     "role": "Techno-libertarian futurist",
     "accent": "#6540A4",
     "portrait": "assets/characters/kai_patel.png",
+    "crop_box": [
+      70,
+      10,
+      1450,
+      1425
+    ],
     "functions": [
       "technology",
       "AI",
@@ -71,6 +83,12 @@
     "role": "Marxist trade unionist",
     "accent": "#A73528",
     "portrait": "assets/characters/thabo_mokoena.png",
+    "crop_box": [
+      90,
+      10,
+      1450,
+      1405
+    ],
     "functions": [
       "workers",
       "wages",
@@ -85,6 +103,12 @@
     "role": "Pan-African cultural analyst",
     "accent": "#A47B19",
     "portrait": "assets/characters/amari_ndlovu.png",
+    "crop_box": [
+      90,
+      10,
+      1440,
+      1394
+    ],
     "functions": [
       "African dignity",
       "migration",

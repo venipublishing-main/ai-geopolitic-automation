@@ -1,0 +1,27 @@
+{
+  "slide_number": 14,
+  "total_slides": 20,
+  "layout": "synthesis",
+  "speaker": "amari_ndlovu",
+  "headline": "AMARI PORTRAIT CALIBRATION.",
+  "deck": "Framing check: preserve face, dress and African cultural context without crowding.",
+  "quote": "Context is not decoration; it carries memory and meaning.",
+  "facts": [
+    "Keep the full face comfortably inside the portrait frame.",
+    "Retain enough shoulder and clothing detail to preserve character identity.",
+    "Keep the character-specific background context visible where useful.",
+    "Avoid edge pressure, accidental cropping and unnecessary zoom."
+  ],
+  "diagram": {
+    "type": "loop",
+    "centre": "FRAME",
+    "steps": [
+      "FACE",
+      "SHOULDERS",
+      "CONTEXT",
+      "BALANCE",
+      "LOCK"
+    ]
+  },
+  "takeaway": "Lock the crop only when identity and cultural context remain balanced."
+}
