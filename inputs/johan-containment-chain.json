@@ -1,0 +1,22 @@
+{
+  "slide_number": 7,
+  "total_slides": 20,
+  "speaker": "johan_vosloo",
+  "layout_family": "containment_chain",
+  "headline": "POWER NEEDS A CHAIN OF CUSTODY.",
+  "deck": "Authority becomes credible when each transfer of power has a named institution, a defined limit and a visible record.",
+  "quote": "Power should never jump from mandate to outcome without passing through accountable hands.",
+  "facts": [
+    "A mandate should identify the legal source of authority.",
+    "Responsibility must remain attached to named institutions.",
+    "Enforcement needs explicit limits and review.",
+    "Disclosure creates the public record that closes the chain."
+  ],
+  "mechanism": [
+    "MANDATE",
+    "AUTHORITY",
+    "ENFORCEMENT",
+    "DISCLOSURE"
+  ],
+  "takeaway": "A legitimate state does not merely possess power; it preserves an auditable chain of responsibility."
+}

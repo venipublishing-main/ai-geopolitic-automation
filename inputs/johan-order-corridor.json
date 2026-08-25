@@ -1,0 +1,22 @@
+{
+  "slide_number": 11,
+  "total_slides": 20,
+  "speaker": "johan_vosloo",
+  "layout_family": "order_corridor",
+  "headline": "ORDER IS A SEQUENCE, NOT A SLOGAN.",
+  "deck": "A functioning institution moves from rule to role, enforcement and appeal without losing responsibility along the way.",
+  "quote": "Predictability is built when every step has a place, an owner and a route for correction.",
+  "facts": [
+    "Rules establish the common boundary.",
+    "Roles determine who acts and who answers.",
+    "Enforcement applies the rule consistently.",
+    "Appeal keeps correction inside the institution."
+  ],
+  "mechanism": [
+    "RULE",
+    "ROLE",
+    "ENFORCEMENT",
+    "APPEAL"
+  ],
+  "takeaway": "Institutional order is credible when citizens can see the route from rule to remedy."
+}

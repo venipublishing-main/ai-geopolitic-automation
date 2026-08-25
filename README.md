@@ -199,7 +199,7 @@ Layout Stress Test
 ## Current development stage
 
 ### Milestone 4.3A — NORA layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The first multi-layout character family builds all five NORA families already approved in `config/layout_presets.json`:
 
@@ -225,7 +225,7 @@ src/make_contact_sheet.py
 
 This utility is intended for NORA now and later character-family proofs and full-episode QA.
 
-Local 4.3A validation before upload: **35 tests passed** and all five NORA family proofs rendered successfully.
+Local 4.3A validation before upload: **35 tests passed** and all five NORA family proofs rendered successfully. The GitHub Actions run subsequently completed green.
 
 Workflow:
 
@@ -255,7 +255,56 @@ Expected outputs:
 - `nora-episode-closer.png`
 - `nora-layout-family-contact-sheet.png`
 
-After visual approval, proceed character-by-character through the remaining approved families, starting with Johan Vosloo.
+### Milestone 4.3B — Johan Vosloo layout family
+**Implementation prepared — pending GitHub workflow verification**
+
+The second multi-layout character family builds all five Johan families already approved in `config/layout_presets.json`:
+
+- `institutional_spine`
+- `containment_chain`
+- `oversight_gate`
+- `order_corridor`
+- `principle_test`
+
+The family is implemented in:
+
+```text
+src/render_johan_layout_family.py
+```
+
+Visual logic remains Johan-specific: rectilinear order, numbered institutional stages, explicit containment, scrutiny and visible chains of authority. The previous-episode library was checked again during this pass. In particular, the Johan **“WATER MUST REACH THE TAP”** slide in `Ep029-20July2026` reinforces the process-chain / last-mile governance language used in the new containment and corridor variants; the new layouts generalise that editorial logic rather than copying the old slide.
+
+Local 4.3B validation before upload: **42 tests passed** and all five Johan family proofs plus the contact sheet rendered successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-johan-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3B Johan layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+Johan
+```
+
+Expected outputs:
+
+- `johan-institutional-spine.png`
+- `johan-containment-chain.png`
+- `johan-oversight-gate.png`
+- `johan-order-corridor.png`
+- `johan-principle-test.png`
+- `johan-layout-family-contact-sheet.png`
+
+After GitHub/Drive verification, proceed to **Milestone 4.3C — Diane Sterling layout family**.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -272,12 +321,15 @@ src/editorial_primitives.py
 src/render_identity_slide.py
 src/render_identity_stress_pack.py
 src/render_nora_layout_family.py
+src/render_johan_layout_family.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
 
 tests/test_identity_renderer.py
 tests/test_identity_stress.py
+tests/test_nora_layout_family.py
+tests/test_johan_layout_family.py
 tests/test_prototype.py
 ```
 

@@ -1,0 +1,48 @@
+AI GEOPOLITIC — MILESTONE 4.3B JOHAN LAYOUT FAMILY
+
+Purpose:
+Add the five approved Johan Vosloo layout families after the hardened 4.2 QA work and the successful NORA family.
+
+ADD these normal repo files:
+- src/render_johan_layout_family.py
+- inputs/johan-institutional-spine.json
+- inputs/johan-containment-chain.json
+- inputs/johan-oversight-gate.json
+- inputs/johan-order-corridor.json
+- inputs/johan-principle-test.json
+- tests/test_johan_layout_family.py
+
+REPLACE:
+- README.md
+
+ADD workflow:
+- .github/workflows/render-johan-layout-family.yml
+
+DO NOT replace or remove:
+- src/editorial_primitives.py
+- src/render_identity_slide.py
+- src/render_identity_stress_pack.py
+- src/render_nora_layout_family.py
+- src/make_contact_sheet.py
+- config/characters.json
+- config/layout_presets.json
+- existing 4.2 or 4.3A workflows/tests
+
+After upload:
+Actions -> Render Milestone 4.3B Johan layout family -> Run workflow
+
+Expected Drive destination:
+AI-Geopolitical / Automation - Temporary Artifacts / Layout Families / Johan
+
+Expected outputs:
+- johan-institutional-spine.png
+- johan-containment-chain.png
+- johan-oversight-gate.png
+- johan-order-corridor.png
+- johan-principle-test.png
+- johan-layout-family-contact-sheet.png
+
+Local validation before packaging:
+- 42 tests passed
+- all five Johan family proofs rendered
+- contact sheet rendered

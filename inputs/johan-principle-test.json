@@ -1,0 +1,37 @@
+{
+  "slide_number": 13,
+  "total_slides": 20,
+  "speaker": "johan_vosloo",
+  "layout_family": "principle_test",
+  "headline": "A PRINCIPLE MATTERS ONLY IF PRACTICE SURVIVES IT.",
+  "deck": "Rule-of-law language must be tested against what institutions actually permit, prevent, review and disclose.",
+  "quote": "A constitutional promise is meaningful only when ordinary administration behaves as though the promise is binding.",
+  "facts": [
+    "Authority requires a lawful source.",
+    "Limits must bind officials as well as citizens.",
+    "Review must exist before failure becomes scandal."
+  ],
+  "tests": [
+    {
+      "label": "MANDATE",
+      "status": "DEFINED",
+      "note": "The legal source of power is visible."
+    },
+    {
+      "label": "LIMIT",
+      "status": "BOUND",
+      "note": "Power has an explicit edge it may not cross."
+    },
+    {
+      "label": "REVIEW",
+      "status": "ACTIVE",
+      "note": "A credible institution can inspect the decision."
+    },
+    {
+      "label": "DISCLOSURE",
+      "status": "VISIBLE",
+      "note": "The result enters a public record."
+    }
+  ],
+  "takeaway": "Institutional legitimacy is the distance between the principle on paper and the behaviour that survives contact with practice."
+}
