@@ -1,0 +1,71 @@
+name: Render Milestone 4.3E Thabo layout family
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run full QA suite
+        run: pytest -q
+
+      - name: Render Thabo layout family
+        run: |
+          python src/render_thabo_layout_family.py --input inputs/thabo-burden-ledger.json --output output/thabo-burden-ledger.png
+          python src/render_thabo_layout_family.py --input inputs/thabo-material-chain.json --output output/thabo-material-chain.png
+          python src/render_thabo_layout_family.py --input inputs/thabo-structural-gap.json --output output/thabo-structural-gap.png
+          python src/render_thabo_layout_family.py --input inputs/thabo-continuity-pressure.json --output output/thabo-continuity-pressure.png
+          python src/make_contact_sheet.py --files output/thabo-burden-ledger.png output/thabo-material-chain.png output/thabo-structural-gap.png output/thabo-continuity-pressure.png --output output/thabo-layout-family-contact-sheet.png --cols 2 --thumb 360
+
+      - name: Upload GitHub artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-geopolitic-milestone-4_3e-thabo-layout-family
+          path: output/thabo-*.png
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Install rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Configure rclone
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > ~/.config/rclone/rclone.conf
+
+      - name: Upload Thabo family proofs to Google Drive
+        run: |
+          DEST='Automation - Temporary Artifacts/Layout Families/Thabo'
+          rclone mkdir ai_geopolitic_drive:"${DEST}"
+          rclone copy output/ ai_geopolitic_drive:"${DEST}" --include 'thabo-*.png' --progress
