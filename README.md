@@ -592,10 +592,10 @@ Automation - Temporary Artifacts /
 Layout Routing Proof
 ```
 
-After GitHub/Drive verification, proceed to **Milestone 4.5 — production episode schema + layout-routing hardening**, then Milestone 5 batch-render a real approved 20-slide episode.
+GitHub/Drive verification completed green. Milestone 4.5 then promoted the routing proof into a strict daily-use 20-slide production schema.
 
 ### Milestone 4.5 — Production episode schema + routing hardening
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 Milestone 4.5 introduces the first daily-use episode manifest. Production slides now contain approved editorial copy inline rather than pointing at character-family test fixtures through `source_input`.
 
@@ -656,7 +656,67 @@ Automation - Temporary Artifacts /
 Production Schema Proof
 ```
 
-After GitHub/Drive verification, proceed to **Milestone 5.0 — first real approved 20-slide automated episode**. At that point the proof fixture is replaced with one actual daily R&D/content plan while the same routing, rendering and QA infrastructure remains in place.
+The GitHub/Drive verification completed green. The repository had **84 tests** at the end of Milestone 4.5.
+
+### Milestone 5.0 — First approved 20-slide automated episode benchmark
+**Implementation prepared — pending GitHub workflow verification**
+
+The first production-scale benchmark uses the archived, approved **Ep029 — 20 July 2026 — “THE FOLLOW-THROUGH GAP”** episode rather than synthetic engineering copy. This gives the automation a fixed editorial target whose original 20-slide finished carousel already exists in Google Drive under:
+
+```text
+AI-Geopolitical /
+History - Episode List /
+Ep029-20July2026
+```
+
+The benchmark production manifest is:
+
+```text
+inputs/episode-029-20july2026.json
+```
+
+It preserves the original episode's 20-slide presenter sequence and editorial themes while expressing them through the v1 production schema. Layout selection remains deterministic: the manifest supplies `speaker + content_type`; `config/layout_routing.json` selects the approved family; no manual `layout_override` is used in the benchmark.
+
+The benchmark exercises all six presenters and routes across **14 distinct character-specific layout families**, including NORA opener/closer, Johan governance/oversight/order layouts, Diane market/transmission layouts, Kai monitoring/network/repair layouts, Thabo material/burden layouts, and Amari dignity/humanitarian layouts.
+
+New regression coverage:
+
+```text
+tests/test_milestone_5_ep029.py
+```
+
+The new tests protect:
+
+- exactly 20 production slides;
+- the archived presenter sequence;
+- expected deterministic layout selection;
+- zero manual layout overrides;
+- 20 standalone 1080×1080 PNG outputs plus resolved inputs, reports and contact sheet.
+
+The 4.5 baseline contains **84 GitHub-green tests**. Milestone 5.0 adds **5 benchmark tests**, so the repository should collect **89 tests** after upload. The Ep029 production manifest has already rendered locally as a complete 20-slide batch.
+
+Workflow:
+
+```text
+.github/workflows/render-milestone-5-ep029.yml
+```
+
+Workflow name:
+
+**Render Milestone 5.0 Ep029 benchmark episode**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Production Episodes /
+Ep029 Benchmark
+```
+
+Milestone 5.0 is a **benchmark, not a claim of final visual parity**. The automated output should be reviewed against the original Ep029 carousel for typography, density, illustration richness, visual storytelling and mobile readability. Any repeated shortcomings should be fixed in reusable primitives/layouts rather than hand-patching one historical episode.
+
+After the benchmark is GitHub/Drive verified, the next step is **Milestone 5.1 — benchmark QA and reusable fidelity corrections**, followed by the first current daily episode compiled directly from approved R&D.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -694,7 +754,11 @@ tests/test_thabo_layout_family.py
 tests/test_amari_layout_family.py
 tests/test_episode_router.py
 tests/test_production_episode.py
+tests/test_milestone_5_ep029.py
 tests/test_prototype.py
+
+inputs/episode-029-20july2026.json
+.github/workflows/render-milestone-5-ep029.yml
 ```
 
 ## Development rule: README must move with the code
@@ -717,7 +781,7 @@ After the layout engine is reliable:
 
 1. expand reusable character layout families;
 2. build layout selection;
-3. render a real approved 20-slide episode;
+3. benchmark and render approved 20-slide production episodes;
 4. export 20 PNGs + contact sheet + QA report;
 5. generate caption + exactly five hashtags;
 6. generate Reel/video assets from the strongest approximately six slides;

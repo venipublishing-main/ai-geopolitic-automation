@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "episode_id": "ep029-20july2026-follow-through",
+  "episode_title": "THE FOLLOW-THROUGH GAP",
+  "episode_date": "20 JULY 2026",
+  "slides": [
+    {
+      "speaker": "nora",
+      "content_type": "episode_open",
+      "headline": "THE FOLLOW-THROUGH GAP",
+      "deck": "The system is judged by what it finishes after the public moment has passed.",
+      "quote": "Continuity is not the test anymore. Completion is.",
+      "facts": [
+        "Clear Rivers must become monitoring, enforcement and maintenance.",
+        "Hammanskraal treatment capacity must become safe water at the tap.",
+        "Oversight, safety disclosure and compensation require visible follow-through.",
+        "Grants, AI governance, hospital resilience and humanitarian response must survive the headline."
+      ],
+      "takeaway": "The system does not collapse only in crisis; it also collapses in the quiet when nobody checks whether the promise became a result.",
+      "visual": {
+        "question": "Can the system finish what it starts once the public moment has passed?",
+        "mechanism": [
+          "PROMISE",
+          "IMPLEMENT",
+          "MONITOR",
+          "CORRECT",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "systems_synthesis",
+      "headline": "MONDAY REOPENS THE FILE.",
+      "deck": "The ceremony ends, but the files remain: water, oversight, safety, claims, grants, migration and global shocks.",
+      "quote": "Public memory fades quickly. Administrative memory cannot.",
+      "facts": [
+        "River cleanup and dam rehabilitation require routine systems work.",
+        "Taps, reticulation and water boards remain after treatment capacity is announced.",
+        "Oversight, safety audits and unpaid claims remain institutional files.",
+        "Migration, grants, AI, hospital power and global shocks require continued execution."
+      ],
+      "takeaway": "Continuity is not automatic. It is designed through institutions, routines and accountability.",
+      "visual": {
+        "mechanism": [
+          "CEREMONY",
+          "FILES",
+          "SYSTEMS WORK",
+          "IMPACT"
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "oversight_checkpoint",
+      "headline": "OVERSIGHT MUST WATCH THE WATCHERS.",
+      "deck": "Anti-corruption power needs independent scrutiny if it is to earn public trust.",
+      "quote": "Oversight is what keeps extraordinary power inside the constitution.",
+      "facts": [
+        "The Office of the IDAC Oversight Judge is operational.",
+        "Independent scrutiny should keep investigations within constitutional limits.",
+        "Public trust depends on legality, fairness and bounded power.",
+        "Watchdog institutions also need scrutiny."
+      ],
+      "takeaway": "Power without oversight becomes privilege. Oversight without independence becomes theatre.",
+      "visual": {
+        "mechanism": [
+          "INVESTIGATORS",
+          "JUDGE REVIEW",
+          "LEGALITY",
+          "PUBLIC TRUST"
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "monitoring_cycle",
+      "headline": "CLEAR RIVERS NEED OPERATING MEMORY.",
+      "deck": "A river stays clean only when cleanup becomes monitoring, reporting, enforcement and local ownership.",
+      "quote": "Cleanup is not an event. It is a feedback system.",
+      "facts": [
+        "The DWS Clear Rivers Campaign runs from 20 to 30 July.",
+        "Pollution-free water resources require continuous measurement.",
+        "Community stewardship matters after the cleanup event.",
+        "Reporting, enforcement and routine maintenance must close the loop."
+      ],
+      "takeaway": "Clean rivers are produced by continuous systems and accountable citizens, not by one-off commands.",
+      "visual": {
+        "monitors": [
+          {
+            "label": "DATA",
+            "value": "LIVE"
+          },
+          {
+            "label": "REPORT",
+            "value": "VISIBLE"
+          },
+          {
+            "label": "ENFORCE",
+            "value": "ACTIVE"
+          },
+          {
+            "label": "UPKEEP",
+            "value": "LOCAL"
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "order_pathway",
+      "headline": "WATER MUST REACH THE TAP",
+      "deck": "A treatment plant proves capacity only when reticulation brings safe water into homes.",
+      "quote": "Infrastructure earns legitimacy at the household tap.",
+      "facts": [
+        "The Klipdrift Package Water Treatment Plant adds 50 megalitres a day of capacity.",
+        "Reticulation is the next institutional priority.",
+        "Tshwane still has to move treated water through reservoirs and pipes to households.",
+        "Timelines, maintenance and public proof turn capacity into service."
+      ],
+      "takeaway": "Facilities without delivery are monuments, not solutions. People do not drink capacity; they drink results.",
+      "visual": {
+        "mechanism": [
+          "TREATMENT",
+          "RETICULATION",
+          "RESERVOIR",
+          "HOUSEHOLD TAP"
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "governance_handoff",
+      "headline": "KOEBERG TRUST IS BUILT BY CONTAINMENT.",
+      "deck": "Technical safety becomes public confidence when monitoring, disclosure and containment all work.",
+      "quote": "Safety earns trust when the state discloses quickly and contains decisively.",
+      "facts": [
+        "Eskom reported no radiation leak at Koeberg Unit 2.",
+        "Brief airborne radioactivity was detected inside a controlled maintenance area.",
+        "The event was rated INES Level 0 with no safety significance.",
+        "Monitoring, filtration and radiation-protection systems worked as designed."
+      ],
+      "takeaway": "Technical competence and transparent disclosure are part of public order.",
+      "visual": {
+        "mechanism": [
+          "DETECTION",
+          "MONITORING",
+          "CONTAINMENT",
+          "DISCLOSURE"
+        ]
+      }
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "material_handoff",
+      "headline": "EX-MINEWORKERS ARE THE UNPAID LEDGER.",
+      "deck": "Compensation delayed for decades is not paperwork; it is history withholding wages from injured bodies.",
+      "quote": "When compensation stalls, injury becomes inherited poverty.",
+      "facts": [
+        "An estimated R10 billion in mineworker compensation remains unpaid.",
+        "The Eastern Cape contributed roughly 370,000 former mineworkers.",
+        "Delayed payment transfers injury and poverty into the household."
+      ],
+      "takeaway": "Labour history is still being billed to poor households in the present.",
+      "visual": {
+        "chain": [
+          {
+            "label": "INJURY",
+            "note": "The harm already exists."
+          },
+          {
+            "label": "CLAIM",
+            "note": "The worker enters administration."
+          },
+          {
+            "label": "REVIEW",
+            "note": "Eligibility and records are checked."
+          },
+          {
+            "label": "PAYMENT",
+            "note": "Delay compounds the burden.",
+            "blocked": true
+          },
+          {
+            "label": "HOUSEHOLD",
+            "note": "Relief matters only when it arrives."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "dignity_continuity",
+      "headline": "HEALING NEEDS A LIFE AFTER CRISIS.",
+      "deck": "GBVF response only becomes justice when survivors receive care, voice, skills, safety and income.",
+      "quote": "A survivor needs more than rescue; she needs a future.",
+      "facts": [
+        "Healing Lives Foundation launched in Mamelodi.",
+        "Its theme links crisis response to career and strength.",
+        "The model joins psychosocial support and aftercare to skills development.",
+        "Job readiness, community awareness and dignity are part of recovery."
+      ],
+      "takeaway": "Justice is incomplete if survival does not become social power and economic voice.",
+      "visual": {
+        "mechanism": [
+          "CARE",
+          "HEALING",
+          "SKILLS",
+          "WORK",
+          "DIGNITY"
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "principle_check",
+      "headline": "MIGRATION NEEDS LAW AND HUMANITY.",
+      "deck": "A lawful state must protect borders without surrendering dignity to vigilantism.",
+      "quote": "A lawful state protects borders without privatizing coercion.",
+      "facts": [
+        "Immigration enforcement remains the responsibility of the state.",
+        "Government reaffirmed support for vulnerable foreign nationals.",
+        "Xenophobia and vigilantism were explicitly rejected."
+      ],
+      "takeaway": "Order without legality corrodes legitimacy; compassion without state capacity collapses under pressure.",
+      "visual": {
+        "tests": [
+          {
+            "label": "AUTHORITY",
+            "status": "STATE",
+            "note": "Coercive authority remains public."
+          },
+          {
+            "label": "LEGALITY",
+            "status": "BOUND",
+            "note": "Enforcement stays inside the law."
+          },
+          {
+            "label": "HUMANITY",
+            "status": "PROTECTED",
+            "note": "Basic dignity and services remain."
+          },
+          {
+            "label": "VIGILANTISM",
+            "status": "REJECTED",
+            "note": "Private coercion has no mandate."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "feedback_cycle",
+      "headline": "FOLLOW-THROUGH IS WHERE TRUST LIVES.",
+      "deck": "Trust is not built at launch; it is built when institutions keep returning to unfinished work.",
+      "quote": "Trust is not a launch event. It is a return visit.",
+      "facts": [
+        "Water systems need visible last-mile delivery.",
+        "Oversight must make power accountable.",
+        "Safety disclosure matters for public confidence.",
+        "Claims, healing and migration support must continue beyond the headline."
+      ],
+      "takeaway": "Institutional memory and repeated delivery are what turn governance into belief.",
+      "visual": {
+        "mechanism": [
+          "PROMISE",
+          "IMPLEMENT",
+          "MONITOR",
+          "CORRECT",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "burden_distribution",
+      "headline": "GRANT REVIEWS MUST NOT BECOME FEAR",
+      "deck": "Protecting public money must not make vulnerable households feel hunted by the system meant to support them.",
+      "quote": "A grant system should verify with dignity, not govern through fear.",
+      "facts": [
+        "Social Development is strengthening review of the grant system.",
+        "The review is framed around governance, accountability and fair administration.",
+        "Households depend on grants for basic stability.",
+        "Poor communication can turn verification into anxiety."
+      ],
+      "takeaway": "Household survival cannot be treated like a compliance inconvenience.",
+      "visual": {
+        "mechanism": [
+          "ACCESS",
+          "REVIEW",
+          "ANXIETY",
+          "HOUSEHOLD"
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "distributed_delivery",
+      "headline": "AI GOVERNANCE MUST LAND LOCALLY",
+      "deck": "Global AI rules matter only if they become local capacity, safe systems and equitable access.",
+      "quote": "A summit is not governance until it changes systems on the ground.",
+      "facts": [
+        "South Africa participates in the 2026 World AI Conference and governance meetings in Shanghai.",
+        "The agenda includes safety, ethics, standards, regulation and capacity building.",
+        "More than 140 thematic forums and 1,400 international guests are expected.",
+        "The test is translation into South African institutions and public systems."
+      ],
+      "takeaway": "Technology legitimacy comes from implementation, safety and access.",
+      "visual": {
+        "routes": [
+          "GLOBAL DIALOGUE",
+          "STANDARDS",
+          "SAFETY",
+          "LOCAL CAPACITY",
+          "ACCESS"
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "distributed_system",
+      "headline": "MICROGRIDS PROTECT CRITICAL CARE.",
+      "deck": "Energy resilience becomes service when hospitals can keep ICU, theatre and emergency care running.",
+      "quote": "Power resilience is health resilience when the load is critical.",
+      "facts": [
+        "A Mandela Day solar microgrid was installed at Mafikeng Provincial Hospital.",
+        "The system includes 200 kW AC of solar PV.",
+        "Battery storage adds 400 kWh of resilience.",
+        "Roughly 170 kW of critical load supports ICU, theatres and emergency services."
+      ],
+      "takeaway": "Infrastructure becomes trust when resilience protects life at the point of care.",
+      "visual": {
+        "mechanism": [
+          "SOLAR PV",
+          "BATTERY",
+          "CONTROL",
+          "CRITICAL LOAD",
+          "CARE"
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "market_dashboard",
+      "headline": "RESILIENCE IS CHEAPER THAN COLLAPSE",
+      "deck": "Preventive systems cost money, but failure charges interest through crisis, delay and public distrust.",
+      "quote": "You either fund resilience up front or you pay for breakdown in instalments.",
+      "facts": [
+        "Hammanskraal shows the cost of deferred water-system maintenance.",
+        "Koeberg safety systems show why prevention is cheaper than crisis.",
+        "Hospital microgrids protect service continuity and lives.",
+        "Execution capacity turns allocated resources into public value."
+      ],
+      "takeaway": "The cheapest state is rarely the cheapest system once breakdown begins.",
+      "visual": {
+        "metrics": [
+          {
+            "label": "PREVENT",
+            "value": "EARLY"
+          },
+          {
+            "label": "ABSORB",
+            "value": "SHOCK"
+          },
+          {
+            "label": "DELIVER",
+            "value": "VALUE"
+          }
+        ],
+        "mechanism": [
+          "INVEST",
+          "MAINTAIN",
+          "RESIST",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "feedback_cycle",
+      "headline": "THE LOOP MUST CLOSE",
+      "deck": "Follow-through means promise, implementation, monitoring, correction, delivery and public proof.",
+      "quote": "Governance becomes believable when the loop closes in public view.",
+      "facts": [
+        "Reviews without disclosure leave accountability unfinished.",
+        "Policy without enforcement stops before the outcome.",
+        "Infrastructure without uptime is capacity without service.",
+        "Budgets without results cannot sustain public confidence."
+      ],
+      "takeaway": "Completion is the administrative form of credibility.",
+      "visual": {
+        "mechanism": [
+          "PROMISE",
+          "IMPLEMENT",
+          "MONITOR",
+          "CORRECT",
+          "PROVE"
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "economic_transmission",
+      "headline": "BRENT BREAKS THE WARNING LINE",
+      "deck": "Oil above $90 turns route risk into transport costs, inflation pressure and budget strain.",
+      "quote": "Energy shocks enter the household through prices long before policy can respond.",
+      "facts": [
+        "Brent moved above $90 as regional conflict and Hormuz disruption intensified.",
+        "Route insecurity lifts fuel, freight and import costs.",
+        "Higher energy prices feed inflation and public-budget pressure."
+      ],
+      "takeaway": "Market signals are warnings; delayed adjustment shifts the burden onto households and the state.",
+      "visual": {
+        "stages": [
+          {
+            "label": "HORMUZ",
+            "value": "RISK",
+            "note": "Route insecurity rises."
+          },
+          {
+            "label": "BRENT",
+            "value": "$90+",
+            "note": "Energy reprices fast."
+          },
+          {
+            "label": "FREIGHT",
+            "value": "UP",
+            "note": "Transport costs rise."
+          },
+          {
+            "label": "INFLATION",
+            "value": "PRESSURE",
+            "note": "Households absorb the shock."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "economic_transmission",
+      "headline": "MARKETS MOVE BEFORE HOUSEHOLDS CAN ADJUST",
+      "deck": "Prices transmit faster than wages, grants and budgets can absorb the shock.",
+      "quote": "Markets reprice in hours; households adjust over weeks.",
+      "facts": [
+        "Oil shocks move through transport, food and utility costs.",
+        "Wages, grants and procurement cycles respond more slowly than markets.",
+        "The adjustment gap increases pressure on poor households and municipalities."
+      ],
+      "takeaway": "Volatility is never socially neutral; the transmission chain decides who pays first.",
+      "visual": {
+        "stages": [
+          {
+            "label": "MARKET",
+            "value": "HOURS",
+            "note": "Prices reprice first."
+          },
+          {
+            "label": "WAGES",
+            "value": "WEEKS",
+            "note": "Income adjusts later."
+          },
+          {
+            "label": "GRANTS",
+            "value": "CYCLES",
+            "note": "Public support moves slowly."
+          },
+          {
+            "label": "HOUSEHOLD",
+            "value": "NOW",
+            "note": "Budgets absorb the gap."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "humanitarian_geography",
+      "headline": "SUDAN IS WHAT BROKEN FOLLOW-THROUGH COSTS",
+      "deck": "Hunger deepens when food, fuel, protection and humanitarian access fail at the same time.",
+      "quote": "A crisis becomes devastation when the world stops carrying its promises through to people.",
+      "facts": [
+        "War and aid disruption are driving extreme hunger in Sudan.",
+        "Fuel and logistics breakdowns deepen humanitarian vulnerability.",
+        "Failures of access, protection and supply reinforce one another.",
+        "Sustained delivery matters more than episodic international attention."
+      ],
+      "takeaway": "Continental dignity demands more than naming suffering; it demands sustained delivery and protection.",
+      "visual": {
+        "map_nodes": [
+          {
+            "label": "AID",
+            "x": 0.16,
+            "y": 0.28
+          },
+          {
+            "label": "FOOD",
+            "x": 0.44,
+            "y": 0.16
+          },
+          {
+            "label": "PROTECTION",
+            "x": 0.72,
+            "y": 0.4
+          },
+          {
+            "label": "FUEL",
+            "x": 0.4,
+            "y": 0.68
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "repair_cycle",
+      "headline": "EBOLA PUNISHES SLOW SYSTEMS",
+      "deck": "Outbreaks expose the delay between detection, funding, logistics, care and public trust.",
+      "quote": "An outbreak is a systems failure map drawn in real time.",
+      "facts": [
+        "Epidemics move faster than weak reporting, logistics and funding.",
+        "Detection, isolation, treatment and communication must connect without delay.",
+        "Public trust determines whether communities cooperate with containment."
+      ],
+      "takeaway": "Data without delivery is only a warning; resilient systems turn information into action.",
+      "visual": {
+        "repair_steps": [
+          "DETECT",
+          "CONFIRM",
+          "LOGISTICS",
+          "TREAT",
+          "CONTAIN"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "episode_close",
+      "headline": "WHAT FOLLOW-THROUGH REVEALS",
+      "deck": "The pattern is completion: rivers, taps, oversight, safety, claims, healing, migration, grants, AI, energy, oil, Sudan and Ebola.",
+      "quote": "Institutions are measured not only by response, but by whether they return and finish the work.",
+      "facts": [
+        "Rivers and water systems require maintenance and last-mile delivery.",
+        "Oversight, safety and compensation require proof and continuity.",
+        "Grants, AI and hospital resilience depend on completion.",
+        "Oil shocks, Sudan and Ebola punish weak follow-through."
+      ],
+      "takeaway": "Follow-through turns commitments into credence. Credence builds legitimacy. Legitimacy sustains peace and prosperity.",
+      "visual": {
+        "mechanism": [
+          "RESPONSE",
+          "COMPLETION",
+          "PROOF",
+          "TRUST"
+        ]
+      }
+    }
+  ]
+}

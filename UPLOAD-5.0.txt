@@ -1,0 +1,29 @@
+AI GEOPOLITIC — MILESTONE 5.0 EP029 BENCHMARK
+
+Upload to the existing repository without renaming folders.
+
+ADD:
+  inputs/episode-029-20july2026.json
+  tests/test_milestone_5_ep029.py
+  .github/workflows/render-milestone-5-ep029.yml
+
+REPLACE:
+  README.md
+
+Do not replace or delete the existing production renderer, routing configuration,
+character renderers, portraits, or previous milestone workflows.
+
+Then run:
+  Actions → Render Milestone 5.0 Ep029 benchmark episode → Run workflow
+
+Expected Drive destination:
+  AI-Geopolitical /
+  Automation - Temporary Artifacts /
+  Production Episodes /
+  Ep029 Benchmark
+
+This benchmark intentionally uses the archived, approved 20 July 2026 episode
+as a controlled reference. The original finished carousel remains in:
+  History - Episode List / Ep029-20July2026
+
+The workflow tests the full repo before rendering the automated 20-slide remake.
