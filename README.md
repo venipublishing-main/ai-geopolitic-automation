@@ -456,7 +456,7 @@ Expected outputs:
 - `thabo-layout-family-contact-sheet.png`
 
 ### Milestone 4.3F — Amari Ndlovu layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The sixth and final character-family expansion builds all five Amari families already approved in `config/layout_presets.json`:
 
@@ -476,7 +476,7 @@ Visual logic remains Amari-specific: human-centred geography, memory, curved pat
 
 The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Amari **“HEALING NEEDS A LIFE AFTER CRISIS.”** slide uses a follow-through pathway from crisis through care, healing, skills, work and dignity. 4.3F generalises that continuity / recognition language into reusable code rather than copying the old slide.
 
-Local validation before upload: **70 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Amari family tests. All five Amari family proofs and the contact sheet rendered successfully.
+Local validation before upload: **70 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Amari family tests. All five Amari family proofs and the contact sheet rendered successfully. The GitHub Actions run subsequently completed green.
 
 Workflow:
 
@@ -506,7 +506,93 @@ Expected outputs:
 - `amari-cultural-landscape.png`
 - `amari-layout-family-contact-sheet.png`
 
-After GitHub/Drive verification, the full six-character layout-family expansion is complete. Proceed to **Milestone 4.4 — layout selection / episode routing proof** before attempting a full production episode.
+The full six-character layout-family expansion is now complete.
+
+### Milestone 4.4 — Layout selection / episode routing proof
+**Implementation prepared — pending GitHub workflow verification**
+
+This is the first orchestration layer above the individual character renderers. One structured episode manifest now drives slide order, speaker routing and character-specific layout selection.
+
+New routing configuration:
+
+```text
+config/layout_routing.json
+```
+
+Selection policy:
+
+**deterministic content type + explicit override**
+
+The router deliberately fails closed. It does not silently guess when a content type is unknown, a speaker is invalid, a source input does not match the requested speaker, or an override requests a family that is not approved for that character.
+
+New router:
+
+```text
+src/route_episode.py
+```
+
+Routing-proof manifest:
+
+```text
+inputs/routing-proof-episode.json
+```
+
+The 4.4 proof contains **14 ordered slides** and exercises all six presenter renderers plus fourteen distinct layout selections:
+
+1. NORA — episode opener
+2. Johan — containment chain
+3. Diane — transmission chain
+4. Kai — monitoring loop
+5. Thabo — material chain
+6. Amari — dignity pathway
+7. NORA — diagnostic matrix
+8. Johan — oversight gate
+9. Diane — portfolio pipeline
+10. Kai — repair network
+11. Thabo — structural gap
+12. Amari — humanitarian map
+13. NORA — feedback loop
+14. NORA — episode closer
+
+The router rewrites slide number / total slide count into resolved per-slide JSON, dispatches each slide to the correct character-family renderer, and produces:
+
+```text
+output/routing-proof/slide_01.png ... slide_14.png
+output/routing-proof/routing-contact-sheet.png
+output/routing-proof/routing-report.json
+output/routing-proof/routing-report.md
+output/routing-proof/resolved-inputs/slide_01.json ... slide_14.json
+```
+
+New tests:
+
+```text
+tests/test_episode_router.py
+```
+
+The tests validate the routing table against approved families, deterministic content-type selection, explicit overrides, fail-closed behaviour for invalid routes, the proof manifest, all 14 rendered outputs and the generated audit report.
+
+Local validation before upload: **77 tests passed / 0 failed**. The 14-slide routed proof, resolved per-slide JSON, routing reports and contact sheet all generated successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-routing-proof.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.4 layout routing proof**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Routing Proof
+```
+
+After GitHub/Drive verification, proceed to **Milestone 4.5 — production episode schema + layout-routing hardening**, then Milestone 5 batch-render a real approved 20-slide episode.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -528,6 +614,7 @@ src/render_diane_layout_family.py
 src/render_kai_layout_family.py
 src/render_thabo_layout_family.py
 src/render_amari_layout_family.py
+src/route_episode.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -540,6 +627,7 @@ tests/test_diane_layout_family.py
 tests/test_kai_layout_family.py
 tests/test_thabo_layout_family.py
 tests/test_amari_layout_family.py
+tests/test_episode_router.py
 tests/test_prototype.py
 ```
 

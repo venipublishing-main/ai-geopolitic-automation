@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "selection_policy": "deterministic_content_type_with_explicit_override",
+  "fail_closed": true,
+  "speakers": {
+    "nora": {
+      "content_types": {
+        "episode_open": "episode_opener",
+        "episode_close": "episode_closer",
+        "systems_synthesis": "system_axis",
+        "feedback_cycle": "feedback_loop",
+        "diagnostic_comparison": "diagnostic_matrix"
+      }
+    },
+    "johan_vosloo": {
+      "content_types": {
+        "institutional_sequence": "institutional_spine",
+        "governance_handoff": "containment_chain",
+        "oversight_checkpoint": "oversight_gate",
+        "order_pathway": "order_corridor",
+        "principle_check": "principle_test"
+      }
+    },
+    "diane_sterling": {
+      "content_types": {
+        "market_dashboard": "market_grid",
+        "economic_transmission": "transmission_chain",
+        "fiscal_allocation": "fiscal_flow",
+        "investment_pipeline": "portfolio_pipeline",
+        "regional_market": "regional_economy"
+      }
+    },
+    "kai_patel": {
+      "content_types": {
+        "distributed_system": "network_mesh",
+        "system_feedback": "feedback_system",
+        "monitoring_cycle": "monitoring_loop",
+        "distributed_delivery": "decentralised_pathway",
+        "repair_cycle": "repair_network"
+      }
+    },
+    "thabo_mokoena": {
+      "content_types": {
+        "burden_distribution": "burden_ledger",
+        "material_handoff": "material_chain",
+        "class_gap": "structural_gap",
+        "pressure_over_time": "continuity_pressure"
+      }
+    },
+    "amari_ndlovu": {
+      "content_types": {
+        "regional_continuity": "regional_memory",
+        "dignity_continuity": "dignity_pathway",
+        "humanitarian_geography": "humanitarian_map",
+        "cross_border_connection": "cross_border_bridge",
+        "cultural_context": "cultural_landscape"
+      }
+    }
+  }
+}

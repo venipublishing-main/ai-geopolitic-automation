@@ -1,0 +1,91 @@
+{
+  "episode_id": "milestone-4.4-routing-proof",
+  "episode_title": "FROM PROMISE TO FOLLOW-THROUGH",
+  "episode_date": "25 AUGUST 2026",
+  "slides": [
+    {
+      "speaker": "nora",
+      "content_type": "episode_open",
+      "source_input": "inputs/nora-episode-opener.json",
+      "expected_layout": "episode_opener"
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "governance_handoff",
+      "source_input": "inputs/johan-containment-chain.json",
+      "expected_layout": "containment_chain"
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "economic_transmission",
+      "source_input": "inputs/diane-transmission-chain.json",
+      "expected_layout": "transmission_chain"
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "monitoring_cycle",
+      "source_input": "inputs/kai-monitoring-loop.json",
+      "expected_layout": "monitoring_loop"
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "material_handoff",
+      "source_input": "inputs/thabo-material-chain.json",
+      "expected_layout": "material_chain"
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "dignity_continuity",
+      "source_input": "inputs/amari-dignity-pathway.json",
+      "expected_layout": "dignity_pathway"
+    },
+    {
+      "speaker": "nora",
+      "content_type": "diagnostic_comparison",
+      "source_input": "inputs/nora-diagnostic-matrix.json",
+      "expected_layout": "diagnostic_matrix"
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "oversight_checkpoint",
+      "source_input": "inputs/johan-oversight-gate.json",
+      "expected_layout": "oversight_gate"
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "investment_pipeline",
+      "source_input": "inputs/diane-portfolio-pipeline.json",
+      "expected_layout": "portfolio_pipeline"
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "repair_cycle",
+      "source_input": "inputs/kai-repair-network.json",
+      "expected_layout": "repair_network"
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "class_gap",
+      "source_input": "inputs/thabo-structural-gap.json",
+      "expected_layout": "structural_gap"
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "humanitarian_geography",
+      "source_input": "inputs/amari-humanitarian-map.json",
+      "expected_layout": "humanitarian_map"
+    },
+    {
+      "speaker": "nora",
+      "content_type": "feedback_cycle",
+      "source_input": "inputs/nora-feedback-loop.json",
+      "expected_layout": "feedback_loop"
+    },
+    {
+      "speaker": "nora",
+      "content_type": "episode_close",
+      "source_input": "inputs/nora-episode-closer.json",
+      "expected_layout": "episode_closer"
+    }
+  ]
+}

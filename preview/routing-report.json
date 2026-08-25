@@ -1,0 +1,173 @@
+{
+  "episode_id": "milestone-4.4-routing-proof",
+  "episode_title": "FROM PROMISE TO FOLLOW-THROUGH",
+  "episode_date": "25 AUGUST 2026",
+  "total_slides": 14,
+  "routing_policy": "deterministic_content_type_with_explicit_override",
+  "speaker_counts": {
+    "amari_ndlovu": 2,
+    "diane_sterling": 2,
+    "johan_vosloo": 2,
+    "kai_patel": 2,
+    "nora": 4,
+    "thabo_mokoena": 2
+  },
+  "layout_counts": {
+    "containment_chain": 1,
+    "diagnostic_matrix": 1,
+    "dignity_pathway": 1,
+    "episode_closer": 1,
+    "episode_opener": 1,
+    "feedback_loop": 1,
+    "humanitarian_map": 1,
+    "material_chain": 1,
+    "monitoring_loop": 1,
+    "oversight_gate": 1,
+    "portfolio_pipeline": 1,
+    "repair_network": 1,
+    "structural_gap": 1,
+    "transmission_chain": 1
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "speaker": "nora",
+      "content_type": "episode_open",
+      "selected_layout": "episode_opener",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/nora-episode-opener.json",
+      "resolved_input": "resolved-inputs/slide_01.json",
+      "output": "slide_01.png"
+    },
+    {
+      "slide_number": 2,
+      "speaker": "johan_vosloo",
+      "content_type": "governance_handoff",
+      "selected_layout": "containment_chain",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/johan-containment-chain.json",
+      "resolved_input": "resolved-inputs/slide_02.json",
+      "output": "slide_02.png"
+    },
+    {
+      "slide_number": 3,
+      "speaker": "diane_sterling",
+      "content_type": "economic_transmission",
+      "selected_layout": "transmission_chain",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/diane-transmission-chain.json",
+      "resolved_input": "resolved-inputs/slide_03.json",
+      "output": "slide_03.png"
+    },
+    {
+      "slide_number": 4,
+      "speaker": "kai_patel",
+      "content_type": "monitoring_cycle",
+      "selected_layout": "monitoring_loop",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/kai-monitoring-loop.json",
+      "resolved_input": "resolved-inputs/slide_04.json",
+      "output": "slide_04.png"
+    },
+    {
+      "slide_number": 5,
+      "speaker": "thabo_mokoena",
+      "content_type": "material_handoff",
+      "selected_layout": "material_chain",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/thabo-material-chain.json",
+      "resolved_input": "resolved-inputs/slide_05.json",
+      "output": "slide_05.png"
+    },
+    {
+      "slide_number": 6,
+      "speaker": "amari_ndlovu",
+      "content_type": "dignity_continuity",
+      "selected_layout": "dignity_pathway",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/amari-dignity-pathway.json",
+      "resolved_input": "resolved-inputs/slide_06.json",
+      "output": "slide_06.png"
+    },
+    {
+      "slide_number": 7,
+      "speaker": "nora",
+      "content_type": "diagnostic_comparison",
+      "selected_layout": "diagnostic_matrix",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/nora-diagnostic-matrix.json",
+      "resolved_input": "resolved-inputs/slide_07.json",
+      "output": "slide_07.png"
+    },
+    {
+      "slide_number": 8,
+      "speaker": "johan_vosloo",
+      "content_type": "oversight_checkpoint",
+      "selected_layout": "oversight_gate",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/johan-oversight-gate.json",
+      "resolved_input": "resolved-inputs/slide_08.json",
+      "output": "slide_08.png"
+    },
+    {
+      "slide_number": 9,
+      "speaker": "diane_sterling",
+      "content_type": "investment_pipeline",
+      "selected_layout": "portfolio_pipeline",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/diane-portfolio-pipeline.json",
+      "resolved_input": "resolved-inputs/slide_09.json",
+      "output": "slide_09.png"
+    },
+    {
+      "slide_number": 10,
+      "speaker": "kai_patel",
+      "content_type": "repair_cycle",
+      "selected_layout": "repair_network",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/kai-repair-network.json",
+      "resolved_input": "resolved-inputs/slide_10.json",
+      "output": "slide_10.png"
+    },
+    {
+      "slide_number": 11,
+      "speaker": "thabo_mokoena",
+      "content_type": "class_gap",
+      "selected_layout": "structural_gap",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/thabo-structural-gap.json",
+      "resolved_input": "resolved-inputs/slide_11.json",
+      "output": "slide_11.png"
+    },
+    {
+      "slide_number": 12,
+      "speaker": "amari_ndlovu",
+      "content_type": "humanitarian_geography",
+      "selected_layout": "humanitarian_map",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/amari-humanitarian-map.json",
+      "resolved_input": "resolved-inputs/slide_12.json",
+      "output": "slide_12.png"
+    },
+    {
+      "slide_number": 13,
+      "speaker": "nora",
+      "content_type": "feedback_cycle",
+      "selected_layout": "feedback_loop",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/nora-feedback-loop.json",
+      "resolved_input": "resolved-inputs/slide_13.json",
+      "output": "slide_13.png"
+    },
+    {
+      "slide_number": 14,
+      "speaker": "nora",
+      "content_type": "episode_close",
+      "selected_layout": "episode_closer",
+      "selection_source": "content_type_rule",
+      "source_input": "inputs/nora-episode-closer.json",
+      "resolved_input": "resolved-inputs/slide_14.json",
+      "output": "slide_14.png"
+    }
+  ]
+}

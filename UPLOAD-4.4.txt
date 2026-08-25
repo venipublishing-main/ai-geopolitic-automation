@@ -1,0 +1,29 @@
+AI GEOPOLITIC — MILESTONE 4.4 LAYOUT ROUTING PROOF
+
+Upload these files to the exact repository paths:
+
+ADD:
+  config/layout_routing.json
+  inputs/routing-proof-episode.json
+  src/route_episode.py
+  tests/test_episode_router.py
+  .github/workflows/render-routing-proof.yml
+
+REPLACE:
+  README.md
+
+Do not alter or remove the six character-family renderers, config/characters.json,
+config/layout_presets.json, previous inputs, tests, or workflows.
+
+Then run:
+  Actions -> Render Milestone 4.4 layout routing proof -> Run workflow
+
+Expected output:
+  output/routing-proof/slide_01.png ... slide_14.png
+  output/routing-proof/routing-contact-sheet.png
+  output/routing-proof/routing-report.json
+  output/routing-proof/routing-report.md
+  output/routing-proof/resolved-inputs/slide_01.json ... slide_14.json
+
+Expected Drive destination:
+  AI-Geopolitical / Automation - Temporary Artifacts / Layout Routing Proof
