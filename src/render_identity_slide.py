@@ -18,6 +18,7 @@ try:
         arrow,
         centre_text,
         draw_deck,
+        editorial_atmosphere,
         draw_footer,
         draw_frame,
         draw_headline,
@@ -33,7 +34,7 @@ try:
 except ImportError:
     from editorial_primitives import (
         H, INK, MUTED, PAPER, SAFE, W, LayoutError, arrow, centre_text,
-        draw_deck, draw_footer, draw_frame, draw_headline, draw_quote,
+        draw_deck, editorial_atmosphere, draw_footer, draw_frame, draw_headline, draw_quote,
         draw_small_fact_list, draw_takeaway_band, ensure, feathered_portrait,
         font, hex_rgb, paper_texture,
     )
@@ -50,7 +51,25 @@ def portrait(img, root: Path, speaker: dict, xy, size):
     x, y = xy
     ensure(x >= SAFE and x + size[0] <= W - SAFE, f"Portrait crosses horizontal safe area: {speaker['name']}")
     ensure(y >= SAFE and y + size[1] <= TAKEAWAY_Y - 12, f"Portrait crosses lower content boundary: {speaker['name']}")
-    p, mask = feathered_portrait(path, crop, size)
+
+    # A light printmaker's plate around the locked portrait helps the presenter
+    # feel embedded in the editorial composition without altering identity.
+    accent = hex_rgb(speaker["accent"])
+    plate = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    pd = ImageDraw.Draw(plate)
+    px0 = max(SAFE, x - 9)
+    py0 = max(SAFE, y - 9)
+    px1 = min(W - SAFE, x + size[0] + 10)
+    py1 = min(TAKEAWAY_Y - 12, y + size[1] + 10)
+    pd.rectangle((px0, py0, px1, py1), outline=(*accent, 72), width=2)
+    for yy in range(py0 + 16, py1 - 8, 13):
+        pd.line((max(px0, px1 - 38), yy, px1, yy), fill=(*accent, 28), width=1)
+    for xx in range(px0 + 12, min(px0 + 82, px1 - 5), 11):
+        pd.line((xx, max(py0, py1 - 34), xx + 22, py1), fill=(*accent, 22), width=1)
+    img.paste(plate, (0, 0), plate)
+
+    fade = max(52, min(78, size[1] // 5))
+    p, mask = feathered_portrait(path, crop, size, fade_bottom=fade)
     img.paste(p, xy, mask)
 
 
@@ -59,6 +78,19 @@ def common_canvas(data, speaker):
     accent = hex_rgb(speaker["accent"])
     img = Image.new("RGB", (W, H), PAPER)
     paper_texture(img)
+    theme = {
+        "NORA": "nora",
+        "Johan Vosloo": "johan_vosloo",
+        "Diane Sterling": "diane_sterling",
+        "Kai Patel": "kai_patel",
+        "Thabo Mokoena": "thabo_mokoena",
+        "Amari Ndlovu": "amari_ndlovu",
+    }.get(speaker.get("name"), "")
+    editorial_atmosphere(
+        img, accent, theme,
+        variant=str(data.get("content_type") or data.get("layout_family") or "identity"),
+        seed=int(data["slide_number"]),
+    )
     draw = ImageDraw.Draw(img)
     draw_frame(draw, accent, data["slide_number"], data["total_slides"])
     return img, draw, accent

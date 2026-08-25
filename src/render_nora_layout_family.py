@@ -32,6 +32,7 @@ try:
         hex_rgb,
         line_height,
         paper_texture,
+        editorial_atmosphere,
         wrap,
     )
     from .render_identity_slide import portrait, render_nora as render_system_axis
@@ -40,7 +41,7 @@ except ImportError:
         H, INK, MUTED, PAPER, SAFE, W, LayoutError, arrow, block_height,
         centre_text, draw_deck, draw_footer, draw_frame, draw_headline,
         draw_lines, draw_quote, draw_small_fact_list, draw_takeaway_band,
-        ensure, fit_wrapped, font, hex_rgb, line_height, paper_texture, wrap,
+        ensure, fit_wrapped, font, hex_rgb, line_height, paper_texture, editorial_atmosphere, wrap,
     )
     from render_identity_slide import portrait, render_nora as render_system_axis
 
@@ -59,6 +60,11 @@ def new_canvas(data: dict, speaker: dict, *, show_slide_number: bool = True):
     accent = hex_rgb(speaker["accent"])
     img = Image.new("RGB", (W, H), PAPER)
     paper_texture(img)
+    editorial_atmosphere(
+        img, accent, "nora",
+        variant=str(data.get("content_type") or data.get("layout_family") or "family"),
+        seed=int(data["slide_number"]),
+    )
     draw = ImageDraw.Draw(img)
     if show_slide_number:
         draw_frame(draw, accent, int(data["slide_number"]), int(data["total_slides"]))

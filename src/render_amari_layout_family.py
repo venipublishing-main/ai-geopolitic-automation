@@ -29,6 +29,7 @@ try:
         font,
         hex_rgb,
         paper_texture,
+        editorial_atmosphere,
     )
     from .render_identity_slide import portrait, render_amari as render_regional_memory
 except ImportError:
@@ -36,7 +37,7 @@ except ImportError:
         INK, MUTED, PAPER, SAFE, W, LayoutError, arrow, centre_text,
         draw_deck, draw_footer, draw_frame, draw_headline, draw_lines,
         draw_quote, draw_small_fact_list, draw_takeaway_band, ensure,
-        fit_wrapped, font, hex_rgb, paper_texture,
+        fit_wrapped, font, hex_rgb, paper_texture, editorial_atmosphere,
     )
     from render_identity_slide import portrait, render_amari as render_regional_memory
 
@@ -56,6 +57,11 @@ def new_canvas(data: dict, speaker: dict):
     accent = hex_rgb(speaker["accent"])
     img = Image.new("RGB", (1080, 1080), PAPER)
     paper_texture(img)
+    editorial_atmosphere(
+        img, accent, "amari_ndlovu",
+        variant=str(data.get("content_type") or data.get("layout_family") or "family"),
+        seed=int(data["slide_number"]),
+    )
     draw = ImageDraw.Draw(img)
     draw_frame(draw, accent, int(data["slide_number"]), int(data["total_slides"]))
     return img, draw, accent

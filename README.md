@@ -659,7 +659,7 @@ Production Schema Proof
 The GitHub/Drive verification completed green. The repository had **84 tests** at the end of Milestone 4.5.
 
 ### Milestone 5.0 — First approved 20-slide automated episode benchmark
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The first production-scale benchmark uses the archived, approved **Ep029 — 20 July 2026 — “THE FOLLOW-THROUGH GAP”** episode rather than synthetic engineering copy. This gives the automation a fixed editorial target whose original 20-slide finished carousel already exists in Google Drive under:
 
@@ -716,7 +716,61 @@ Ep029 Benchmark
 
 Milestone 5.0 is a **benchmark, not a claim of final visual parity**. The automated output should be reviewed against the original Ep029 carousel for typography, density, illustration richness, visual storytelling and mobile readability. Any repeated shortcomings should be fixed in reusable primitives/layouts rather than hand-patching one historical episode.
 
-After the benchmark is GitHub/Drive verified, the next step is **Milestone 5.1 — benchmark QA and reusable fidelity corrections**, followed by the first current daily episode compiled directly from approved R&D.
+The GitHub/Drive benchmark completed green. The side-by-side comparison confirmed that orchestration, identity, routing and readable information architecture are working; the remaining gap is primarily visual fidelity, especially contextual illustration richness, portrait integration and background editorial atmosphere.
+
+### Milestone 5.1 — Benchmark QA + reusable fidelity corrections
+**Implementation prepared — pending GitHub workflow verification**
+
+Milestone 5.1 improves shared primitives rather than creating more layouts. The goal is to make the entire existing library feel less template-like before a current daily episode is attempted.
+
+Changes:
+
+- richer deterministic paper grain with faint print-fibre scratches;
+- shared character-specific editorial atmosphere behind foreground content;
+- NORA system/globe contours;
+- Johan institutional facade/authority geometry;
+- Diane market bars/transmission traces;
+- Kai network/circuit traces;
+- Thabo ledger/burden hatching;
+- Amari regional contours/route lines;
+- subtle printmaker plate and deeper feathering around the locked portraits;
+- numbered evidence-ledger treatment in shared fact panels;
+- no changes to locked portrait files, routing rules, episode schema or approved layout families.
+
+Benchmark notes are documented in:
+
+```text
+docs/FIDELITY_BENCHMARK.md
+```
+
+New regression coverage:
+
+```text
+tests/test_fidelity_primitives.py
+```
+
+The 5.0 repository baseline contains **89 GitHub-green tests**. Milestone 5.1 adds **3 primitive/fidelity tests**, so the repository should collect **92 tests** after upload. The updated Ep029 benchmark has already rendered locally as a complete 20-slide batch.
+
+Workflow:
+
+```text
+.github/workflows/render-milestone-5-1-fidelity.yml
+```
+
+Workflow name:
+
+**Render Milestone 5.1 fidelity benchmark**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Production Episodes /
+Ep029 Fidelity 5.1
+```
+
+Milestone 5.1 is still not final visual parity. The biggest remaining gap is bespoke contextual illustration. If the GitHub/Drive run is green and visually approved, proceed to **Milestone 5.2 — contextual illustration layer proof** rather than adding more layout families.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -724,6 +778,7 @@ Do not create 20–30 unrelated giant templates. Build variants from reusable ed
 
 ```text
 docs/PRODUCTION_SPEC.md
+docs/FIDELITY_BENCHMARK.md
 config/brand.json
 config/characters.json
 config/layouts.json
@@ -755,10 +810,12 @@ tests/test_amari_layout_family.py
 tests/test_episode_router.py
 tests/test_production_episode.py
 tests/test_milestone_5_ep029.py
+tests/test_fidelity_primitives.py
 tests/test_prototype.py
 
 inputs/episode-029-20july2026.json
 .github/workflows/render-milestone-5-ep029.yml
+.github/workflows/render-milestone-5-1-fidelity.yml
 ```
 
 ## Development rule: README must move with the code

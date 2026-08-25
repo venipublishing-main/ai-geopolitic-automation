@@ -110,14 +110,143 @@ def draw_lines(draw, lines: Iterable[str], xy, fnt, fill, spacing=4):
 
 
 def paper_texture(img: Image.Image):
-    random.seed(20260822)
+    """Deterministic paper grain with faint fibre scratches.
+
+    The original handcrafted episodes are materially denser than a flat cream
+    canvas. Keep this subtle enough for body copy while avoiding a sterile
+    template background.
+    """
+    rng = random.Random(20260822)
     px = img.load()
-    for _ in range(24000):
-        x = random.randrange(W)
-        y = random.randrange(H)
+    for _ in range(30000):
+        x = rng.randrange(W)
+        y = rng.randrange(H)
         r, g, b = px[x, y]
-        d = random.choice((-4, -3, -2, -1, 1, 2, 3))
+        d = rng.choice((-5, -4, -3, -2, -1, 1, 2, 3, 4))
         px[x, y] = tuple(max(0, min(255, c + d)) for c in (r, g, b))
+
+    fibre = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    fd = ImageDraw.Draw(fibre)
+    for _ in range(190):
+        x = rng.randrange(18, W - 18)
+        y = rng.randrange(18, H - 18)
+        length = rng.randrange(14, 90)
+        alpha = rng.randrange(5, 12)
+        colour = (*INK, alpha) if rng.random() < 0.72 else (255, 255, 255, alpha)
+        fd.line((x, y, min(W - 1, x + length), y + rng.choice((-1, 0, 1))), fill=colour, width=1)
+    img.paste(fibre, (0, 0), fibre)
+
+
+def _stable_seed(*parts) -> int:
+    text = "|".join(str(p or "") for p in parts)
+    return sum((idx + 1) * ord(ch) for idx, ch in enumerate(text)) & 0xFFFFFFFF
+
+
+def editorial_atmosphere(
+    img: Image.Image,
+    accent,
+    theme: str,
+    *,
+    variant: str = "",
+    seed: int = 0,
+):
+    """Add a low-contrast character-specific editorial background layer.
+
+    This is deliberately decorative rather than informational. It supplies the
+    engraved maps / institutional geometry / network traces / ledger marks that
+    make the reference episodes feel authored, while leaving exact content to
+    the foreground renderer.
+    """
+    theme = str(theme or "").strip().lower()
+    rng = random.Random(_stable_seed(theme, variant, seed, 20260825))
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay)
+
+    faint = (*accent, 22)
+    soft = (*accent, 34)
+    ghost_ink = (*INK, 12)
+
+    # Universal registration / print texture, mostly around the frame edges.
+    for x0, y0 in ((105, 805), (830, 190)):
+        for yy in range(y0, y0 + 96, 12):
+            for xx in range(x0, x0 + 132, 12):
+                if rng.random() < 0.52:
+                    d.ellipse((xx, yy, xx + 2, yy + 2), fill=faint)
+    for x in (116, 132, 148):
+        d.line((x, 86, x, 99), fill=soft, width=1)
+    for y in (932, 944):
+        d.line((906, y, 958, y), fill=ghost_ink, width=1)
+
+    if theme == "nora":
+        # Systems / globe / diagnostic axes.
+        box = (690, 400, 1080, 790)
+        for inset in (0, 38, 76):
+            b = (box[0] + inset, box[1] + inset, box[2] - inset, box[3] - inset)
+            d.arc(b, 196, 352, fill=faint, width=2)
+        d.line((785, 540, 1015, 540), fill=faint, width=2)
+        d.line((900, 425, 900, 690), fill=faint, width=2)
+        for px, py in ((780, 540), (900, 425), (1015, 540), (900, 690)):
+            d.ellipse((px - 5, py - 5, px + 5, py + 5), outline=soft, width=2)
+
+    elif theme == "johan_vosloo":
+        # Institutional facade / chain-of-authority geometry.
+        base_y = 855
+        d.line((680, base_y, 1010, base_y), fill=faint, width=3)
+        for x in range(712, 990, 55):
+            d.line((x, 640, x, base_y), fill=faint, width=3)
+            d.line((x - 12, 640, x + 12, 640), fill=soft, width=2)
+            d.line((x - 16, base_y, x + 16, base_y), fill=soft, width=2)
+        d.arc((680, 555, 1010, 760), 190, 350, fill=faint, width=3)
+        for y in (700, 740, 780):
+            d.line((630, y, 690, y), fill=ghost_ink, width=2)
+
+    elif theme == "diane_sterling":
+        # Market ticks, conversion bars and transmission slope.
+        x0, y0 = 650, 815
+        d.line((x0, y0, 1025, y0), fill=faint, width=2)
+        heights = [42, 76, 58, 112, 95, 142]
+        for i, h in enumerate(heights):
+            x = x0 + 28 + i * 52
+            d.rectangle((x, y0 - h, x + 22, y0), outline=faint, width=2)
+        pts = [(655, 480), (720, 455), (785, 500), (850, 430), (920, 448), (1000, 380)]
+        d.line(pts, fill=soft, width=2)
+        for x, y in pts:
+            d.ellipse((x - 4, y - 4, x + 4, y + 4), fill=soft)
+
+    elif theme == "kai_patel":
+        # Distributed network / circuit traces.
+        nodes = [(655, 420), (780, 360), (915, 430), (1005, 560), (895, 680), (730, 650), (635, 545)]
+        links = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 0), (1, 5), (2, 5), (0, 4)]
+        for a, b in links:
+            d.line((nodes[a], nodes[b]), fill=faint, width=2)
+        for x, y in nodes:
+            r = 7 if rng.random() < 0.35 else 5
+            d.ellipse((x - r, y - r, x + r, y + r), outline=soft, width=2)
+        for y in (770, 790, 810):
+            d.line((650, y, 1015, y), fill=ghost_ink, width=1)
+
+    elif theme == "thabo_mokoena":
+        # Ledger / burden / strike marks.
+        for y in range(620, 865, 34):
+            d.line((610, y, 1015, y), fill=faint, width=2)
+            d.line((610, y, 655, y), fill=soft, width=4)
+        for x in range(700, 1020, 18):
+            d.line((x, 410, x - 105, 540), fill=ghost_ink, width=2)
+        d.line((660, 870, 1015, 545), fill=(*accent, 28), width=5)
+
+    elif theme == "amari_ndlovu":
+        # Regional contours, routes and memory rings.
+        centre = (865, 620)
+        for r in (80, 125, 170, 220):
+            d.arc((centre[0]-r, centre[1]-r, centre[0]+r, centre[1]+r), 205, 28, fill=faint, width=2)
+        route = [(620, 780), (690, 700), (760, 735), (835, 640), (925, 675), (1015, 565)]
+        d.line(route, fill=soft, width=3)
+        for x, y in route:
+            d.ellipse((x - 5, y - 5, x + 5, y + 5), outline=soft, width=2)
+        for x in range(625, 1000, 42):
+            d.arc((x, 385, x + 54, 440), 190, 345, fill=ghost_ink, width=1)
+
+    img.paste(overlay, (0, 0), overlay)
 
 
 def distressed_text(img: Image.Image, xy, text: str, fnt, fill, seed=1):
@@ -306,13 +435,15 @@ def draw_small_fact_list(
 
     body_y = y0 + 46
     available = y1 - body_y - 8
-    body_width = x1 - x0 - 48
+    marker_x = x0 + 27
+    text_x = x0 + 45
+    body_width = x1 - text_x - 12
     selected = None
     for size in range(start, minimum - 1, -1):
         ff = font(size, serif=True)
         rows = [wrap(draw, f, ff, body_width) for f in facts]
-        # 6 px between bullet items, 1 px between wrapped lines.
-        need = sum(block_height(draw, r, ff, spacing=1) + 6 for r in rows)
+        # 7 px between numbered evidence rows, 1 px between wrapped lines.
+        need = sum(block_height(draw, r, ff, spacing=1) + 7 for r in rows)
         if need <= available:
             selected = ff, rows
             break
@@ -321,10 +452,15 @@ def draw_small_fact_list(
             f"Facts do not fit in {box} at minimum {minimum}px. Reduce copy or enlarge facts panel."
         )
     ff, rows = selected
+    draw.line((marker_x, body_y + 4, marker_x, y1 - 11), fill=accent, width=1)
     y = body_y
-    for row_lines in rows:
-        draw.ellipse((x0 + 14, y + 6, x0 + 22, y + 14), fill=accent)
-        y = draw_lines(draw, row_lines, (x0 + 32, y), ff, INK, spacing=1) + 6
+    for index, row_lines in enumerate(rows, start=1):
+        marker_y = y + 10
+        draw.ellipse((marker_x - 9, marker_y - 9, marker_x + 9, marker_y + 9), fill=PAPER, outline=accent, width=2)
+        centre_text(draw, f"{index:02d}", (marker_x, marker_y), font(8, bold=True, condensed=True), accent)
+        y = draw_lines(draw, row_lines, (text_x, y), ff, INK, spacing=1) + 7
+        if index != len(rows) and y + 1 < y1:
+            draw.line((text_x, y - 3, x1 - 12, y - 3), fill=accent, width=1)
     ensure(y <= y1, "Facts crossed bottom of facts panel.")
     return y
 

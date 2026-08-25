@@ -1,0 +1,27 @@
+AI Geopolitic — Milestone 5.1 Fidelity Benchmark
+
+Upload to the existing repository paths exactly.
+
+REPLACE:
+- README.md
+- src/editorial_primitives.py
+- src/render_identity_slide.py
+- src/render_nora_layout_family.py
+- src/render_johan_layout_family.py
+- src/render_diane_layout_family.py
+- src/render_kai_layout_family.py
+- src/render_thabo_layout_family.py
+- src/render_amari_layout_family.py
+
+ADD:
+- docs/FIDELITY_BENCHMARK.md
+- tests/test_fidelity_primitives.py
+- .github/workflows/render-milestone-5-1-fidelity.yml
+
+Do not rename folders or delete previous milestone workflows.
+
+Then run:
+Actions -> Render Milestone 5.1 fidelity benchmark -> Run workflow
+
+Expected Drive destination:
+AI-Geopolitical / Automation - Temporary Artifacts / Production Episodes / Ep029 Fidelity 5.1
