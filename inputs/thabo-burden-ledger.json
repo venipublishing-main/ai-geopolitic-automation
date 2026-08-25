@@ -1,0 +1,17 @@
+{
+  "slide_number": 12,
+  "total_slides": 20,
+  "speaker": "thabo_mokoena",
+  "layout_family": "burden_ledger",
+  "headline": "EVERY SYSTEM FAILURE SENDS A BILL TO SOMEONE.",
+  "deck": "When public delivery breaks, the cost is displaced onto workers and households as money, time and risk.",
+  "quote": "The real ledger is not what government spends. It is what ordinary people absorb when delivery fails.",
+  "facts": [
+    "Extra transport costs are shifted to households.",
+    "Queues and delays consume unpaid time.",
+    "Service gaps push risk onto those with least buffer.",
+    "The burden compounds across wages and care work."
+  ],
+  "mechanism": ["COST", "TIME", "RISK", "HOUSEHOLD"],
+  "takeaway": "A delivery failure is a transfer of cost downward unless the state absorbs and repairs the burden."
+}

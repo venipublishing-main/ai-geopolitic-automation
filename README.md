@@ -356,7 +356,7 @@ Expected outputs:
 - `diane-layout-family-contact-sheet.png`
 
 ### Milestone 4.3D — Kai Patel layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The fourth multi-layout character family builds all five Kai families already approved in `config/layout_presets.json`:
 
@@ -376,7 +376,7 @@ Visual logic remains Kai-specific: distributed nodes, live-state monitoring, cir
 
 The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Kai **“CLEAR RIVERS NEED OPERATING MEMORY.”** slide uses monitoring, reporting, enforcement, stewardship and maintenance as a continuous operating loop. 4.3D generalises that systems-memory / feedback language into reusable code rather than copying the old slide.
 
-Local validation before upload: **56 tests passed / 0 failed**, including all prior identity, stress, NORA, Johan and Diane tests plus the new Kai family tests. All five Kai family proofs and the contact sheet rendered successfully.
+Local validation before upload: **56 tests passed / 0 failed**, including all prior identity, stress, NORA, Johan and Diane tests plus the new Kai family tests. All five Kai family proofs and the contact sheet rendered successfully. The GitHub Actions run subsequently completed green.
 
 Workflow:
 
@@ -406,7 +406,56 @@ Expected outputs:
 - `kai-repair-network.png`
 - `kai-layout-family-contact-sheet.png`
 
-After GitHub/Drive verification, proceed to **Milestone 4.3E — Thabo Mokoena layout family**.
+### Milestone 4.3E — Thabo Mokoena layout family
+**Implementation prepared — pending GitHub workflow verification**
+
+The fifth multi-layout character family builds all four Thabo families already approved in `config/layout_presets.json`:
+
+- `burden_ledger`
+- `material_chain`
+- `structural_gap`
+- `continuity_pressure`
+
+The family is implemented in:
+
+```text
+src/render_thabo_layout_family.py
+```
+
+Visual logic remains Thabo-specific: stacked material burden, broken handoffs, visible class gaps, accumulating pressure and explicit household cost. The family deliberately avoids Diane-style dashboard polish, Kai-style neutral network geometry and NORA-style symmetrical synthesis.
+
+The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Thabo **“EX-MINEWORKERS ARE THE UNPAID LEDGER.”** slide uses a broken path from injury → claim → review → payment → household relief. 4.3E generalises that material-chain / blocked-handoff logic into reusable code rather than copying the old slide.
+
+Local validation before upload: **63 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Thabo family tests. All four Thabo family proofs and the contact sheet rendered successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-thabo-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3E Thabo layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+Thabo
+```
+
+Expected outputs:
+
+- `thabo-burden-ledger.png`
+- `thabo-material-chain.png`
+- `thabo-structural-gap.png`
+- `thabo-continuity-pressure.png`
+- `thabo-layout-family-contact-sheet.png`
+
+After GitHub/Drive verification, proceed to **Milestone 4.3F — Amari Ndlovu layout family**.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -426,6 +475,7 @@ src/render_nora_layout_family.py
 src/render_johan_layout_family.py
 src/render_diane_layout_family.py
 src/render_kai_layout_family.py
+src/render_thabo_layout_family.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -436,6 +486,7 @@ tests/test_nora_layout_family.py
 tests/test_johan_layout_family.py
 tests/test_diane_layout_family.py
 tests/test_kai_layout_family.py
+tests/test_thabo_layout_family.py
 tests/test_prototype.py
 ```
 

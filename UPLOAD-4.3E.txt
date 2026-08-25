@@ -1,0 +1,26 @@
+Milestone 4.3E — Thabo Mokoena layout family
+
+ADD:
+  src/render_thabo_layout_family.py
+  inputs/thabo-burden-ledger.json
+  inputs/thabo-material-chain.json
+  inputs/thabo-structural-gap.json
+  inputs/thabo-continuity-pressure.json
+  tests/test_thabo_layout_family.py
+  .github/workflows/render-thabo-layout-family.yml
+
+REPLACE:
+  README.md
+
+DO NOT CHANGE:
+  config/characters.json
+  config/layout_presets.json
+  src/editorial_primitives.py
+  src/render_identity_slide.py
+  existing character-family renderers/workflows
+
+RUN:
+  Actions → Render Milestone 4.3E Thabo layout family → Run workflow
+
+EXPECTED DRIVE DESTINATION:
+  AI-Geopolitical / Automation - Temporary Artifacts / Layout Families / Thabo

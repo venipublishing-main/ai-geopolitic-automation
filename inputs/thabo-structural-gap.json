@@ -1,0 +1,20 @@
+{
+  "slide_number": 11,
+  "total_slides": 20,
+  "speaker": "thabo_mokoena",
+  "layout_family": "structural_gap",
+  "headline": "THE GAP BETWEEN POLICY AND LIFE HAS A CLASS ADDRESS.",
+  "deck": "When institutions report progress but households still absorb the same costs, the gap itself becomes part of the political economy.",
+  "quote": "A programme can exist on paper while the worker still pays for the failure with wages, time and debt.",
+  "facts": [
+    "Formal access does not guarantee usable access.",
+    "Delayed relief is often financed by household debt.",
+    "Unpaid time is part of the real cost of administration."
+  ],
+  "gaps": [
+    {"promise": "Access is formally available.", "reality": "Travel, queues and documentation still cost money."},
+    {"promise": "Support is approved.", "reality": "Payment delay shifts the waiting cost to the household."},
+    {"promise": "The programme is funded.", "reality": "Workers still absorb the risk when delivery breaks."}
+  ],
+  "takeaway": "The structural gap is not empty space; it is where public failure becomes private cost."
+}

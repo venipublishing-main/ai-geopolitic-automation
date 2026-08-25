@@ -1,0 +1,22 @@
+{
+  "slide_number": 7,
+  "total_slides": 20,
+  "speaker": "thabo_mokoena",
+  "layout_family": "material_chain",
+  "headline": "A RIGHT IS ONLY REAL WHEN THE MATERIAL CHAIN CLOSES.",
+  "deck": "Policy can promise relief, but workers experience the system through each handoff between recognition, administration and payment.",
+  "quote": "The paperwork is not the outcome. The outcome is whether relief reaches the household before the damage deepens.",
+  "facts": [
+    "Every extra handoff creates another place for delay.",
+    "A stalled payment pushes debt and care costs downstream.",
+    "The final household transfer is the material test."
+  ],
+  "chain": [
+    {"label": "INJURY / NEED", "note": "The material harm already exists."},
+    {"label": "CLAIM", "note": "The worker enters the administrative system."},
+    {"label": "REVIEW", "note": "Files, proof and eligibility are checked."},
+    {"label": "PAYMENT", "note": "Delay here compounds the burden.", "blocked": true},
+    {"label": "HOUSEHOLD", "note": "Relief matters only when it arrives."}
+  ],
+  "takeaway": "A benefit that stops inside administration is not relief; it is an unpaid promise."
+}
