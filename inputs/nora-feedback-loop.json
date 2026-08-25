@@ -1,0 +1,17 @@
+{
+  "slide_number": 5,
+  "total_slides": 20,
+  "speaker": "nora",
+  "layout_family": "feedback_loop",
+  "headline": "A SYSTEM IS ONLY REAL WHEN THE LOOP CLOSES.",
+  "deck": "Announcements become governance only when implementation, monitoring, correction and delivery reconnect to the original promise.",
+  "quote": "The test is not whether the system starts. The test is whether it learns enough to finish.",
+  "facts": [
+    "Promises must translate into funded implementation.",
+    "Monitoring must reveal the state of delivery.",
+    "Correction must remove bottlenecks rather than explain them.",
+    "The final outcome must be visible to the public."
+  ],
+  "mechanism": ["PROMISE", "BUILD", "MONITOR", "CORRECT", "DELIVER"],
+  "takeaway": "Credibility is earned when the system can detect failure, repair it and still deliver the result."
+}

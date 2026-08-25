@@ -1,0 +1,17 @@
+{
+  "slide_number": 4,
+  "total_slides": 20,
+  "speaker": "nora",
+  "layout_family": "system_axis",
+  "headline": "TRUST IS A SYSTEM PROPERTY.",
+  "deck": "A public service is judged by the whole loop: signal, state response, feedback and outcome.",
+  "quote": "Trust is not one promise. It is a system that keeps returning a usable answer.",
+  "facts": [
+    "Front-end access is only one part of delivery.",
+    "Back-office state changes must be visible.",
+    "Failures need feedback, not silence.",
+    "The outcome must close the loop for the user."
+  ],
+  "mechanism": ["SIGNAL", "STATE", "FEEDBACK", "OUTCOME"],
+  "takeaway": "A trustworthy institution makes the full system legible, not merely the launch moment."
+}

@@ -1,0 +1,19 @@
+{
+  "slide_number": 20,
+  "total_slides": 20,
+  "speaker": "nora",
+  "layout_family": "episode_closer",
+  "episode_date": "Monday 20 July 2026",
+  "episode_title": "The Follow-Through Test",
+  "headline": "THE SYSTEM MUST CLOSE ITS OWN LOOP.",
+  "deck": "The episode ends where governance begins: with the obligation to turn signal into response, response into result and result into durable trust.",
+  "quote": "A system becomes credible when the public no longer has to guess whether anyone is still carrying the promise.",
+  "facts": [
+    "Responsibility remains visible after the announcement.",
+    "Failures trigger correction rather than disappearance.",
+    "Delivery reaches the intended person or place.",
+    "The result can be checked independently."
+  ],
+  "mechanism": ["SIGNAL", "RESPONSE", "RESULT", "TRUST"],
+  "takeaway": "The final test is institutional memory: can the system keep carrying the obligation until the public can see the result?"
+}

@@ -1,0 +1,21 @@
+{
+  "slide_number": 9,
+  "total_slides": 20,
+  "speaker": "nora",
+  "layout_family": "diagnostic_matrix",
+  "headline": "THE FAILURE IS NOT ONE THING. IT IS A PATTERN.",
+  "deck": "A diagnostic view separates access, state response, accountability and outcome so the system can see where trust is actually breaking.",
+  "quote": "A useful diagnosis names the failed link before it prescribes the repair.",
+  "facts": [
+    "Access can work while the back office remains stalled.",
+    "Response can occur without meaningful accountability.",
+    "Outputs can be reported without reaching the intended user."
+  ],
+  "matrix": [
+    {"label": "ACCESS", "value": "OPEN", "note": "The public can enter the system and submit the required signal."},
+    {"label": "STATE", "value": "DELAYED", "note": "Internal processing is visible but slower than the service promise."},
+    {"label": "ACCOUNTABILITY", "value": "PARTIAL", "note": "Responsibility exists, but escalation and ownership are not yet clear."},
+    {"label": "OUTCOME", "value": "UNPROVEN", "note": "Completion still has to be demonstrated in the real-world result."}
+  ],
+  "takeaway": "System reform improves when failure is located precisely instead of being described as one general crisis."
+}

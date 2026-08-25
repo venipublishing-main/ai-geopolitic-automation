@@ -1,0 +1,21 @@
+{
+  "slide_number": 1,
+  "total_slides": 20,
+  "speaker": "nora",
+  "layout_family": "episode_opener",
+  "episode_date": "Monday 20 July 2026",
+  "episode_title": "The Follow-Through Test",
+  "headline": "THE FOLLOW-THROUGH TEST.",
+  "deck": "The system is judged by what it finishes after the public moment has passed.",
+  "question": "Can the system finish what it starts once the public moment has passed?",
+  "quote": "Continuity is not the test anymore. Completion is.",
+  "facts": [
+    "Water delivery must move from treatment to household taps.",
+    "Oversight must become visible accountability, not ceremony.",
+    "Safety disclosure must produce correction and maintenance.",
+    "Claims and grants must reach people, not remain administrative promises.",
+    "Public AI systems must prove that governance survives the launch moment."
+  ],
+  "mechanism": ["PROMISE", "IMPLEMENT", "MONITOR", "CORRECT", "DELIVER"],
+  "takeaway": "The system does not collapse only in crisis; it also collapses in the quiet when nobody checks whether the promise became a result."
+}

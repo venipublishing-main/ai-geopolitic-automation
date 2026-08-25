@@ -159,7 +159,7 @@ Layout Identity Proof
 ```
 
 ### Milestone 4.2B — Layout stress testing
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The six hardened identity layouts are now tested against three copy-density profiles:
 
@@ -198,11 +198,64 @@ Layout Stress Test
 
 ## Current development stage
 
-Run and visually review Milestone 4.2B. If the workflow and contact sheet are clean, mark 4.2B complete and proceed to Milestone 4.3.
+### Milestone 4.3A — NORA layout family
+**Implementation prepared — pending GitHub workflow verification**
 
-### Then: Milestone 4.3 — 3–5 layout families per character
+The first multi-layout character family builds all five NORA families already approved in `config/layout_presets.json`:
 
-The previous-episode library in Google Drive is the visual reference source for expanding each character into approximately 3–5 reusable compositions.
+- `system_axis`
+- `feedback_loop`
+- `diagnostic_matrix`
+- `episode_opener`
+- `episode_closer`
+
+The family is implemented in:
+
+```text
+src/render_nora_layout_family.py
+```
+
+Reference direction was checked against the previous-episode library in Google Drive, including the established full-header NORA opener and the follow-through/open-file visual language from `Ep029-20July2026`. The new code does not reproduce those slides literally; it converts their composition logic into reusable, measured layouts.
+
+New reusable utility:
+
+```text
+src/make_contact_sheet.py
+```
+
+This utility is intended for NORA now and later character-family proofs and full-episode QA.
+
+Local 4.3A validation before upload: **35 tests passed** and all five NORA family proofs rendered successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-nora-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3A NORA layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+NORA
+```
+
+Expected outputs:
+
+- `nora-system-axis.png`
+- `nora-feedback-loop.png`
+- `nora-diagnostic-matrix.png`
+- `nora-episode-opener.png`
+- `nora-episode-closer.png`
+- `nora-layout-family-contact-sheet.png`
+
+After visual approval, proceed character-by-character through the remaining approved families, starting with Johan Vosloo.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -218,6 +271,8 @@ config/layout_presets.json
 src/editorial_primitives.py
 src/render_identity_slide.py
 src/render_identity_stress_pack.py
+src/render_nora_layout_family.py
+src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
 

@@ -1,0 +1,40 @@
+AI GEOPOLITIC — MILESTONE 4.3A NORA LAYOUT FAMILY
+
+Purpose:
+Build and verify the five approved NORA layout families before expanding the other panelists.
+
+ADD:
+- src/render_nora_layout_family.py
+- src/make_contact_sheet.py
+- inputs/nora-system-axis.json
+- inputs/nora-feedback-loop.json
+- inputs/nora-diagnostic-matrix.json
+- inputs/nora-episode-opener.json
+- inputs/nora-episode-closer.json
+- tests/test_nora_layout_family.py
+- .github/workflows/render-nora-layout-family.yml
+
+REPLACE:
+- README.md
+
+DO NOT replace or remove:
+- src/editorial_primitives.py
+- src/render_identity_slide.py
+- src/render_identity_stress_pack.py
+- config/characters.json
+- config/layout_presets.json
+- existing Milestone 4.2 workflows/tests
+
+After upload:
+Actions -> Render Milestone 4.3A NORA layout family -> Run workflow
+
+Expected Drive destination:
+AI-Geopolitical / Automation - Temporary Artifacts / Layout Families / NORA
+
+Expected outputs:
+- nora-system-axis.png
+- nora-feedback-loop.png
+- nora-diagnostic-matrix.png
+- nora-episode-opener.png
+- nora-episode-closer.png
+- nora-layout-family-contact-sheet.png
