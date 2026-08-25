@@ -1,4 +1,4 @@
-name: Render Milestone 4.1 identity proof
+name: Render Milestone 4.2A hardened identity proof
 
 on:
   workflow_dispatch:
@@ -24,7 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Render identity proof pack
+      - name: Run layout QA tests
+        run: pytest -q
+
+      - name: Render hardened identity proof pack
         run: |
           python src/render_identity_slide.py --input inputs/identity-nora.json --output output/identity-nora.png
           python src/render_identity_slide.py --input inputs/identity-johan.json --output output/identity-johan.png
@@ -36,7 +39,7 @@ jobs:
       - name: Upload GitHub artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ai-geopolitic-milestone-4_1-identity-proof
+          name: ai-geopolitic-milestone-4_2a-hardened-identity-proof
           path: output/identity-*.png
           if-no-files-found: error
           retention-days: 14
