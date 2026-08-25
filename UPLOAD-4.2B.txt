@@ -1,0 +1,28 @@
+AI GEOPOLITIC — MILESTONE 4.2B STRESS TEST PACK
+
+ADD:
+- src/render_identity_stress_pack.py
+- tests/test_identity_stress.py
+- .github/workflows/render-layout-stress-test.yml
+
+REPLACE:
+- README.md
+
+DO NOT replace or remove:
+- src/editorial_primitives.py
+- src/render_identity_slide.py
+- .github/workflows/render-layout-identity-proof.yml
+- config/characters.json
+- config/layout_presets.json
+- existing identity inputs
+
+After upload:
+Actions -> Render Milestone 4.2B layout stress test -> Run workflow
+
+Expected:
+- pytest passes
+- 18 stress PNGs render (six characters x short/normal/dense)
+- identity-stress-contact-sheet.png renders
+- files upload to Google Drive / AI-Geopolitical / Automation - Temporary Artifacts / Layout Stress Test
+
+If green, visually inspect the contact sheet. 4.2B is complete only after both the workflow and the visual proof are clean.

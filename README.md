@@ -158,20 +158,47 @@ Automation - Temporary Artifacts /
 Layout Identity Proof
 ```
 
+### Milestone 4.2B — Layout stress testing
+**Implementation prepared — pending GitHub workflow verification**
+
+The six hardened identity layouts are now tested against three copy-density profiles:
+
+- `short` — deliberately sparse copy;
+- `normal` — the existing approved identity-proof inputs;
+- `dense` — realistic near-limit copy tuned to each character's constrained regions.
+
+The 4.2B QA suite also supplies one deliberately impossible case per character and requires a clean `LayoutError` instead of a silent collision or unreadable fallback. Local validation before upload: **29 tests passed** and all **18 stress renders** plus the contact sheet generated successfully.
+
+New files:
+
+```text
+src/render_identity_stress_pack.py
+tests/test_identity_stress.py
+.github/workflows/render-layout-stress-test.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.2B layout stress test**
+
+Expected output:
+
+- 18 standalone stress PNGs: six characters × short/normal/dense;
+- `identity-stress-contact-sheet.png`;
+- full pytest QA pass before rendering.
+
+Drive destination:
+
+```text
+Google Drive
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Stress Test
+```
+
 ## Current development stage
 
-### Next: Milestone 4.2B — Stress testing
-
-Before creating more layout families, stress-test all six base layouts with short, normal and deliberately difficult copy.
-
-Goals:
-
-- no silent text collisions
-- no unreadably small fallback text
-- no portrait overlap
-- no footer/takeaway collisions
-- clean failure through `LayoutError` when content cannot fit
-- retain character-specific visual identity under variable copy length
+Run and visually review Milestone 4.2B. If the workflow and contact sheet are clean, mark 4.2B complete and proceed to Milestone 4.3.
 
 ### Then: Milestone 4.3 — 3–5 layout families per character
 
@@ -190,10 +217,12 @@ config/layout_presets.json
 
 src/editorial_primitives.py
 src/render_identity_slide.py
+src/render_identity_stress_pack.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
 
 tests/test_identity_renderer.py
+tests/test_identity_stress.py
 tests/test_prototype.py
 ```
 
