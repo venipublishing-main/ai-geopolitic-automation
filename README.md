@@ -407,7 +407,7 @@ Expected outputs:
 - `kai-layout-family-contact-sheet.png`
 
 ### Milestone 4.3E — Thabo Mokoena layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The fifth multi-layout character family builds all four Thabo families already approved in `config/layout_presets.json`:
 
@@ -426,7 +426,7 @@ Visual logic remains Thabo-specific: stacked material burden, broken handoffs, v
 
 The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Thabo **“EX-MINEWORKERS ARE THE UNPAID LEDGER.”** slide uses a broken path from injury → claim → review → payment → household relief. 4.3E generalises that material-chain / blocked-handoff logic into reusable code rather than copying the old slide.
 
-Local validation before upload: **63 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Thabo family tests. All four Thabo family proofs and the contact sheet rendered successfully.
+Local validation before upload: **63 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Thabo family tests. All four Thabo family proofs and the contact sheet rendered successfully. The GitHub Actions run subsequently completed green.
 
 Workflow:
 
@@ -455,7 +455,58 @@ Expected outputs:
 - `thabo-continuity-pressure.png`
 - `thabo-layout-family-contact-sheet.png`
 
-After GitHub/Drive verification, proceed to **Milestone 4.3F — Amari Ndlovu layout family**.
+### Milestone 4.3F — Amari Ndlovu layout family
+**Implementation prepared — pending GitHub workflow verification**
+
+The sixth and final character-family expansion builds all five Amari families already approved in `config/layout_presets.json`:
+
+- `regional_memory`
+- `dignity_pathway`
+- `humanitarian_map`
+- `cross_border_bridge`
+- `cultural_landscape`
+
+The family is implemented in:
+
+```text
+src/render_amari_layout_family.py
+```
+
+Visual logic remains Amari-specific: human-centred geography, memory, curved pathways, regional continuity, recognition, dignity and solidarity. The family deliberately avoids Diane-style financial dashboards, Johan-style enforcement hierarchy and Thabo-style burden ledgers.
+
+The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Amari **“HEALING NEEDS A LIFE AFTER CRISIS.”** slide uses a follow-through pathway from crisis through care, healing, skills, work and dignity. 4.3F generalises that continuity / recognition language into reusable code rather than copying the old slide.
+
+Local validation before upload: **70 tests passed / 0 failed**, including all previous identity, stress and character-family tests plus the new Amari family tests. All five Amari family proofs and the contact sheet rendered successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-amari-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3F Amari layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+Amari
+```
+
+Expected outputs:
+
+- `amari-regional-memory.png`
+- `amari-dignity-pathway.png`
+- `amari-humanitarian-map.png`
+- `amari-cross-border-bridge.png`
+- `amari-cultural-landscape.png`
+- `amari-layout-family-contact-sheet.png`
+
+After GitHub/Drive verification, the full six-character layout-family expansion is complete. Proceed to **Milestone 4.4 — layout selection / episode routing proof** before attempting a full production episode.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -476,6 +527,7 @@ src/render_johan_layout_family.py
 src/render_diane_layout_family.py
 src/render_kai_layout_family.py
 src/render_thabo_layout_family.py
+src/render_amari_layout_family.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -487,6 +539,7 @@ tests/test_johan_layout_family.py
 tests/test_diane_layout_family.py
 tests/test_kai_layout_family.py
 tests/test_thabo_layout_family.py
+tests/test_amari_layout_family.py
 tests/test_prototype.py
 ```
 

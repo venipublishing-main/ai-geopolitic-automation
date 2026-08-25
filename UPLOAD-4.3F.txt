@@ -1,0 +1,39 @@
+AI GEOPOLITIC — MILESTONE 4.3F AMARI LAYOUT FAMILY
+
+Upload these files to the existing repository paths.
+
+ADD:
+- src/render_amari_layout_family.py
+- inputs/amari-regional-memory.json
+- inputs/amari-dignity-pathway.json
+- inputs/amari-humanitarian-map.json
+- inputs/amari-cross-border-bridge.json
+- inputs/amari-cultural-landscape.json
+- tests/test_amari_layout_family.py
+- .github/workflows/render-amari-layout-family.yml
+
+REPLACE:
+- README.md
+
+DO NOT RENAME OR MOVE EXISTING FILES.
+
+Then run:
+Actions → Render Milestone 4.3F Amari layout family → Run workflow
+
+Expected QA:
+- full pytest suite runs before rendering
+- local pre-upload result: 70 passed / 0 failed
+
+Expected outputs:
+- output/amari-regional-memory.png
+- output/amari-dignity-pathway.png
+- output/amari-humanitarian-map.png
+- output/amari-cross-border-bridge.png
+- output/amari-cultural-landscape.png
+- output/amari-layout-family-contact-sheet.png
+
+Expected Drive destination:
+Automation - Temporary Artifacts/Layout Families/Amari
+
+If green, Milestone 4.3 character-family expansion is complete across all six presenters.
+Next: Milestone 4.4 — layout selection / episode routing proof.
