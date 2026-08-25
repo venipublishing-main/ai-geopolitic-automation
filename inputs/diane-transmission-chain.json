@@ -1,0 +1,22 @@
+{
+  "slide_number": 10,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "layout_family": "transmission_chain",
+  "headline": "VALUE LEAKS AT EVERY HANDOFF.",
+  "deck": "The economic test is whether public capital survives the chain from authorisation to a usable service without delay, inflation or execution failure.",
+  "quote": "Track the conversion rate from money approved to value delivered.",
+  "facts": [
+    "Each handoff adds time, cost and execution risk.",
+    "Contract clarity reduces expensive rework and dispute.",
+    "Operational readiness matters before an asset can perform.",
+    "The final service is the only output households can consume."
+  ],
+  "stages": [
+    {"label": "ALLOCATE", "value": "100%", "note": "Capital authorised."},
+    {"label": "CONTRACT", "value": "92%", "note": "Obligations placed."},
+    {"label": "EXECUTE", "value": "81%", "note": "Work completed."},
+    {"label": "DELIVER", "value": "74%", "note": "Usable service."}
+  ],
+  "takeaway": "Performance is the share of public capital that survives every handoff and reaches a usable outcome."
+}

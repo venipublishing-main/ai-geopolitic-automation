@@ -1,0 +1,23 @@
+{
+  "slide_number": 11,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "layout_family": "fiscal_flow",
+  "headline": "A BUDGET IS A FLOW, NOT A TROPHY.",
+  "deck": "Allocation quality depends on where capital goes, how quickly it moves and whether the spending mix produces measurable public capacity.",
+  "quote": "The question is not only how much was allocated, but what the allocation bought.",
+  "facts": [
+    "Capital spending should create durable productive capacity.",
+    "Maintenance protects the value of existing assets.",
+    "Operating funds determine whether completed assets can function.",
+    "Leakage and delay reduce the real value of every nominal rand."
+  ],
+  "total": "R100",
+  "flows": [
+    {"label": "CAPEX", "value": "R36", "share": 36},
+    {"label": "OPERATIONS", "value": "R31", "share": 31},
+    {"label": "MAINTENANCE", "value": "R21", "share": 21},
+    {"label": "BUFFER", "value": "R12", "share": 12}
+  ],
+  "takeaway": "Fiscal discipline is not underspending; it is directing money toward outputs that preserve and expand productive capacity."
+}

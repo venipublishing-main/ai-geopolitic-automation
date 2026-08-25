@@ -1,0 +1,36 @@
+{
+  "slide_number": 9,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "layout_family": "market_grid",
+  "headline": "DELIVERY IS A TRANSMISSION TEST.",
+  "deck": "Budgets and contracts only matter if capital moves through execution into a usable public service.",
+  "quote": "A funded programme is an input. Performance is what reaches the household.",
+  "facts": [
+    "Appropriations establish capacity, not completed delivery.",
+    "Procurement converts budgets into executable obligations.",
+    "Operational performance determines whether assets become services.",
+    "Households experience the final output, not the accounting line."
+  ],
+  "metrics": [
+    {
+      "label": "INPUT",
+      "value": "BUDGET"
+    },
+    {
+      "label": "CHANNEL",
+      "value": "EXECUTION"
+    },
+    {
+      "label": "OUTCOME",
+      "value": "SERVICE"
+    }
+  ],
+  "mechanism": [
+    "CAPITAL",
+    "CONTRACT",
+    "SERVICE",
+    "HOUSEHOLD"
+  ],
+  "takeaway": "Economic credibility is the ability to convert allocated resources into repeatable delivery."
+}

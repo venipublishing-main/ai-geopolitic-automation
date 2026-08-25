@@ -256,7 +256,7 @@ Expected outputs:
 - `nora-layout-family-contact-sheet.png`
 
 ### Milestone 4.3B — Johan Vosloo layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The second multi-layout character family builds all five Johan families already approved in `config/layout_presets.json`:
 
@@ -274,7 +274,7 @@ src/render_johan_layout_family.py
 
 Visual logic remains Johan-specific: rectilinear order, numbered institutional stages, explicit containment, scrutiny and visible chains of authority. The previous-episode library was checked again during this pass. In particular, the Johan **“WATER MUST REACH THE TAP”** slide in `Ep029-20July2026` reinforces the process-chain / last-mile governance language used in the new containment and corridor variants; the new layouts generalise that editorial logic rather than copying the old slide.
 
-Local 4.3B validation before upload: **42 tests passed** and all five Johan family proofs plus the contact sheet rendered successfully.
+Local 4.3B validation before upload: **42 tests passed** and all five Johan family proofs plus the contact sheet rendered successfully. The GitHub Actions run subsequently completed green.
 
 Workflow:
 
@@ -304,7 +304,58 @@ Expected outputs:
 - `johan-principle-test.png`
 - `johan-layout-family-contact-sheet.png`
 
-After GitHub/Drive verification, proceed to **Milestone 4.3C — Diane Sterling layout family**.
+### Milestone 4.3C — Diane Sterling layout family
+**Implementation prepared — pending GitHub workflow verification**
+
+The third multi-layout character family builds all five Diane families already approved in `config/layout_presets.json`:
+
+- `market_grid`
+- `transmission_chain`
+- `fiscal_flow`
+- `portfolio_pipeline`
+- `regional_economy`
+
+The family is implemented in:
+
+```text
+src/render_diane_layout_family.py
+```
+
+Visual logic remains Diane-specific: measurable economic transmission, capital allocation, conversion rates, portfolio readiness, fiscal rails and regional market connections. The layouts deliberately avoid Johan-style institutional hierarchy and Kai-style network-system aesthetics even when they use arrows or connected nodes.
+
+The previous-episode Google Drive library remains the design reference source. 4.3C generalises the established AI Geopolitic economic/dashboard language into reusable code rather than copying a single old slide.
+
+Diane-specific local validation before upload: **7 tests passed**, all five Diane family proofs rendered successfully, and the existing 42-test pre-Diane suite was already verified green in GitHub. The 4.3C GitHub workflow runs the full suite before rendering.
+
+Workflow:
+
+```text
+.github/workflows/render-diane-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3C Diane layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+Diane
+```
+
+Expected outputs:
+
+- `diane-market-grid.png`
+- `diane-transmission-chain.png`
+- `diane-fiscal-flow.png`
+- `diane-portfolio-pipeline.png`
+- `diane-regional-economy.png`
+- `diane-layout-family-contact-sheet.png`
+
+After GitHub/Drive verification, proceed to **Milestone 4.3D — Kai Patel layout family**.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -322,6 +373,7 @@ src/render_identity_slide.py
 src/render_identity_stress_pack.py
 src/render_nora_layout_family.py
 src/render_johan_layout_family.py
+src/render_diane_layout_family.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -330,6 +382,7 @@ tests/test_identity_renderer.py
 tests/test_identity_stress.py
 tests/test_nora_layout_family.py
 tests/test_johan_layout_family.py
+tests/test_diane_layout_family.py
 tests/test_prototype.py
 ```
 

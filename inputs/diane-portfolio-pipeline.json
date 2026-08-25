@@ -1,0 +1,23 @@
+{
+  "slide_number": 12,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "layout_family": "portfolio_pipeline",
+  "headline": "A PROJECT PIPELINE MUST CONVERT, NOT ACCUMULATE.",
+  "deck": "A large portfolio looks impressive until projects are tested for readiness, procurement, execution and actual service entry.",
+  "quote": "Count projects by conversion stage, not by the number of announcements.",
+  "facts": [
+    "Pipeline visibility exposes where projects repeatedly stall.",
+    "Readiness should precede procurement rather than follow it.",
+    "Delivery risk rises when too many projects enter execution unprepared.",
+    "Completion only matters when an asset enters productive use."
+  ],
+  "portfolio": [
+    {"project": "WATER NETWORK", "status": "READY", "value": "R2.4bn", "note": "Design and funding aligned."},
+    {"project": "GRID UPGRADE", "status": "PROCURE", "value": "R1.8bn", "note": "Tender conversion in progress."},
+    {"project": "CLINIC BUILD", "status": "BUILD", "value": "R920m", "note": "Execution milestone tracking."},
+    {"project": "TRANSIT LINK", "status": "LIVE", "value": "R3.1bn", "note": "Asset entering service."}
+  ],
+  "mechanism": ["APPROVE", "PROCURE", "BUILD", "DELIVER"],
+  "takeaway": "A credible portfolio is a conversion engine from prepared capital to functioning assets, not a warehouse of promises."
+}

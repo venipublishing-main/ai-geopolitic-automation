@@ -1,0 +1,22 @@
+{
+  "slide_number": 13,
+  "total_slides": 20,
+  "speaker": "diane_sterling",
+  "layout_family": "regional_economy",
+  "headline": "NATIONAL GROWTH IS BUILT FROM REGIONAL CONNECTIONS.",
+  "deck": "A headline growth rate can hide whether cities, corridors and productive regions are actually connected to markets, infrastructure and demand.",
+  "quote": "Regional performance matters because economies move through places before they appear in national statistics.",
+  "facts": [
+    "Transport costs shape which regions can compete.",
+    "Energy reliability changes the geography of investment.",
+    "Market access determines whether local production can scale.",
+    "Regional bottlenecks can suppress national productivity."
+  ],
+  "regions": [
+    {"name": "METRO", "value": "+2.8%", "note": "services"},
+    {"name": "INDUSTRIAL", "value": "+3.5%", "note": "output"},
+    {"name": "LOGISTICS", "value": "+1.9%", "note": "throughput"},
+    {"name": "RURAL", "value": "+1.4%", "note": "market access"}
+  ],
+  "takeaway": "Growth policy works when regional production, infrastructure and markets reinforce one another instead of operating as disconnected islands."
+}

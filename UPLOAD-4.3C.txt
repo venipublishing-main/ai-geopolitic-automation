@@ -1,0 +1,47 @@
+AI GEOPOLITIC — MILESTONE 4.3C / DIANE STERLING LAYOUT FAMILY
+
+Upload these files through the GitHub browser to the exact repository paths shown.
+
+ADD:
+  src/render_diane_layout_family.py
+  inputs/diane-market-grid.json
+  inputs/diane-transmission-chain.json
+  inputs/diane-fiscal-flow.json
+  inputs/diane-portfolio-pipeline.json
+  inputs/diane-regional-economy.json
+  tests/test_diane_layout_family.py
+  .github/workflows/render-diane-layout-family.yml
+
+REPLACE:
+  README.md
+
+DO NOT CHANGE:
+  config/characters.json
+  config/layout_presets.json
+  src/editorial_primitives.py
+  src/render_identity_slide.py
+  src/render_identity_stress_pack.py
+  src/render_nora_layout_family.py
+  src/render_johan_layout_family.py
+  src/make_contact_sheet.py
+  existing workflows/tests
+
+After upload:
+  Actions -> Render Milestone 4.3C Diane layout family -> Run workflow
+
+Expected Drive destination:
+  Automation - Temporary Artifacts/Layout Families/Diane
+
+Expected outputs:
+  diane-market-grid.png
+  diane-transmission-chain.png
+  diane-fiscal-flow.png
+  diane-portfolio-pipeline.png
+  diane-regional-economy.png
+  diane-layout-family-contact-sheet.png
+
+QA:
+  49 tests should be collected after this upload.
+  The workflow runs the full pytest suite before rendering.
+  Diane-specific local tests: 7 passed.
+  All five Diane proof renders and contact sheet generated successfully locally.
