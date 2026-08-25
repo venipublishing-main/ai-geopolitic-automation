@@ -1,0 +1,49 @@
+AI GEOPOLITIC — MILESTONE 4.3D — KAI PATEL LAYOUT FAMILY
+
+Upload the package contents to the repository using these exact paths.
+
+ADD:
+  src/render_kai_layout_family.py
+  inputs/kai-network-mesh.json
+  inputs/kai-feedback-system.json
+  inputs/kai-monitoring-loop.json
+  inputs/kai-decentralised-pathway.json
+  inputs/kai-repair-network.json
+  tests/test_kai_layout_family.py
+  .github/workflows/render-kai-layout-family.yml
+
+REPLACE:
+  README.md
+
+LEAVE UNTOUCHED:
+  config/characters.json
+  config/layout_presets.json
+  src/editorial_primitives.py
+  src/render_identity_slide.py
+  src/render_identity_stress_pack.py
+  src/render_nora_layout_family.py
+  src/render_johan_layout_family.py
+  src/render_diane_layout_family.py
+  src/make_contact_sheet.py
+  all existing workflows and tests
+
+RUN:
+  Actions -> Render Milestone 4.3D Kai layout family -> Run workflow
+
+EXPECTED QA:
+  Full pytest suite runs before rendering.
+  Local pre-upload result: 56 passed / 0 failed.
+
+EXPECTED OUTPUTS:
+  kai-network-mesh.png
+  kai-feedback-system.png
+  kai-monitoring-loop.png
+  kai-decentralised-pathway.png
+  kai-repair-network.png
+  kai-layout-family-contact-sheet.png
+
+DRIVE DESTINATION:
+  AI-Geopolitical / Automation - Temporary Artifacts / Layout Families / Kai
+
+NEXT AFTER GREEN:
+  Milestone 4.3E — Thabo Mokoena layout family.

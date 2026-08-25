@@ -305,7 +305,7 @@ Expected outputs:
 - `johan-layout-family-contact-sheet.png`
 
 ### Milestone 4.3C — Diane Sterling layout family
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 The third multi-layout character family builds all five Diane families already approved in `config/layout_presets.json`:
 
@@ -325,7 +325,7 @@ Visual logic remains Diane-specific: measurable economic transmission, capital a
 
 The previous-episode Google Drive library remains the design reference source. 4.3C generalises the established AI Geopolitic economic/dashboard language into reusable code rather than copying a single old slide.
 
-Diane-specific local validation before upload: **7 tests passed**, all five Diane family proofs rendered successfully, and the existing 42-test pre-Diane suite was already verified green in GitHub. The 4.3C GitHub workflow runs the full suite before rendering.
+Diane-specific local validation before upload: **7 tests passed**, all five Diane family proofs rendered successfully, and the existing 42-test pre-Diane suite was already verified green in GitHub. The 4.3C GitHub workflow subsequently completed green with the expanded suite.
 
 Workflow:
 
@@ -355,7 +355,58 @@ Expected outputs:
 - `diane-regional-economy.png`
 - `diane-layout-family-contact-sheet.png`
 
-After GitHub/Drive verification, proceed to **Milestone 4.3D — Kai Patel layout family**.
+### Milestone 4.3D — Kai Patel layout family
+**Implementation prepared — pending GitHub workflow verification**
+
+The fourth multi-layout character family builds all five Kai families already approved in `config/layout_presets.json`:
+
+- `network_mesh`
+- `feedback_system`
+- `monitoring_loop`
+- `decentralised_pathway`
+- `repair_network`
+
+The family is implemented in:
+
+```text
+src/render_kai_layout_family.py
+```
+
+Visual logic remains Kai-specific: distributed nodes, live-state monitoring, circular feedback, redundant routing and explicit repair cycles. The family deliberately avoids Johan-style institutional hierarchy, Diane-style financial dashboards and Thabo-style burden ledgers.
+
+The previous-episode library was checked again during this pass. In `Ep029-20July2026`, the Kai **“CLEAR RIVERS NEED OPERATING MEMORY.”** slide uses monitoring, reporting, enforcement, stewardship and maintenance as a continuous operating loop. 4.3D generalises that systems-memory / feedback language into reusable code rather than copying the old slide.
+
+Local validation before upload: **56 tests passed / 0 failed**, including all prior identity, stress, NORA, Johan and Diane tests plus the new Kai family tests. All five Kai family proofs and the contact sheet rendered successfully.
+
+Workflow:
+
+```text
+.github/workflows/render-kai-layout-family.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.3D Kai layout family**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Layout Families /
+Kai
+```
+
+Expected outputs:
+
+- `kai-network-mesh.png`
+- `kai-feedback-system.png`
+- `kai-monitoring-loop.png`
+- `kai-decentralised-pathway.png`
+- `kai-repair-network.png`
+- `kai-layout-family-contact-sheet.png`
+
+After GitHub/Drive verification, proceed to **Milestone 4.3E — Thabo Mokoena layout family**.
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -374,6 +425,7 @@ src/render_identity_stress_pack.py
 src/render_nora_layout_family.py
 src/render_johan_layout_family.py
 src/render_diane_layout_family.py
+src/render_kai_layout_family.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -383,6 +435,7 @@ tests/test_identity_stress.py
 tests/test_nora_layout_family.py
 tests/test_johan_layout_family.py
 tests/test_diane_layout_family.py
+tests/test_kai_layout_family.py
 tests/test_prototype.py
 ```
 

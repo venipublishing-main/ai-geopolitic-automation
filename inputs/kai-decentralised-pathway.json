@@ -1,0 +1,17 @@
+{
+  "slide_number": 13,
+  "total_slides": 20,
+  "speaker": "kai_patel",
+  "layout_family": "decentralised_pathway",
+  "headline": "REDUNDANCY IS WHAT KEEPS ONE FAILURE FROM BECOMING THE WHOLE SYSTEM.",
+  "deck": "A resilient pathway provides alternate routes instead of forcing every transaction through one fragile handoff.",
+  "quote": "Decentralisation is useful when it removes single points of failure, not when it merely scatters responsibility.",
+  "facts": [
+    "Alternate nodes keep service moving when one path fails.",
+    "Routing rules must remain visible and testable.",
+    "Shared standards let separate nodes still interoperate.",
+    "Users should experience continuity rather than backend complexity."
+  ],
+  "routes": ["SOURCE", "NODE A", "NODE B", "EDGE", "USER"],
+  "takeaway": "Good decentralisation creates optionality without abandoning coherence, standards or accountability."
+}

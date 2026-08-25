@@ -1,0 +1,17 @@
+{
+  "slide_number": 7,
+  "total_slides": 20,
+  "speaker": "kai_patel",
+  "layout_family": "feedback_system",
+  "headline": "A SYSTEM THAT CANNOT LEARN WILL REPEAT THE SAME FAILURE.",
+  "deck": "Feedback must travel from observation to action and back into the operating model.",
+  "quote": "Automation matters less than whether the system can see what happened and change what it does next.",
+  "facts": [
+    "Detection without response only creates a better alarm.",
+    "Routing must connect signals to an accountable action path.",
+    "Verification tells the system whether the intervention worked.",
+    "Learning closes the loop by changing the next response."
+  ],
+  "mechanism": ["SENSE", "CLASSIFY", "ROUTE", "ACT", "VERIFY"],
+  "takeaway": "A digital service becomes resilient when every incident becomes usable feedback for the next decision."
+}

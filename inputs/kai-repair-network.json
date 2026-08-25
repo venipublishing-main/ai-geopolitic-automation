@@ -1,0 +1,17 @@
+{
+  "slide_number": 15,
+  "total_slides": 20,
+  "speaker": "kai_patel",
+  "layout_family": "repair_network",
+  "headline": "FAILURE IS INEVITABLE. RECOVERY ARCHITECTURE IS A DESIGN CHOICE.",
+  "deck": "Reliable systems assume incidents will happen and organise detection, isolation, rerouting and verification in advance.",
+  "quote": "The real test of infrastructure is not whether it never breaks. It is how quickly it can recover without hiding the failure.",
+  "facts": [
+    "Detection must identify the affected state quickly.",
+    "Isolation limits the blast radius of an incident.",
+    "Rerouting preserves service while repair happens.",
+    "Verification confirms that recovery is real rather than cosmetic."
+  ],
+  "repair_steps": ["DETECT", "ISOLATE", "REROUTE", "REPAIR", "VERIFY"],
+  "takeaway": "Resilience is the capacity to absorb failure, restore service and feed the lesson back into the network."
+}

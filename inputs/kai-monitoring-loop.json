@@ -1,0 +1,22 @@
+{
+  "slide_number": 11,
+  "total_slides": 20,
+  "speaker": "kai_patel",
+  "layout_family": "monitoring_loop",
+  "headline": "YOU CANNOT REPAIR WHAT THE SYSTEM CANNOT SEE.",
+  "deck": "Monitoring turns infrastructure from a black box into a continuously observable operating state.",
+  "quote": "The key question is not whether a dashboard exists. It is whether the right signal reaches the right response in time.",
+  "facts": [
+    "Telemetry should expose state changes before users report failure.",
+    "Alerts need thresholds tied to action, not decorative dashboards.",
+    "Operators need a shared view of incidents and recovery.",
+    "Verification prevents a closed ticket from masquerading as a solved problem."
+  ],
+  "monitors": [
+    {"label": "STATE", "value": "LIVE"},
+    {"label": "LATENCY", "value": "VISIBLE"},
+    {"label": "FAILURE", "value": "ROUTED"},
+    {"label": "RECOVERY", "value": "VERIFIED"}
+  ],
+  "takeaway": "Observability is infrastructure: it shortens the distance between failure, diagnosis and repair."
+}
