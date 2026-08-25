@@ -1,0 +1,50 @@
+AI GEOPOLITIC — MILESTONE 4.2A LAYOUT HARDENING
+
+PURPOSE
+Fix the six existing base identity layouts before adding any new 3–5 layout variants per character.
+
+REPLACE THESE EXACT FILES
+1. src/editorial_primitives.py
+2. src/render_identity_slide.py
+3. tests/test_identity_renderer.py
+4. .github/workflows/render-layout-identity-proof.yml
+
+DO NOT CHANGE
+- config/characters.json
+- config/layout_presets.json
+- assets/characters/*
+- the existing identity input JSON files
+- older Milestone 3 / 3.2 renderers and workflows
+
+WHAT THIS PASS CHANGES
+- text blocks are measured against both width and height
+- headlines, decks, quotes and fact panels fail with LayoutError instead of silently colliding
+- fact blocks use a readable minimum font size and an opaque paper background
+- portrait placement is checked against safe-area/content boundaries
+- Johan / Kai upper text stacks are guarded against quote collisions
+- Diane gets a larger readable evidence block
+- Thabo facts are moved completely off the portrait
+- all six current proof slides are still rendered
+- pytest now runs before the workflow generates/uploads anything
+
+BROWSER UPLOAD
+For each file above:
+GitHub -> venipublishing-main/ai-geopolitic-automation -> open exact path -> Edit (pencil) -> replace all -> Commit changes.
+
+Recommended commit messages:
+- Harden identity layout primitives
+- Harden six identity base layouts
+- Add layout overflow regression tests
+- Run QA before identity proof render
+
+AFTER ALL FOUR FILES ARE COMMITTED
+Actions -> Render Milestone 4.2A hardened identity proof -> Run workflow
+
+EXPECTED RESULT
+- pytest passes
+- six PNGs render
+- artifact: ai-geopolitic-milestone-4_2a-hardened-identity-proof
+- Drive: AI-Geopolitical / Automation - Temporary Artifacts / Layout Identity Proof
+
+NEXT STEP AFTER VISUAL APPROVAL
+Milestone 4.2B stress-test copy lengths, then resume the 3–5 approved layout families per character.
