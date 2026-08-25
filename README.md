@@ -509,7 +509,7 @@ Expected outputs:
 The full six-character layout-family expansion is now complete.
 
 ### Milestone 4.4 — Layout selection / episode routing proof
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 This is the first orchestration layer above the individual character renderers. One structured episode manifest now drives slide order, speaker routing and character-specific layout selection.
 
@@ -594,6 +594,70 @@ Layout Routing Proof
 
 After GitHub/Drive verification, proceed to **Milestone 4.5 — production episode schema + layout-routing hardening**, then Milestone 5 batch-render a real approved 20-slide episode.
 
+### Milestone 4.5 — Production episode schema + routing hardening
+**Implementation prepared — pending GitHub workflow verification**
+
+Milestone 4.5 introduces the first daily-use episode manifest. Production slides now contain approved editorial copy inline rather than pointing at character-family test fixtures through `source_input`.
+
+New renderer/compiler:
+
+```text
+src/render_production_episode.py
+```
+
+New working production proof and copy template:
+
+```text
+inputs/production-schema-proof.json
+inputs/production-episode-template.json
+```
+
+New schema documentation:
+
+```text
+docs/EPISODE_SCHEMA.md
+```
+
+The v1 production contract requires exactly **20 slides**. Array order is canonical; `slide_number`, `total_slides` and `layout_family` are compiler-owned and must not appear in daily slide content. Slide 1 must be NORA `episode_opener`, slide 20 must be NORA `episode_closer`, and slides 2–19 may not use either full-header family.
+
+Each slide supplies common copy (`headline`, `deck`, `quote`, `facts`, `takeaway`) plus optional family-specific structured data under a `visual` object. The deterministic 4.4 router still selects the approved character layout using `speaker + content_type`, with `layout_override` retained for deliberate editorial intervention.
+
+Hardening added in 4.5:
+
+- exact 20-slide production validation;
+- safe lowercase `episode_id`;
+- blank-copy and fact-list validation;
+- compiler-owned field rejection;
+- reserved `visual` field collision rejection;
+- NORA opener/closer position enforcement;
+- resolved per-slide renderer JSON;
+- `resolved-episode.json`;
+- production routing/QA reports in JSON and Markdown;
+- 20-slide contact sheet;
+- fail-closed renderer dispatch.
+
+Local reconstructed-suite validation before upload: the existing package tests plus the new 4.5 tests pass cleanly; the GitHub workflow runs the repository's full `pytest -q` suite before rendering. The 4.5 proof itself renders **20 standalone 1080×1080 PNGs**.
+
+Workflow:
+
+```text
+.github/workflows/render-production-schema-proof.yml
+```
+
+Workflow name:
+
+**Render Milestone 4.5 production schema proof**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Production Schema Proof
+```
+
+After GitHub/Drive verification, proceed to **Milestone 5.0 — first real approved 20-slide automated episode**. At that point the proof fixture is replaced with one actual daily R&D/content plan while the same routing, rendering and QA infrastructure remains in place.
+
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
 ## Main production files
@@ -615,6 +679,7 @@ src/render_kai_layout_family.py
 src/render_thabo_layout_family.py
 src/render_amari_layout_family.py
 src/route_episode.py
+src/render_production_episode.py
 src/make_contact_sheet.py
 src/render_prototype_slide.py
 src/render_milestone_3.py
@@ -628,6 +693,7 @@ tests/test_kai_layout_family.py
 tests/test_thabo_layout_family.py
 tests/test_amari_layout_family.py
 tests/test_episode_router.py
+tests/test_production_episode.py
 tests/test_prototype.py
 ```
 

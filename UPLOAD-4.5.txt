@@ -1,0 +1,29 @@
+AI Geopolitic — Milestone 4.5 Production Schema Proof
+
+Upload to exact paths:
+
+REPLACE
+- README.md
+
+ADD
+- src/render_production_episode.py
+- inputs/production-schema-proof.json
+- inputs/production-episode-template.json
+- docs/EPISODE_SCHEMA.md
+- tests/test_production_episode.py
+- .github/workflows/render-production-schema-proof.yml
+
+LEAVE UNTOUCHED
+- src/route_episode.py
+- config/layout_routing.json
+- config/layout_presets.json
+- config/characters.json
+- every existing character-family renderer and workflow
+
+Then run:
+Actions -> Render Milestone 4.5 production schema proof -> Run workflow
+
+Expected Drive destination:
+Automation - Temporary Artifacts/Production Schema Proof
+
+Expected proof outputs include slide_01.png through slide_20.png, episode-contact-sheet.png, 20 resolved-input JSON files, resolved-episode.json, production-report.json and production-report.md.

@@ -1,0 +1,577 @@
+{
+  "schema_version": 1,
+  "episode_id": "milestone-4.5-production-schema-proof",
+  "episode_title": "PRODUCTION EPISODE SCHEMA PROOF",
+  "episode_date": "25 AUGUST 2026",
+  "slides": [
+    {
+      "speaker": "nora",
+      "content_type": "episode_open",
+      "headline": "THE FOLLOW-THROUGH TEST.",
+      "deck": "The system is judged by what it finishes after the public moment has passed.",
+      "quote": "Continuity is not the test anymore. Completion is.",
+      "facts": [
+        "Water delivery must move from treatment to household taps.",
+        "Oversight must become visible accountability, not ceremony.",
+        "Safety disclosure must produce correction and maintenance.",
+        "Claims and grants must reach people, not remain administrative promises.",
+        "Public AI systems must prove that governance survives the launch moment."
+      ],
+      "takeaway": "The system does not collapse only in crisis; it also collapses in the quiet when nobody checks whether the promise became a result.",
+      "visual": {
+        "question": "Can the system finish what it starts once the public moment has passed?",
+        "mechanism": [
+          "PROMISE",
+          "IMPLEMENT",
+          "MONITOR",
+          "CORRECT",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "institutional_sequence",
+      "headline": "ORDER DEPENDS ON A VISIBLE CHAIN OF AUTHORITY.",
+      "deck": "Public confidence rises when rules, responsibility, enforcement and disclosure line up.",
+      "quote": "A state earns trust when authority is clear, bounded and accountable.",
+      "facts": [
+        "Rules must define who is responsible.",
+        "Authority must be traceable to an institution.",
+        "Enforcement should be proportionate and predictable.",
+        "Disclosure closes the accountability chain."
+      ],
+      "takeaway": "Institutional order is strongest when power is visible, limited and answerable.",
+      "visual": {
+        "mechanism": [
+          "RULE",
+          "AUTHORITY",
+          "ENFORCEMENT",
+          "TRUST"
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "market_dashboard",
+      "headline": "DELIVERY IS A TRANSMISSION TEST.",
+      "deck": "Budgets and contracts only matter if capital moves through execution into a usable public service.",
+      "quote": "A funded programme is an input. Performance is what reaches the household.",
+      "facts": [
+        "Appropriations establish capacity, not completed delivery.",
+        "Procurement converts budgets into executable obligations.",
+        "Operational performance determines whether assets become services.",
+        "Households experience the final output, not the accounting line."
+      ],
+      "takeaway": "Economic credibility is the ability to convert allocated resources into repeatable delivery.",
+      "visual": {
+        "metrics": [
+          {
+            "label": "INPUT",
+            "value": "BUDGET"
+          },
+          {
+            "label": "CHANNEL",
+            "value": "EXECUTION"
+          },
+          {
+            "label": "OUTCOME",
+            "value": "SERVICE"
+          }
+        ],
+        "mechanism": [
+          "CAPITAL",
+          "CONTRACT",
+          "SERVICE",
+          "HOUSEHOLD"
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "distributed_system",
+      "headline": "RESILIENCE LIVES IN THE NETWORK, NOT THE FRONT END.",
+      "deck": "A robust service can detect failure, route around it, learn from it and repair itself.",
+      "quote": "The interface is visible. The feedback architecture is what determines whether it survives.",
+      "facts": [
+        "Sensors reveal the real state of the system.",
+        "Models help classify and route failures.",
+        "Distributed nodes reduce single-point dependence.",
+        "Repair loops turn incidents into system learning."
+      ],
+      "takeaway": "Resilience comes from distributed feedback and fast repair, not from a polished interface alone.",
+      "visual": {
+        "mechanism": [
+          "SENSOR",
+          "MODEL",
+          "NODE",
+          "USER",
+          "REPAIR"
+        ]
+      }
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "burden_distribution",
+      "headline": "EVERY SYSTEM FAILURE SENDS A BILL TO SOMEONE.",
+      "deck": "When public delivery breaks, the cost is displaced onto workers and households as money, time and risk.",
+      "quote": "The real ledger is not what government spends. It is what ordinary people absorb when delivery fails.",
+      "facts": [
+        "Extra transport costs are shifted to households.",
+        "Queues and delays consume unpaid time.",
+        "Service gaps push risk onto those with least buffer.",
+        "The burden compounds across wages and care work."
+      ],
+      "takeaway": "A delivery failure is a transfer of cost downward unless the state absorbs and repairs the burden.",
+      "visual": {
+        "mechanism": [
+          "COST",
+          "TIME",
+          "RISK",
+          "HOUSEHOLD"
+        ]
+      }
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "regional_continuity",
+      "headline": "DELIVERY ALSO CARRIES MEMORY AND DIGNITY.",
+      "deck": "Institutions are experienced through place, history and whether people are recognised as full participants.",
+      "quote": "A service is never only technical. It tells people whether they belong in the public story.",
+      "facts": [
+        "Place shapes how institutions are encountered.",
+        "Memory changes what promises mean to communities.",
+        "Rights become real through repeated recognition.",
+        "Solidarity links local delivery to regional dignity."
+      ],
+      "takeaway": "Public systems gain legitimacy when delivery recognises history, place and human dignity.",
+      "visual": {
+        "mechanism": [
+          "PLACE",
+          "MEMORY",
+          "RIGHTS",
+          "SOLIDARITY"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "feedback_cycle",
+      "headline": "A SYSTEM IS ONLY REAL WHEN THE LOOP CLOSES.",
+      "deck": "Announcements become governance only when implementation, monitoring, correction and delivery reconnect to the original promise.",
+      "quote": "The test is not whether the system starts. The test is whether it learns enough to finish.",
+      "facts": [
+        "Promises must translate into funded implementation.",
+        "Monitoring must reveal the state of delivery.",
+        "Correction must remove bottlenecks rather than explain them.",
+        "The final outcome must be visible to the public."
+      ],
+      "takeaway": "Credibility is earned when the system can detect failure, repair it and still deliver the result.",
+      "visual": {
+        "mechanism": [
+          "PROMISE",
+          "BUILD",
+          "MONITOR",
+          "CORRECT",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "governance_handoff",
+      "headline": "POWER NEEDS A CHAIN OF CUSTODY.",
+      "deck": "Authority becomes credible when each transfer of power has a named institution, a defined limit and a visible record.",
+      "quote": "Power should never jump from mandate to outcome without passing through accountable hands.",
+      "facts": [
+        "A mandate should identify the legal source of authority.",
+        "Responsibility must remain attached to named institutions.",
+        "Enforcement needs explicit limits and review.",
+        "Disclosure creates the public record that closes the chain."
+      ],
+      "takeaway": "A legitimate state does not merely possess power; it preserves an auditable chain of responsibility.",
+      "visual": {
+        "mechanism": [
+          "MANDATE",
+          "AUTHORITY",
+          "ENFORCEMENT",
+          "DISCLOSURE"
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "economic_transmission",
+      "headline": "VALUE LEAKS AT EVERY HANDOFF.",
+      "deck": "The economic test is whether public capital survives the chain from authorisation to a usable service without delay, inflation or execution failure.",
+      "quote": "Track the conversion rate from money approved to value delivered.",
+      "facts": [
+        "Each handoff adds time, cost and execution risk.",
+        "Contract clarity reduces expensive rework and dispute.",
+        "Operational readiness matters before an asset can perform.",
+        "The final service is the only output households can consume."
+      ],
+      "takeaway": "Performance is the share of public capital that survives every handoff and reaches a usable outcome.",
+      "visual": {
+        "stages": [
+          {
+            "label": "ALLOCATE",
+            "value": "100%",
+            "note": "Capital authorised."
+          },
+          {
+            "label": "CONTRACT",
+            "value": "92%",
+            "note": "Obligations placed."
+          },
+          {
+            "label": "EXECUTE",
+            "value": "81%",
+            "note": "Work completed."
+          },
+          {
+            "label": "DELIVER",
+            "value": "74%",
+            "note": "Usable service."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "monitoring_cycle",
+      "headline": "YOU CANNOT REPAIR WHAT THE SYSTEM CANNOT SEE.",
+      "deck": "Monitoring turns infrastructure from a black box into a continuously observable operating state.",
+      "quote": "The key question is not whether a dashboard exists. It is whether the right signal reaches the right response in time.",
+      "facts": [
+        "Telemetry should expose state changes before users report failure.",
+        "Alerts need thresholds tied to action, not decorative dashboards.",
+        "Operators need a shared view of incidents and recovery.",
+        "Verification prevents a closed ticket from masquerading as a solved problem."
+      ],
+      "takeaway": "Observability is infrastructure: it shortens the distance between failure, diagnosis and repair.",
+      "visual": {
+        "monitors": [
+          {
+            "label": "STATE",
+            "value": "LIVE"
+          },
+          {
+            "label": "LATENCY",
+            "value": "VISIBLE"
+          },
+          {
+            "label": "FAILURE",
+            "value": "ROUTED"
+          },
+          {
+            "label": "RECOVERY",
+            "value": "VERIFIED"
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "material_handoff",
+      "headline": "A RIGHT IS ONLY REAL WHEN THE MATERIAL CHAIN CLOSES.",
+      "deck": "Policy can promise relief, but workers experience the system through each handoff between recognition, administration and payment.",
+      "quote": "The paperwork is not the outcome. The outcome is whether relief reaches the household before the damage deepens.",
+      "facts": [
+        "Every extra handoff creates another place for delay.",
+        "A stalled payment pushes debt and care costs downstream.",
+        "The final household transfer is the material test."
+      ],
+      "takeaway": "A benefit that stops inside administration is not relief; it is an unpaid promise.",
+      "visual": {
+        "chain": [
+          {
+            "label": "INJURY / NEED",
+            "note": "The material harm already exists."
+          },
+          {
+            "label": "CLAIM",
+            "note": "The worker enters the administrative system."
+          },
+          {
+            "label": "REVIEW",
+            "note": "Files, proof and eligibility are checked."
+          },
+          {
+            "label": "PAYMENT",
+            "note": "Delay here compounds the burden.",
+            "blocked": true
+          },
+          {
+            "label": "HOUSEHOLD",
+            "note": "Relief matters only when it arrives."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "dignity_continuity",
+      "headline": "DIGNITY MUST SURVIVE THE JOURNEY.",
+      "deck": "A right is weakened when people are recognised at the policy level but disappear at the next administrative handoff.",
+      "quote": "Recognition is not a ceremonial word. It must remain visible from the first promise to the final encounter.",
+      "facts": [
+        "Access begins with being seen as a full participant.",
+        "Language and place affect whether a service can be used.",
+        "Repeated exclusion accumulates as institutional memory.",
+        "The final handoff determines whether dignity becomes material."
+      ],
+      "takeaway": "A system protects dignity only when recognition survives every handoff.",
+      "visual": {
+        "mechanism": [
+          "RECOGNISE",
+          "LISTEN",
+          "ACCESS",
+          "REPAIR",
+          "BELONG"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "diagnostic_comparison",
+      "headline": "THE FAILURE IS NOT ONE THING. IT IS A PATTERN.",
+      "deck": "A diagnostic view separates access, state response, accountability and outcome so the system can see where trust is actually breaking.",
+      "quote": "A useful diagnosis names the failed link before it prescribes the repair.",
+      "facts": [
+        "Access can work while the back office remains stalled.",
+        "Response can occur without meaningful accountability.",
+        "Outputs can be reported without reaching the intended user."
+      ],
+      "takeaway": "System reform improves when failure is located precisely instead of being described as one general crisis.",
+      "visual": {
+        "matrix": [
+          {
+            "label": "ACCESS",
+            "value": "OPEN",
+            "note": "The public can enter the system and submit the required signal."
+          },
+          {
+            "label": "STATE",
+            "value": "DELAYED",
+            "note": "Internal processing is visible but slower than the service promise."
+          },
+          {
+            "label": "ACCOUNTABILITY",
+            "value": "PARTIAL",
+            "note": "Responsibility exists, but escalation and ownership are not yet clear."
+          },
+          {
+            "label": "OUTCOME",
+            "value": "UNPROVEN",
+            "note": "Completion still has to be demonstrated in the real-world result."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "johan_vosloo",
+      "content_type": "oversight_checkpoint",
+      "headline": "AUTHORITY IS LEGITIMATE ONLY WHEN IT CAN BE CHECKED.",
+      "deck": "Mandate and enforcement must pass through limits, review and disclosure before power can claim durable legitimacy.",
+      "quote": "Oversight is not an obstacle to authority. It is what prevents authority from becoming arbitrary.",
+      "facts": [
+        "A clear mandate defines what the institution may do.",
+        "Limits define what the institution may not do.",
+        "Independent review tests whether power stayed inside those limits.",
+        "Disclosure lets the public see the result."
+      ],
+      "takeaway": "The strongest institutions make scrutiny part of the architecture of power rather than an afterthought.",
+      "visual": {
+        "mechanism": [
+          "MANDATE",
+          "LIMIT",
+          "REVIEW",
+          "DISCLOSURE"
+        ]
+      }
+    },
+    {
+      "speaker": "diane_sterling",
+      "content_type": "investment_pipeline",
+      "headline": "A PROJECT PIPELINE MUST CONVERT, NOT ACCUMULATE.",
+      "deck": "A large portfolio looks impressive until projects are tested for readiness, procurement, execution and actual service entry.",
+      "quote": "Count projects by conversion stage, not by the number of announcements.",
+      "facts": [
+        "Pipeline visibility exposes where projects repeatedly stall.",
+        "Readiness should precede procurement rather than follow it.",
+        "Delivery risk rises when too many projects enter execution unprepared.",
+        "Completion only matters when an asset enters productive use."
+      ],
+      "takeaway": "A credible portfolio is a conversion engine from prepared capital to functioning assets, not a warehouse of promises.",
+      "visual": {
+        "portfolio": [
+          {
+            "project": "WATER NETWORK",
+            "status": "READY",
+            "value": "R2.4bn",
+            "note": "Design and funding aligned."
+          },
+          {
+            "project": "GRID UPGRADE",
+            "status": "PROCURE",
+            "value": "R1.8bn",
+            "note": "Tender conversion in progress."
+          },
+          {
+            "project": "CLINIC BUILD",
+            "status": "BUILD",
+            "value": "R920m",
+            "note": "Execution milestone tracking."
+          },
+          {
+            "project": "TRANSIT LINK",
+            "status": "LIVE",
+            "value": "R3.1bn",
+            "note": "Asset entering service."
+          }
+        ],
+        "mechanism": [
+          "APPROVE",
+          "PROCURE",
+          "BUILD",
+          "DELIVER"
+        ]
+      }
+    },
+    {
+      "speaker": "kai_patel",
+      "content_type": "repair_cycle",
+      "headline": "FAILURE IS INEVITABLE. RECOVERY ARCHITECTURE IS A DESIGN CHOICE.",
+      "deck": "Reliable systems assume incidents will happen and organise detection, isolation, rerouting and verification in advance.",
+      "quote": "The real test of infrastructure is not whether it never breaks. It is how quickly it can recover without hiding the failure.",
+      "facts": [
+        "Detection must identify the affected state quickly.",
+        "Isolation limits the blast radius of an incident.",
+        "Rerouting preserves service while repair happens.",
+        "Verification confirms that recovery is real rather than cosmetic."
+      ],
+      "takeaway": "Resilience is the capacity to absorb failure, restore service and feed the lesson back into the network.",
+      "visual": {
+        "repair_steps": [
+          "DETECT",
+          "ISOLATE",
+          "REROUTE",
+          "REPAIR",
+          "VERIFY"
+        ]
+      }
+    },
+    {
+      "speaker": "thabo_mokoena",
+      "content_type": "class_gap",
+      "headline": "THE GAP BETWEEN POLICY AND LIFE HAS A CLASS ADDRESS.",
+      "deck": "When institutions report progress but households still absorb the same costs, the gap itself becomes part of the political economy.",
+      "quote": "A programme can exist on paper while the worker still pays for the failure with wages, time and debt.",
+      "facts": [
+        "Formal access does not guarantee usable access.",
+        "Delayed relief is often financed by household debt.",
+        "Unpaid time is part of the real cost of administration."
+      ],
+      "takeaway": "The structural gap is not empty space; it is where public failure becomes private cost.",
+      "visual": {
+        "gaps": [
+          {
+            "promise": "Access is formally available.",
+            "reality": "Travel, queues and documentation still cost money."
+          },
+          {
+            "promise": "Support is approved.",
+            "reality": "Payment delay shifts the waiting cost to the household."
+          },
+          {
+            "promise": "The programme is funded.",
+            "reality": "Workers still absorb the risk when delivery breaks."
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "amari_ndlovu",
+      "content_type": "humanitarian_geography",
+      "headline": "A BORDER DOES NOT END A HUMAN SYSTEM.",
+      "deck": "People move through regional networks of family, work, care and survival even when institutions remain nationally bounded.",
+      "quote": "The map that matters is not only the line between states. It is the route people must actually travel to remain whole.",
+      "facts": [
+        "Care networks often cross formal jurisdictional boundaries.",
+        "Distance and documentation can turn nominal rights into practical exclusion.",
+        "Regional coordination can reduce duplicate barriers and lost cases.",
+        "Humanitarian continuity depends on recognising movement as part of ordinary life."
+      ],
+      "takeaway": "Regional systems work when mobility does not erase continuity of care, rights or belonging.",
+      "visual": {
+        "map_nodes": [
+          {
+            "label": "HOME",
+            "x": 0.22,
+            "y": 0.6
+          },
+          {
+            "label": "CROSSING",
+            "x": 0.44,
+            "y": 0.38
+          },
+          {
+            "label": "SERVICE",
+            "x": 0.66,
+            "y": 0.55
+          },
+          {
+            "label": "RETURN / LINK",
+            "x": 0.78,
+            "y": 0.76
+          }
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "systems_synthesis",
+      "headline": "TRUST IS A SYSTEM PROPERTY.",
+      "deck": "A public service is judged by the whole loop: signal, state response, feedback and outcome.",
+      "quote": "Trust is not one promise. It is a system that keeps returning a usable answer.",
+      "facts": [
+        "Front-end access is only one part of delivery.",
+        "Back-office state changes must be visible.",
+        "Failures need feedback, not silence.",
+        "The outcome must close the loop for the user."
+      ],
+      "takeaway": "A trustworthy institution makes the full system legible, not merely the launch moment.",
+      "visual": {
+        "mechanism": [
+          "SIGNAL",
+          "STATE",
+          "FEEDBACK",
+          "OUTCOME"
+        ]
+      }
+    },
+    {
+      "speaker": "nora",
+      "content_type": "episode_close",
+      "headline": "THE SYSTEM MUST CLOSE ITS OWN LOOP.",
+      "deck": "The episode ends where governance begins: with the obligation to turn signal into response, response into result and result into durable trust.",
+      "quote": "A system becomes credible when the public no longer has to guess whether anyone is still carrying the promise.",
+      "facts": [
+        "Responsibility remains visible after the announcement.",
+        "Failures trigger correction rather than disappearance.",
+        "Delivery reaches the intended person or place.",
+        "The result can be checked independently."
+      ],
+      "takeaway": "The final test is institutional memory: can the system keep carrying the obligation until the public can see the result?",
+      "visual": {
+        "mechanism": [
+          "SIGNAL",
+          "RESPONSE",
+          "RESULT",
+          "TRUST"
+        ]
+      }
+    }
+  ]
+}
