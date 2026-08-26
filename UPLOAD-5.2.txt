@@ -1,0 +1,38 @@
+AI GEOPOLITIC — MILESTONE 5.2 CONTEXTUAL ILLUSTRATION LAYER
+
+Upload to the existing repository paths exactly as listed.
+
+ADD:
+- src/contextual_illustrations.py
+- inputs/episode-029-context-art-5.2.json
+- docs/CONTEXTUAL_ILLUSTRATION.md
+- tests/test_contextual_illustrations.py
+- .github/workflows/render-milestone-5-2-contextual.yml
+
+REPLACE:
+- README.md
+- docs/EPISODE_SCHEMA.md
+- src/render_production_episode.py
+- src/render_identity_slide.py
+- src/render_nora_layout_family.py
+- src/render_johan_layout_family.py
+- src/render_diane_layout_family.py
+- src/render_kai_layout_family.py
+- src/render_thabo_layout_family.py
+- src/render_amari_layout_family.py
+
+DO NOT CHANGE:
+- config/characters.json
+- config/layout_presets.json
+- config/layout_routing.json
+- assets/characters/*
+- inputs/episode-029-20july2026.json
+
+Then run:
+Actions -> Render Milestone 5.2 contextual illustration proof -> Run workflow
+
+Expected QA collection: 98 tests.
+Expected Drive destination:
+AI-Geopolitical / Automation - Temporary Artifacts / Production Episodes / Ep029 Contextual 5.2
+
+This milestone proves the compositor and future generated-asset hook. It is not a claim that the current procedural illustrations match the handcrafted reference quality.

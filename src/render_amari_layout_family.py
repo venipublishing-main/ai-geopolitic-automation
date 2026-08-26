@@ -41,6 +41,11 @@ except ImportError:
     )
     from render_identity_slide import portrait, render_amari as render_regional_memory
 
+try:
+    from .contextual_illustrations import apply_context_art
+except ImportError:
+    from contextual_illustrations import apply_context_art
+
 
 FAMILIES = {
     "regional_memory",
@@ -62,6 +67,7 @@ def new_canvas(data: dict, speaker: dict):
         variant=str(data.get("content_type") or data.get("layout_family") or "family"),
         seed=int(data["slide_number"]),
     )
+    apply_context_art(img, accent, data.get("context_art"), seed=int(data["slide_number"]))
     draw = ImageDraw.Draw(img)
     draw_frame(draw, accent, int(data["slide_number"]), int(data["total_slides"]))
     return img, draw, accent

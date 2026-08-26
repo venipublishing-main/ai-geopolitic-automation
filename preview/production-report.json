@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "episode_id": "ep029-20july2026-follow-through",
+  "episode_id": "ep029-20july2026-context-art-5.2",
   "episode_title": "THE FOLLOW-THROUGH GAP",
   "episode_date": "20 JULY 2026",
   "total_slides": 20,
@@ -57,6 +57,7 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
+        "context_art",
         "mechanism"
       ],
       "resolved_input": "resolved-inputs/slide_02.json",
@@ -83,6 +84,7 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
+        "context_art",
         "monitors"
       ],
       "resolved_input": "resolved-inputs/slide_04.json",
@@ -96,6 +98,7 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
+        "context_art",
         "mechanism"
       ],
       "resolved_input": "resolved-inputs/slide_05.json",
@@ -122,7 +125,8 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
-        "chain"
+        "chain",
+        "context_art"
       ],
       "resolved_input": "resolved-inputs/slide_07.json",
       "output": "slide_07.png"
@@ -135,6 +139,7 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
+        "context_art",
         "mechanism"
       ],
       "resolved_input": "resolved-inputs/slide_08.json",
@@ -240,6 +245,7 @@
       "selection_source": "content_type_rule",
       "layout_override": null,
       "visual_keys": [
+        "context_art",
         "stages"
       ],
       "resolved_input": "resolved-inputs/slide_16.json",

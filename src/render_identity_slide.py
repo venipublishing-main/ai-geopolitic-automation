@@ -38,6 +38,11 @@ except ImportError:
         draw_small_fact_list, draw_takeaway_band, ensure, feathered_portrait,
         font, hex_rgb, paper_texture,
     )
+try:
+    from .contextual_illustrations import apply_context_art
+except ImportError:
+    from contextual_illustrations import apply_context_art
+
 
 DEFAULT_CROP = (100, 10, 1450, 1400)
 TAKEAWAY_Y = 894
@@ -91,6 +96,7 @@ def common_canvas(data, speaker):
         variant=str(data.get("content_type") or data.get("layout_family") or "identity"),
         seed=int(data["slide_number"]),
     )
+    apply_context_art(img, accent, data.get("context_art"), seed=int(data["slide_number"]))
     draw = ImageDraw.Draw(img)
     draw_frame(draw, accent, data["slide_number"], data["total_slides"])
     return img, draw, accent

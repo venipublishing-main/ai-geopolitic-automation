@@ -673,6 +673,7 @@ The benchmark production manifest is:
 
 ```text
 inputs/episode-029-20july2026.json
+inputs/episode-029-context-art-5.2.json
 ```
 
 It preserves the original episode's 20-slide presenter sequence and editorial themes while expressing them through the v1 production schema. Layout selection remains deterministic: the manifest supplies `speaker + content_type`; `config/layout_routing.json` selects the approved family; no manual `layout_override` is used in the benchmark.
@@ -719,7 +720,7 @@ Milestone 5.0 is a **benchmark, not a claim of final visual parity**. The automa
 The GitHub/Drive benchmark completed green. The side-by-side comparison confirmed that orchestration, identity, routing and readable information architecture are working; the remaining gap is primarily visual fidelity, especially contextual illustration richness, portrait integration and background editorial atmosphere.
 
 ### Milestone 5.1 — Benchmark QA + reusable fidelity corrections
-**Implementation prepared — pending GitHub workflow verification**
+**Complete — GitHub workflow verified green on 25 August 2026**
 
 Milestone 5.1 improves shared primitives rather than creating more layouts. The goal is to make the entire existing library feel less template-like before a current daily episode is attempted.
 
@@ -770,7 +771,79 @@ Production Episodes /
 Ep029 Fidelity 5.1
 ```
 
-Milestone 5.1 is still not final visual parity. The biggest remaining gap is bespoke contextual illustration. If the GitHub/Drive run is green and visually approved, proceed to **Milestone 5.2 — contextual illustration layer proof** rather than adding more layout families.
+Milestone 5.1 is still not final visual parity. The GitHub/Drive run completed green, confirming that the shared fidelity changes did not break the renderer. The biggest remaining gap remains bespoke contextual illustration.
+
+### Milestone 5.2 — Contextual illustration layer proof
+**Implementation prepared — pending GitHub workflow verification**
+
+Milestone 5.2 adds a reusable contextual-art compositor rather than more layout families. The aim is to separate rich illustration from exact typography and locked presenter identity.
+
+New compositor:
+
+```text
+src/contextual_illustrations.py
+```
+
+The illustration contract supports two sources:
+
+- `procedural` — deterministic zero-cost Pillow line art;
+- `asset` — a future repository PNG/WebP under `assets/`, intended for local RTX/NVIDIA/API-generated or manually approved context art.
+
+The production schema now accepts `visual.context_art` with a protected `box`, `layer`, `opacity`, optional `paper_wash`, and `exclusions` that prevent foreground artwork from crossing exact labels or copy. Invalid kinds, unsafe boxes, invalid layers and asset paths outside `assets/` fail closed before production.
+
+Milestone 5.2 uses a controlled Ep029 proof manifest:
+
+```text
+inputs/episode-029-context-art-5.2.json
+```
+
+Six slides — one per presenter — receive context-specific procedural illustration while the other fourteen remain the 5.1 control:
+
+- NORA / slide 2 — `casefile_system`;
+- Kai Patel / slide 4 — `river_monitoring`;
+- Johan Vosloo / slide 5 — `water_infrastructure`;
+- Thabo Mokoena / slide 7 — `mineworker_claims`;
+- Amari Ndlovu / slide 8 — `care_pathway`;
+- Diane Sterling / slide 16 — `oil_market`.
+
+The production report now records contextual-art count, source, kind and layer.
+
+Documentation:
+
+```text
+docs/CONTEXTUAL_ILLUSTRATION.md
+docs/EPISODE_SCHEMA.md
+```
+
+Regression coverage:
+
+```text
+tests/test_contextual_illustrations.py
+```
+
+The 5.1 baseline contains **92 GitHub-green tests**. Milestone 5.2 adds **6 contextual-illustration tests**, so the repository should collect **98 tests** after upload. The full 20-slide Ep029 5.2 proof already renders locally.
+
+Workflow:
+
+```text
+.github/workflows/render-milestone-5-2-contextual.yml
+```
+
+Workflow name:
+
+**Render Milestone 5.2 contextual illustration proof**
+
+Expected Drive destination:
+
+```text
+AI-Geopolitical /
+Automation - Temporary Artifacts /
+Production Episodes /
+Ep029 Contextual 5.2
+```
+
+Milestone 5.2 is an **architecture proof, not visual parity**. The procedural backend gives the compositor something deterministic to test, but the original reference slides still have much stronger bespoke scene illustration and engraved detail. After 5.2 is green, do not keep polishing procedural drawings indefinitely. Proceed to **Milestone 5.3 — generated contextual-asset backend proof**, using the 5.2 `asset` hook while code continues to own all text and locked identities.
+
 
 Do not create 20–30 unrelated giant templates. Build variants from reusable editorial primitives while preserving each character's visual grammar.
 
@@ -779,12 +852,14 @@ Do not create 20–30 unrelated giant templates. Build variants from reusable ed
 ```text
 docs/PRODUCTION_SPEC.md
 docs/FIDELITY_BENCHMARK.md
+docs/CONTEXTUAL_ILLUSTRATION.md
 config/brand.json
 config/characters.json
 config/layouts.json
 config/layout_presets.json
 
 src/editorial_primitives.py
+src/contextual_illustrations.py
 src/render_identity_slide.py
 src/render_identity_stress_pack.py
 src/render_nora_layout_family.py
@@ -811,11 +886,14 @@ tests/test_episode_router.py
 tests/test_production_episode.py
 tests/test_milestone_5_ep029.py
 tests/test_fidelity_primitives.py
+tests/test_contextual_illustrations.py
 tests/test_prototype.py
 
 inputs/episode-029-20july2026.json
+inputs/episode-029-context-art-5.2.json
 .github/workflows/render-milestone-5-ep029.yml
 .github/workflows/render-milestone-5-1-fidelity.yml
+.github/workflows/render-milestone-5-2-contextual.yml
 ```
 
 ## Development rule: README must move with the code

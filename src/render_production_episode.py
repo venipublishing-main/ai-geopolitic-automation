@@ -7,8 +7,10 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from PIL import Image
+
 try:
-    from .editorial_primitives import ensure
+    from .editorial_primitives import ensure, hex_rgb
     from .make_contact_sheet import make_contact_sheet
     from .route_episode import (
         RENDER_MODULES,
@@ -17,9 +19,14 @@ try:
         validate_routing_config,
     )
 except ImportError:
-    from editorial_primitives import ensure
+    from editorial_primitives import ensure, hex_rgb
     from make_contact_sheet import make_contact_sheet
     from route_episode import RENDER_MODULES, load_json, select_layout, validate_routing_config
+
+try:
+    from .contextual_illustrations import apply_context_art, validate_context_art_spec
+except ImportError:
+    from contextual_illustrations import apply_context_art, validate_context_art_spec
 
 
 SCHEMA_VERSION = 1
@@ -87,6 +94,8 @@ def _validate_slide_copy(slide: dict, index: int) -> None:
     collisions = sorted(VISUAL_RESERVED_FIELDS.intersection(visual))
     ensure(not collisions,
            f"Slide {index} visual contains reserved fields: {', '.join(collisions)}.")
+    if "context_art" in visual:
+        validate_context_art_spec(visual.get("context_art"), label=f"Slide {index} visual.context_art")
 
 
 def validate_production_manifest(manifest: dict, routing: dict, presets: dict) -> list[dict]:
@@ -144,6 +153,7 @@ def compile_slide(manifest: dict, slide: dict, index: int, routing: dict, preset
         spec["episode_date"] = manifest["episode_date"]
         spec["episode_title"] = manifest["episode_title"]
 
+    context_art = visual.get("context_art") if isinstance(visual.get("context_art"), dict) else {}
     audit = {
         "slide_number": index,
         "speaker": slide["speaker"],
@@ -152,6 +162,9 @@ def compile_slide(manifest: dict, slide: dict, index: int, routing: dict, preset
         "selection_source": selection_source,
         "layout_override": slide.get("layout_override"),
         "visual_keys": sorted(visual),
+        "context_art_source": context_art.get("source") if context_art else None,
+        "context_art_kind": context_art.get("kind") if context_art else None,
+        "context_art_layer": context_art.get("layer", "background") if context_art else None,
     }
     return spec, audit
 
@@ -163,6 +176,7 @@ def render_production_episode(manifest_path: Path, output_dir: Path) -> dict:
     presets = load_json(root / "config/layout_presets.json")
     validate_routing_config(routing, presets)
     slides = validate_production_manifest(manifest, routing, presets)
+    characters = load_json(root / "config/characters.json")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     resolved_dir = output_dir / "resolved-inputs"
@@ -188,6 +202,14 @@ def render_production_episode(manifest_path: Path, output_dir: Path) -> dict:
         module.render(resolved_path, output_path)
         ensure(output_path.exists(), f"Renderer did not create production slide {index}.")
 
+        context_spec = spec.get("context_art")
+        if isinstance(context_spec, dict) and str(context_spec.get("layer", "background")).lower() == "foreground":
+            with Image.open(output_path) as rendered:
+                composed = rendered.convert("RGB")
+            accent = hex_rgb(characters[slide["speaker"]]["accent"])
+            apply_context_art(composed, accent, context_spec, seed=index, stage="foreground")
+            composed.save(output_path, "PNG", optimize=True)
+
         audit["resolved_input"] = str(resolved_path.relative_to(output_dir))
         audit["output"] = str(output_path.relative_to(output_dir))
         audit_rows.append(audit)
@@ -203,6 +225,9 @@ def render_production_episode(manifest_path: Path, output_dir: Path) -> dict:
 
     speaker_counts = Counter(row["speaker"] for row in audit_rows)
     layout_counts = Counter(row["selected_layout"] for row in audit_rows)
+    context_rows = [row for row in audit_rows if row.get("context_art_source")]
+    context_source_counts = Counter(row["context_art_source"] for row in context_rows)
+    context_kind_counts = Counter(row["context_art_kind"] for row in context_rows if row.get("context_art_kind"))
     report = {
         "schema_version": SCHEMA_VERSION,
         "episode_id": manifest["episode_id"],
@@ -211,6 +236,9 @@ def render_production_episode(manifest_path: Path, output_dir: Path) -> dict:
         "total_slides": TOTAL_SLIDES,
         "routing_policy": routing.get("selection_policy"),
         "override_count": sum(1 for row in audit_rows if row["selection_source"] == "explicit_override"),
+        "context_art_count": len(context_rows),
+        "context_art_source_counts": dict(sorted(context_source_counts.items())),
+        "context_art_kind_counts": dict(sorted(context_kind_counts.items())),
         "speaker_counts": dict(sorted(speaker_counts.items())),
         "layout_counts": dict(sorted(layout_counts.items())),
         "slides": audit_rows,
@@ -228,14 +256,18 @@ def render_production_episode(manifest_path: Path, output_dir: Path) -> dict:
         f"Slides: **{TOTAL_SLIDES}**",
         f"Routing policy: `{routing.get('selection_policy')}`",
         "",
-        "| Slide | Speaker | Content type | Selected layout | Visual payload |",
-        "|---:|---|---|---|---|",
+        "| Slide | Speaker | Content type | Selected layout | Visual payload | Context art |",
+        "|---:|---|---|---|---|---|",
     ]
     for row in audit_rows:
         visual = ", ".join(row["visual_keys"]) if row["visual_keys"] else "—"
+        context = "—"
+        if row.get("context_art_source"):
+            kind = row.get("context_art_kind") or "asset"
+            context = f"{row['context_art_source']}:{kind}:{row.get('context_art_layer') or 'background'}"
         md.append(
             f"| {row['slide_number']:02d} | {row['speaker']} | {row['content_type']} | "
-            f"{row['selected_layout']} | {visual} |"
+            f"{row['selected_layout']} | {visual} | {context} |"
         )
     md += [
         "",

@@ -85,3 +85,27 @@ The router maps `speaker + content_type` to an approved layout family. Layout-sp
 6. Run the production-schema workflow. Validation happens before any upload to Drive.
 
 The current template intentionally contains known-good test content so it remains structurally valid while being edited. Milestone 5 will replace this proof content with a real approved daily episode.
+
+## Contextual illustration payload — Milestone 5.2
+
+Production slides may optionally include `visual.context_art`. Context art never owns headline/body copy or presenter identity; it is a composited illustration layer only.
+
+```json
+{
+  "visual": {
+    "context_art": {
+      "source": "procedural",
+      "kind": "river_monitoring",
+      "box": [420, 520, 945, 875],
+      "layer": "foreground",
+      "opacity": 0.4,
+      "paper_wash": false,
+      "exclusions": [[625, 625, 800, 795]]
+    }
+  }
+}
+```
+
+The compiler validates the illustration specification before rendering. Invalid kinds, unsafe boxes, invalid layers and asset paths outside `assets/` fail the run.
+
+See `docs/CONTEXTUAL_ILLUSTRATION.md` for the complete contract and current proof kinds.
