@@ -2,6 +2,41 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Phase A.1 — Current Drive metadata compatibility
+
+**Locally validated — 291 tests passed (102 existing + 119 Phase A + 70 Phase A.1).**
+The full suite uses the documented Windows QA adapter; the 189 ingestion/readiness
+tests also pass with ordinary pytest. No new dependencies or renderer changes.
+
+Phase A.1 aligns deterministic ingestion with the supplied current Ep102 control
+metadata. It preserves every Phase A alias and adds `PRODUCTION DATE (SAST)`,
+`EPISODE`, and `RECOMMENDED EPISODE / WORKING TITLE`. Human dates accept ISO or
+full English dates such as `Thursday, 1 October 2026`, with weekday validation
+independent of Windows locale. Manifest dates remain ISO `YYYY-MM-DD`.
+
+`SOURCE DAILY R&D EPISODE: Ep102 — TITLE` is parsed into an ID and optional title.
+When Slide Design lacks a separate title field, that source title supplies it;
+the source title is always checked against Daily R&D. Explicit full R&D and
+manual-blueprint completion statuses are supported; arbitrary READY text is not.
+Dual-slide `central_relationship` now requires `converge`, `oppose`,
+`partially_overlap`, or `synthesize`; single slides require null.
+
+The local Ep102 pre-handoff fixture must return BLOCKED solely because
+`AUTOMATION_MANIFEST_MISSING`:
+
+```powershell
+python -m src.daily_readiness --source local --rnd-file tests/fixtures/daily_readiness/daily_rnd_ep102.txt --slide-design-file tests/fixtures/daily_readiness/slide_design_ep102.txt --date 2026-10-01 --json
+```
+
+The upstream ChatGPT Slide Design automation must add the exact automation JSON
+markers and a complete ISO-dated v2 manifest while preserving the human blueprint.
+This repository does not modify the live Drive documents. The next real Drive
+readiness test remains blocked until that handoff exists. Existing v1 rendering,
+Milestone 5.2, assets, configuration and GitHub workflows remain intact.
+
+See [Drive ingestion](docs/DRIVE_INGESTION.md) and
+[Manifest v2](docs/EPISODE_SCHEMA_V2.md) for the corrected contract.
+
 ## Phase A — Daily ingestion and readiness foundation
 
 **Implemented and locally validated — 221 tests passed (102 existing + 119 new).**

@@ -41,7 +41,7 @@ sorting, renumbering, duplicates or gaps are allowed.
 | `pairing_mode` | Null for single; an approved string for dual |
 | `shared_ground` | Nonblank description for dual; null or empty string for single |
 | `panelist_contributions` | Object keyed by panelist slug, with nonblank contribution strings; exactly both keys for dual; null, `{}`, or the single panelist's key for single |
-| `central_relationship` | Nonblank editorial description connecting the contributions for dual; null or empty string for single |
+| `central_relationship` | Exactly `converge`, `oppose`, `partially_overlap` or `synthesize` for dual; null for single |
 | `why_dual` | Nonblank explanation for dual; null or empty string for single |
 | `slide_role`, `core_argument`, `headline`, `subheadline` | Nonblank strings |
 | `hero_visual`, `main_visual_phrase` | Nonblank strings |
@@ -54,8 +54,12 @@ sorting, renumbering, duplicates or gaps are allowed.
 | `notices_first`, `preferred_visual_reasoning_family` | Nonblank strings |
 | `anti_cliche_guardrail`, `portrait_scale_intention`, `density_type_size_note` | Nonblank strings |
 
-`central_relationship` is descriptive text, not a second enum. Phase A validates
-its presence and type; it does not use inference to assess editorial meaning.
+Phase A.1 makes `central_relationship` a strict, case-sensitive enum. Arbitrary
+descriptions, empty strings, case variants and surrounding whitespace are rejected
+for dual slides. Single slides must use JSON null. All four values are supported
+without inferring or coercing a relationship from prose. Pairing mode and central
+relationship are checked independently; no additional mode-to-relationship mapping
+is imposed by this contract.
 `preferred_visual_reasoning_family` is an editorial brief, not a forced v1
 `layout_family` route. No extra NORA opener/closer constraints are imposed on v2.
 
@@ -97,7 +101,7 @@ Dual example (fragment):
     "diane_sterling": "Trace the resource allocation.",
     "johan_vosloo": "Identify the accountable owner."
   },
-  "central_relationship": "Resource allocation and accountability explain the same handoff.",
+  "central_relationship": "synthesize",
   "why_dual": "Both explanations are needed to assess delivery.",
   "accent_colours": {"diane_sterling": "#176B4A", "johan_vosloo": "#173C68"}
 }
@@ -109,8 +113,9 @@ dual slides, all six canonical panelists, and every required slide field.
 
 ## Exact JSON handoff
 
-The human-readable Daily Slide Design remains. Upstream ChatGPT automation will
-eventually also populate this literal block in that document:
+The human-readable Daily Slide Design remains intact. The upstream ChatGPT Slide
+Design automation must also populate this literal block in that document before
+the first real Drive readiness test can return READY:
 
 ```text
 === BEGIN AUTOMATION MANIFEST JSON ===
@@ -124,3 +129,18 @@ document. Its contents must be JSON alone: no Markdown fence, comments, trailing
 commas, duplicate keys, `NaN` or `Infinity`. Missing, ambiguous, malformed,
 unsupported or metadata-inconsistent handoffs block BUILD. Human slide prose is
 never translated heuristically into machine fields.
+
+The manifest's `production_date_sast` and `source_rnd_date_sast` must remain ISO
+`YYYY-MM-DD`, even when the human metadata uses `Thursday, 1 October 2026`.
+Preserve the canonical identifier's case (`Ep102`), title and declared archive
+identity. Use the complete field contract above and exactly 20 ordered slides,
+including the strict central relationship enum and canonical accent mappings.
+This repository does not rewrite the real Daily R&D or Slide Design documents.
+
+`tests/fixtures/daily_readiness/daily_rnd_ep102.txt` and `slide_design_ep102.txt`
+reproduce the supplied current metadata shape with a synthetic archive ID and no
+geopolitical blueprint. The Slide Design fixture intentionally omits the JSON
+handoff. For production date 2026-10-01 its sole blocker is
+`AUTOMATION_MANIFEST_MISSING`; adding a valid, consistent ISO-dated v2 handoff
+passes the integration tests. That synthetic test does not claim the real Drive
+document already contains a manifest.

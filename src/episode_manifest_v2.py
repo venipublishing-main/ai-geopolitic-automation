@@ -9,6 +9,7 @@ from .control_documents import Blocker, parse_iso_date
 
 PAIRING_MODES = frozenset({"SUPPORTIVE_CONVERGENT", "OPPOSING_FACE_OFF",
                            "QUALIFIED_TENSION", "SYNTHESIS_COMPLEMENTARY"})
+CENTRAL_RELATIONSHIPS = frozenset({"converge", "oppose", "partially_overlap", "synthesize"})
 TOP_FIELDS = frozenset({"schema_version", "episode_id", "episode_title", "production_date_sast",
                         "source_rnd_date_sast", "archive_destination", "archive_folder_id", "slides"})
 COPY_FIELDS = frozenset({"slide_role", "core_argument", "headline", "subheadline", "hero_visual",
@@ -103,13 +104,18 @@ def validate_manifest_v2(manifest: object, characters: dict) -> list[Blocker]:
         if len(panelists) == 2:
             mode = slide.get("pairing_mode")
             check(isinstance(mode, str) and mode in PAIRING_MODES, "DUAL_PAIRING_INVALID", "Require an approved dual pairing mode.", f"{path}.pairing_mode")
-            for key in ("shared_ground", "central_relationship", "why_dual"):
+            relationship = slide.get("central_relationship")
+            check(isinstance(relationship, str) and relationship in CENTRAL_RELATIONSHIPS,
+                  "DUAL_PAIRING_INVALID", "Dual central_relationship must be converge, oppose, partially_overlap or synthesize.", f"{path}.central_relationship")
+            for key in ("shared_ground", "why_dual"):
                 check(nonblank(slide.get(key)), "DUAL_PAIRING_INVALID", f"Dual slide requires nonblank {key}.", f"{path}.{key}")
             check(isinstance(contributions, dict) and set(contributions) == set(panelists) and all(nonblank(v) for v in contributions.values()),
                   "DUAL_PAIRING_INVALID", "Contributions must map exactly the two panelists to nonblank text.", f"{path}.panelist_contributions")
         else:
             check(slide.get("pairing_mode") is None, "SINGLE_PAIRING_INVALID", "Single slide pairing_mode must be null.", f"{path}.pairing_mode")
-            for key in ("shared_ground", "central_relationship", "why_dual"):
+            check(slide.get("central_relationship") is None, "SINGLE_PAIRING_INVALID",
+                  "Single slide central_relationship must be null.", f"{path}.central_relationship")
+            for key in ("shared_ground", "why_dual"):
                 check(slide.get(key) in (None, ""), "SINGLE_PAIRING_INVALID", f"Single slide {key} must be null or empty text.", f"{path}.{key}")
             check(contributions is None or contributions == {} or
                   (isinstance(contributions, dict) and set(contributions) == set(panelists) and all(nonblank(v) for v in contributions.values())),

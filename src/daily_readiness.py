@@ -15,8 +15,11 @@ from .episode_manifest_v2 import load_canonical_characters, validate_manifest_v2
 from .production_inputs import (DailyDocuments, InputSourceError, LocalFileInput,
                                 ProductionInput, RcloneDriveInput)
 
-RND_SUCCESS_STATUSES = frozenset({"COMPLETE", "R&D COMPLETE", "READY FOR SLIDE DESIGN"})
+RND_SUCCESS_STATUSES = frozenset({"COMPLETE", "R&D COMPLETE", "READY FOR SLIDE DESIGN",
+                                 "R&D COMPLETE — READY FOR 20-SLIDE DESIGN"})
 DESIGN_READY_STATUS = "READY FOR CAROUSEL RENDERING"
+DESIGN_READY_STATUSES = frozenset({DESIGN_READY_STATUS,
+                                  "20-SLIDE BLUEPRINT COMPLETE — READY FOR MANUAL RENDERING"})
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -93,13 +96,15 @@ class DailyBuildReadiness:
         if design:
             if design.production_date != today:
                 block("SLIDE_DESIGN_STALE", f"Slide Design date {design.production_date} does not match {today}.", "slide_design.production_date")
-            if design.status != DESIGN_READY_STATUS:
-                block("SLIDE_DESIGN_NOT_READY", f"Slide Design status must be {DESIGN_READY_STATUS}.", "slide_design.status")
+            if design.status not in DESIGN_READY_STATUSES:
+                block("SLIDE_DESIGN_NOT_READY", "Slide Design must have an explicitly supported completion status.", "slide_design.status")
         if rnd and design:
             if rnd.episode_id != design.episode_id:
                 block("EPISODE_MISMATCH", "R&D and Slide Design episodes differ.")
             if rnd.production_date != design.source_rnd_date or rnd.episode_id != design.source_rnd_episode:
                 block("SOURCE_RND_MISMATCH", "Slide Design source R&D date/episode differs from Daily R&D.")
+            if design.source_rnd_title is not None and design.source_rnd_title != rnd.episode_title:
+                block("SOURCE_RND_TITLE_MISMATCH", "Slide Design source R&D title differs from Daily R&D.", "slide_design.source_rnd_title")
             if rnd.episode_title != design.episode_title:
                 block("DOCUMENT_TITLE_MISMATCH", "R&D and Slide Design titles differ.")
             if rnd.archive_destination != design.archive_destination:

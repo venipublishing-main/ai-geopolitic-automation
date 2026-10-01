@@ -43,6 +43,43 @@ def parse_iso_date(value: object) -> date:
     return date.fromisoformat(value)
 
 
+ENGLISH_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
+}
+ENGLISH_WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+EPISODE_ID_PATTERN = r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}"
+
+
+def parse_control_date(value: str) -> date:
+    """Human metadata accepts ISO or a complete English weekday/day/month/year."""
+    if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        return parse_iso_date(value)
+    match = re.fullmatch(r"([A-Za-z]+),[ \t]+([0-9]{1,2})[ \t]+([A-Za-z]+)[ \t]+([0-9]{4})", value)
+    if not match:
+        raise ValueError("Control date must be YYYY-MM-DD or Weekday, D Month YYYY.")
+    weekday, day, month, year = match.groups()
+    if weekday.casefold() not in ENGLISH_WEEKDAYS or month.casefold() not in ENGLISH_MONTHS:
+        raise ValueError("Control date requires full English weekday and month names.")
+    result = date(int(year), ENGLISH_MONTHS[month.casefold()], int(day))
+    if ENGLISH_WEEKDAYS[result.weekday()] != weekday.casefold():
+        raise ValueError("Control date weekday contradicts its calendar date.")
+    return result
+
+
+def parse_episode_reference(value: str) -> tuple[str, str | None]:
+    """Accept an ID alone or exactly ID + spaced em dash + a nonblank title."""
+    if re.fullmatch(EPISODE_ID_PATTERN, value):
+        return value, None
+    match = re.fullmatch(rf"({EPISODE_ID_PATTERN})[ \t]+—[ \t]+(\S.*)", value)
+    if not match:
+        raise ControlDocumentError("SOURCE_EPISODE_INVALID", "Source episode must be an ID or ID — TITLE.")
+    episode_id, title = match.groups()
+    if title.startswith(("—", "–", "-")):
+        raise ControlDocumentError("SOURCE_EPISODE_INVALID", "Source episode title must not begin with another separator.")
+    return episode_id, title.strip()
+
+
 @dataclass(frozen=True)
 class DailyMetadata:
     production_date: date
@@ -53,17 +90,21 @@ class DailyMetadata:
     archive_folder_id: str | None
     source_rnd_date: date | None = None
     source_rnd_episode: str | None = None
+    source_rnd_title: str | None = None
 
 
 # An explicit label vocabulary, not free-text inference. Alias collisions fail closed.
 LABELS = {
     "production date": "production_date",
+    "production date (sast)": "production_date",
     "production date sast": "production_date",
     "status": "status",
     "episode id": "episode_id",
+    "episode": "episode_id",
     "working title": "episode_title",
     "working episode title": "episode_title",
     "recommended episode title": "episode_title",
+    "recommended episode / working title": "episode_title",
     "archive destination": "archive_destination",
     "archive folder id": "archive_folder_id",
     "source daily r&d date": "source_rnd_date",
@@ -87,21 +128,29 @@ def parse_daily_metadata(text: str, *, slide_design: bool = False) -> DailyMetad
             if key in values:
                 raise ControlDocumentError("METADATA_AMBIGUOUS", f"Duplicate metadata field: {key}.")
             values[key] = value.strip()
-    required = {"production_date", "status", "episode_id", "episode_title", "archive_destination"}
+    required = {"production_date", "status", "episode_id", "archive_destination"}
     if slide_design:
         required |= {"source_rnd_date", "source_rnd_episode"}
+    else:
+        required.add("episode_title")
     missing = sorted(key for key in required if not values.get(key))
     if missing:
         raise ControlDocumentError("METADATA_MISSING", f"Missing/blank metadata: {', '.join(missing)}.")
+    source_episode, source_title = (parse_episode_reference(values["source_rnd_episode"])
+                                    if slide_design else (None, None))
+    # An explicit title field must be nonblank; only an absent field can use the source title.
+    title = values.get("episode_title", source_title)
+    if not title:
+        raise ControlDocumentError("METADATA_MISSING", "Missing/blank episode_title (explicit or source-reference title).")
     try:
-        production = parse_iso_date(values["production_date"])
-        source = parse_iso_date(values["source_rnd_date"]) if slide_design else None
+        production = parse_control_date(values["production_date"])
+        source = parse_control_date(values["source_rnd_date"]) if slide_design else None
     except ValueError as exc:
         raise ControlDocumentError("METADATA_DATE_INVALID", str(exc)) from exc
     return DailyMetadata(production, values["status"], values["episode_id"],
-                         values["episode_title"], values["archive_destination"],
+                         title, values["archive_destination"],
                          values.get("archive_folder_id") or None, source,
-                         values.get("source_rnd_episode"))
+                         source_episode, source_title)
 
 
 def extract_automation_manifest(text: str) -> object:

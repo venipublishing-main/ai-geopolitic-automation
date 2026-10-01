@@ -1,4 +1,4 @@
-# Daily control-document ingestion — Phase A
+# Daily control-document ingestion — Phase A / A.1
 
 Phase A implements:
 
@@ -38,26 +38,57 @@ Source Daily R&D date: 2026-10-01
 Source Daily R&D episode: ep042
 ```
 
-These examples define the supported export contract; current live documents were
-not supplied for Phase A. Metadata labels are case insensitive and allow surrounding
-whitespace, but are otherwise literal `label: value` lines. The explicit aliases
-are `Production date SAST`, `Working episode title`, and `Recommended episode title`
-alongside `Working title`. Dates require ISO `YYYY-MM-DD`; locale-specific dates,
-Markdown labels, multiline values, combined episode/title lines and prose inference
-are unsupported. Add an explicit tested alias if a real export needs one.
+Phase A.1 also accepts the actual Ep102 metadata shape supplied for integration.
+Metadata labels are case insensitive and allow surrounding whitespace, but are
+otherwise literal `label: value` lines. The explicit alias table accepts:
 
-Required labels: production date, status, episode ID, title, archive destination;
-Slide Design also requires source Daily R&D date/episode. Duplicate labels, including
-two aliases for the same field, are ambiguous even if the values agree. Missing,
-blank or invalid required values fail closed. R&D's folder ID is optional when
+| Semantic field | Supported labels |
+|---|---|
+| Production date | `PRODUCTION DATE`, `PRODUCTION DATE (SAST)`, `PRODUCTION DATE SAST` |
+| Episode ID | `EPISODE`, `EPISODE ID` |
+| Title | `WORKING TITLE`, `WORKING EPISODE TITLE`, `RECOMMENDED EPISODE TITLE`, `RECOMMENDED EPISODE / WORKING TITLE` |
+| Source date | `SOURCE DAILY R&D DATE` |
+| Source episode | `SOURCE DAILY R&D EPISODE` |
+
+Existing status and archive labels remain unchanged. Duplicate aliases resolving
+to one field still fail closed, even when their values agree. No fuzzy label
+matching, Markdown label interpretation, multiline values or prose inference is
+used.
+
+Human dates accept either ISO `YYYY-MM-DD` or the complete English form
+`Thursday, 1 October 2026`. English month/weekday names are parsed through explicit
+maps rather than process locale. Names are case insensitive; abbreviated names
+and dates without a weekday are unsupported. The weekday must agree with the
+calendar date. Impossible dates and contradictory weekdays fail closed. Manifest
+v2 dates and the CLI `--date` argument remain strictly ISO.
+
+The source episode value accepts a safe episode ID alone or `ID — TITLE`, using a
+spaced em dash. Thus `Ep102 — CHINA IS BUILDING A WAY OUT OF CUDA` becomes episode
+ID `Ep102` plus an optional source title. Malformed references fail closed; the
+parser does not guess other separators. The source title, when supplied, must
+match Daily R&D's title even if Slide Design also has an explicit title.
+
+Required labels: production date, status, episode ID and archive destination;
+Daily R&D also requires a title. Slide Design requires source Daily R&D date/episode
+and obtains its title from an explicit title field or, when that field is absent,
+the combined source-reference title. A blank explicit title is invalid and is not
+silently replaced. A bare source ID without either title leaves metadata incomplete.
+Missing, blank or invalid required values fail closed. R&D's folder ID is optional when
 absent; Slide Design and the manifest require it. Any supplied R&D ID must match.
 Metadata outside the daily payload is ignored. JSON contents are opaque to the
 metadata parser. The full v2 contract and exact JSON markers are documented in
 [EPISODE_SCHEMA_V2.md](EPISODE_SCHEMA_V2.md).
 
-Accepted successful R&D statuses are exactly `COMPLETE`, `R&D COMPLETE`, or
-`READY FOR SLIDE DESIGN`. These represent an explicit successful upstream handoff;
-all other statuses block. Status values and identity strings are case sensitive.
+Accepted successful R&D statuses are exactly `COMPLETE`, `R&D COMPLETE`,
+`READY FOR SLIDE DESIGN`, or `R&D COMPLETE — READY FOR 20-SLIDE DESIGN`.
+Accepted Slide Design completion statuses are exactly `READY FOR CAROUSEL RENDERING`
+or `20-SLIDE BLUEPRINT COMPLETE — READY FOR MANUAL RENDERING`. These represent an
+explicit successful upstream handoff; arbitrary text containing READY still blocks.
+The manual-rendering status acknowledges a completed blueprint during Phase A.1;
+it does not waive JSON validation or start a renderer. A future status such as
+`20-SLIDE BLUEPRINT COMPLETE — READY FOR AUTOMATED RENDERING` must be added explicitly
+to the completion-status set in a later change; it is not enabled yet.
+Status values and identity strings are case sensitive.
 Titles, archive destinations and supplied archive IDs must agree exactly after
 trimming surrounding metadata whitespace.
 
@@ -86,6 +117,7 @@ Results contain `production_date_sast`, `build`, `state`, `blockers` and `manife
 Each blocker has `code`, `message` and `path`. Only a READY result exposes the
 validated manifest; a BLOCKED result has `manifest: null`. Codes include
 `RND_STALE`, `SLIDE_DESIGN_STALE`, `SOURCE_RND_MISMATCH`, `EPISODE_MISMATCH`,
+`SOURCE_RND_TITLE_MISMATCH`, `SOURCE_EPISODE_INVALID`,
 `RND_NOT_SUCCESSFUL`, `SLIDE_DESIGN_NOT_READY`, `AUTOMATION_MANIFEST_MISSING`,
 `AUTOMATION_MANIFEST_INVALID_JSON`, `MANIFEST_SCHEMA_UNSUPPORTED`,
 `MANIFEST_METADATA_MISMATCH`, `ARCHIVE_IDENTITY_MISMATCH`, `ARCHIVE_FOLDER_MISSING`,
@@ -144,10 +176,39 @@ Both calls use TXT export, argument arrays without a shell, and a 60-second time
 Ambiguous filenames fail instead of concatenating several documents. Listing/read
 failures return a sanitized source blocker without exposing rclone stderr.
 
-Live access has not been exercised in Phase A. Setup still requires rclone, an
-authorized remote, exact unique document paths, and confirmation that the live
-metadata follows the documented contract. The upstream ChatGPT automation must
-eventually write the complete v2 JSON block; until then missing JSON blocks BUILD.
+Live access has not been exercised in Phase A/A.1. Phase A.1 verifies the supplied
+Ep102 metadata through local reproductions, using synthetic archive IDs. Setup
+still requires rclone, an authorized remote, exact unique document paths, and
+confirmation of the actual exports. No real Drive document is modified by this
+repository. The upstream ChatGPT Slide Design automation must add the complete
+v2 JSON block while leaving the human blueprint intact. That JSON must use ISO
+dates even if the human metadata uses long-form dates. Until then missing JSON
+blocks BUILD.
+
+## Ep102 pre-handoff integration check
+
+The local Ep102 metadata fixtures omit the JSON block, as the supplied current
+Slide Design does. They include the full live completion statuses, a combined
+source episode/title, long-form dates and no separate Slide Design title.
+For the supplied production day, run:
+
+```powershell
+python -m src.daily_readiness --source local --rnd-file tests/fixtures/daily_readiness/daily_rnd_ep102.txt --slide-design-file tests/fixtures/daily_readiness/slide_design_ep102.txt --date 2026-10-01 --json
+```
+
+Expected result: BUILD BLOCKED, exit 1, with exactly
+`AUTOMATION_MANIFEST_MISSING`. Human metadata parsing, status, episode, source date,
+title and declared archive checks all pass. A synthetic test adds a fully valid
+ISO-dated v2 manifest to these texts and requires READY. Subsequent real daily
+checks must use the current SAST day rather than continuing to override the date
+to 2026-10-01.
+
+Phase A.1 validation: all **291 tests passed** using the documented Windows QA
+adapter (102 existing + 119 Phase A + 70 integration tests). The 189 Phase A/A.1
+tests also passed with ordinary pytest. The local Ep102 CLI check returned exit 1
+with only `AUTOMATION_MANIFEST_MISSING`; the synthetic ISO JSON handoff integration
+returned READY. Existing renderers, Milestone 5.2, config/assets, dependencies and
+GitHub workflows were not modified.
 
 ## Fixtures and validation
 
