@@ -2,6 +2,66 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Phase A — Daily ingestion and readiness foundation
+
+**Implemented and locally validated — 221 tests passed (102 existing + 119 new).**
+Windows rendering QA used original DejaVu fonts and Pillow's FriBiDi shaping
+support through a local test adapter; production renderer code is unchanged.
+Live Drive integration still requires configuration and actual-export verification.
+
+Phase A adds deterministic Daily R&D + Daily Slide Design ingestion, freshness
+checks in `Africa/Johannesburg`, and a strict **Episode Manifest v2** automation
+handoff. It returns **BUILD READY** or **BUILD BLOCKED**, with structured blocker
+codes and paths. Today's R&D with yesterday's Slide Design explicitly returns
+`WAITING_FOR_CURRENT_SLIDE_DESIGN`; yesterday's design is never reused.
+
+The existing Milestone 4.5 **v1 production renderer**, canonical character config,
+deterministic layout families, fail-closed routing, Milestone 5.2 `context_art`
+hook and GitHub Actions proofs remain intact. V2 is validated independently and
+is not forced into a v1 `layout_family`. Phase A stops at readiness; it does not
+generate images, render v2 slides, redesign composition, add a web UI or publish.
+
+The human-readable Slide Design remains. Upstream ChatGPT automation will
+eventually also populate these exact standalone markers with a valid v2 JSON
+object between them:
+
+```text
+=== BEGIN AUTOMATION MANIFEST JSON ===
+{ valid JSON conforming to Episode Manifest v2 }
+=== END AUTOMATION MANIFEST JSON ===
+```
+
+Missing, duplicated, malformed, unsupported or inconsistent JSON fails closed.
+No LLM or heuristic converts human slide prose into a manifest. Both documents
+also require the exact `=== BEGIN DAILY PAYLOAD ===` / `=== END DAILY PAYLOAD ===`
+metadata envelope.
+
+Developer examples (from the repository root):
+
+```powershell
+python -m src.daily_readiness --source fixtures --date 2026-10-01
+python -m src.daily_readiness --source fixtures --fixture stale --date 2026-10-01
+python -m src.daily_readiness --source local --rnd-file daily-rnd.txt --slide-design-file daily-design.txt --json
+python -m src.daily_readiness --source drive --json
+python -m pytest -q
+```
+
+The fixture commands demonstrate READY and BLOCKED respectively. `--json` returns
+the structured result; exit codes are 0 for READY and 1 for BLOCKED. Live Drive
+uses the existing rclone remote architecture and requires local configuration;
+no credentials or new Python dependencies are added.
+
+New modules: `src/production_inputs.py`, `src/control_documents.py`,
+`src/episode_manifest_v2.py`, and `src/daily_readiness.py`. Tests and compact control
+document fixtures live in `tests/test_daily_readiness.py` and
+`tests/fixtures/daily_readiness/`.
+
+See [Episode Manifest v2](docs/EPISODE_SCHEMA_V2.md) for the strict field contract
+and [Drive ingestion](docs/DRIVE_INGESTION.md) for metadata labels, statuses,
+readiness philosophy, environment variables, live setup and assumptions. The next
+integration step is to align actual control-document exports and have upstream
+ChatGPT populate the JSON handoff; Phase A ends here for review.
+
 ## Project goal
 
 Build a low-cost, ideally $0/month, production pipeline:

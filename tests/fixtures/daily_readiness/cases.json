@@ -1,0 +1,79 @@
+[
+  {
+    "name": "episode_mismatch",
+    "replace": [
+      "Episode ID: ep042",
+      "Episode ID: ep999"
+    ],
+    "code": "EPISODE_MISMATCH"
+  },
+  {
+    "name": "source_rnd_date_mismatch",
+    "replace": [
+      "Source Daily R&D date: 2026-10-01",
+      "Source Daily R&D date: 2026-09-30"
+    ],
+    "code": "SOURCE_RND_MISMATCH"
+  },
+  {
+    "name": "source_rnd_episode_mismatch",
+    "replace": [
+      "Source Daily R&D episode: ep042",
+      "Source Daily R&D episode: ep999"
+    ],
+    "code": "SOURCE_RND_MISMATCH"
+  },
+  {
+    "name": "missing_manifest",
+    "manifest": "missing",
+    "code": "AUTOMATION_MANIFEST_MISSING"
+  },
+  {
+    "name": "malformed_manifest",
+    "manifest": "malformed",
+    "code": "AUTOMATION_MANIFEST_INVALID_JSON"
+  },
+  {
+    "name": "nineteen_slides",
+    "manifest": "nineteen",
+    "code": "SLIDE_COUNT_INVALID"
+  },
+  {
+    "name": "duplicate_number",
+    "slide": 0,
+    "field": "slide_number",
+    "value": 2,
+    "code": "SLIDE_NUMBER_INVALID"
+  },
+  {
+    "name": "missing_number",
+    "slide": 0,
+    "field": "slide_number",
+    "delete": true,
+    "code": "MANIFEST_FIELD_MISSING"
+  },
+  {
+    "name": "unknown_panelist",
+    "slide": 0,
+    "field": "panelists",
+    "value": [
+      "unknown"
+    ],
+    "code": "UNKNOWN_PANELIST"
+  },
+  {
+    "name": "invalid_dual_pairing",
+    "slide": 1,
+    "field": "pairing_mode",
+    "value": "UNSUPPORTED",
+    "code": "DUAL_PAIRING_INVALID"
+  },
+  {
+    "name": "missing_archive_folder",
+    "replace": [
+      "Archive folder ID: fixture_archive_042",
+      "Archive folder ID: "
+    ],
+    "code": "ARCHIVE_FOLDER_MISSING"
+  }
+]

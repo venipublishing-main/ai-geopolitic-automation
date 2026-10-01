@@ -1,0 +1,14 @@
+Daily R&D control document
+Operator notes outside the payload are not production metadata.
+
+=== BEGIN DAILY PAYLOAD ===
+Production date: 2026-10-01
+Status: READY FOR SLIDE DESIGN
+Episode ID: ep042
+Recommended episode title: THE DELIVERY TEST
+Archive destination: AI-Geopolitical / History - Episode List / Ep042-01October2026
+Archive folder ID: fixture_archive_042
+
+Editorial note: Compact delivery-evidence test content.
+=== END DAILY PAYLOAD ===
+Archive notes outside the payload are ignored.
