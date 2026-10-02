@@ -2,6 +2,39 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Phase B — Generation / worker foundation
+
+**Validated — 463 tests passed: 172 Phase B + 189 Phase A/A.1 + 102 existing.**
+The full suite passed through the existing Windows QA adapter without skips;
+both targeted suites also passed with ordinary pytest in the QA environment.
+
+Provider-neutral job contracts, explicit asynchronous lifecycle, deterministic
+single-provider routing and selection audits now live in `src/providers/`.
+`IMAGE`, `VIDEO` and `AUDIO` vocabulary is defined; the deterministic IMAGE mock
+exercises queue/run/success/failure/cancellation with structured data and no images.
+The production policy permits only proven `ZERO_COST`, enforces commercial-model
+permission and separates monetary cost from finite compute resources. Paid and
+unknown-cost providers fail closed; mocks require an explicit development policy.
+
+WanGP and ComfyUI have isolated, inactive adapter seams behind the same contract.
+They remain unavailable even with configuration until transport/capabilities are
+verified. No workers are installed or launched, no models are downloaded, no image
+APIs are called and no quota is used. Existing renderers, portraits, Manifest v2,
+readiness, dependencies and GitHub workflows are unchanged.
+
+**Phase A end-to-end accepted:** real Google Drive/rclone returned `BUILD_READY`,
+Ep103, 2026-10-02 SAST, 20 validated slides, exit 0. The historical Phase A/A.1
+sections below record their earlier local validation and pre-handoff state.
+
+Phase B adds offline contract/routing tests and uses the existing Windows QA
+adapter for full renderer regression validation. No workflow or production output
+destination is added. The next phase is a controlled **one-slide** WanGP/ComfyUI
+visual benchmark and verified adapter integration, using Milestone 5.2's `asset`
+seam. Phase B does not begin that benchmark or connect to production rendering.
+
+See [Generation providers](docs/GENERATION_PROVIDERS.md) for contracts, lifecycle,
+policy, mock usage, adapter boundaries and explicitly deferred work.
+
 ## Phase A.1 — Current Drive metadata compatibility
 
 **Locally validated — 291 tests passed (102 existing + 119 Phase A + 70 Phase A.1).**
