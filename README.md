@@ -2,6 +2,38 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Phase C.1 — Free cloud provider implementation
+
+**Offline implementation; real one-slide acceptance remains blocked.**
+Full Windows QA: **640 passed, 1 skipped** (113 cloud + 64 local Phase C +
+172 Phase B + 189 Phase A/A.1 + 102 existing; the skip is opt-in worker discovery).
+Cloudflare Workers AI and AI Horde now implement the existing provider contract
+through isolated stdlib HTTPS transports. The existing router/zero-cost policy
+and dormant WanGP/ComfyUI work are retained. No dependencies, renderer behaviour,
+canonical assets, readiness rules or CI workflows change.
+
+`python -m src.phase_c_cloud` defaults to discovery/dry run; only `--execute`
+permits one contextual image after current readiness, exact model licence and
+free-cost gates pass. Configurable priority starts Cloudflare → Horde → BLOCK.
+Cloudflare's exact `@cf/black-forest-labs/flux-1-schnell` has a reviewed Apache-2.0
+entry; a token alone cannot prove free cost. Workers Free and free-allocation-only
+declarations are required. Horde supports personal/official anonymous keys, but
+the active compact Schnell derivative stays blocked pending exact licence evidence.
+Credentials are environment-only; see [.env.example](.env.example).
+
+The existing one-slide bridge, artifact QA, ledger, staging and asset compositor
+are reused for one compatible **current** Manifest slide; cloud jobs never assume
+Ep103/12. Code retains all portrait/copy/layout ownership. A durable two-attempt
+maximum permits only one diagnosed terminal technical retry; unresolved submission
+never permits fallback. Reports/artifacts stay in ignored `output/phase-c1/`.
+
+**2026-10-03 live dry run:** Ep104, `BUILD_BLOCKED`,
+`AUTOMATION_MANIFEST_MISSING`; Cloudflare `NOT_CONFIGURED`/`UNKNOWN`; Horde reachable
+and zero-cost but `MODEL_PERMISSION_UNPROVEN`. Zero real generation or uploads.
+Next: resolve the current Manifest and Cloudflare Free configuration (or verify
+the exact Horde derivative), then prove one image/composite. Pollinations/Puter
+remain future Phase C.2 candidates. See [free cloud provider details](docs/PHASE_C_FREE_CLOUD.md).
+
 ## Phase C — Controlled local one-slide integration
 
 **Transport/bridge implementation; real-generation acceptance remains open.**
@@ -11,7 +43,7 @@ WanGP now has a stdlib localhost MCP v2 adapter; ComfyUI has an official HTTP jo
 adapter and a fixed core-node-only workflow. Both remain unavailable by default.
 External operator-reviewed profiles must bind runtime discovery, installed model
 files, supported dimensions, hardware requirements and authoritative licence evidence.
-No production model permissions are shipped. The Phase B contract/router, renderers,
+No local production model permissions are shipped. The Phase B contract/router, renderers,
 readiness, canonical assets, requirements and GitHub workflows remain unchanged.
 
 `python -m src.phase_c` defaults to preflight/dry run, reads current live Drive
@@ -32,8 +64,8 @@ or Drive uploads. A blocked report records the measurements and open gates.
 Offline transport, permission, lifecycle, bridge, artifact, compositor and budget
 tests accompany the integration. Real worker discovery is explicitly opt-in;
 normal pytest never launches a model. See [Phase C benchmark](docs/PHASE_C_BENCHMARK.md)
-for commands, external profile requirements and limitations. Next: resolve the
-hardware/live-manifest gates and prove this single slide before further development.
+for commands, external profile requirements and limitations. These local adapters
+are now dormant while C.1 provides the active free-cloud acceptance path.
 
 ## Phase B — Generation / worker foundation
 

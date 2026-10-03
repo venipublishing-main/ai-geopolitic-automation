@@ -38,6 +38,11 @@ LOCKED_ART = (
 
 def compile_slide(readiness: DailyBuildReadinessResult):
     """Only the validated current Ep103 Slide 12; never compiles other slides."""
+    return compile_context_slide(readiness, 12, expected_episode="Ep103")
+
+
+def compile_context_slide(readiness: DailyBuildReadinessResult, slide_number: int, *, expected_episode=None):
+    """Reuse the material-chain bridge for one explicitly supported current slide."""
     today = current_production_date().isoformat()
     if (not isinstance(readiness, DailyBuildReadinessResult) or readiness.build != "READY" or
             readiness.state != "BUILD_READY" or readiness.blockers or readiness.production_date_sast != today):
@@ -45,15 +50,18 @@ def compile_slide(readiness: DailyBuildReadinessResult):
     manifest = readiness.manifest
     if validate_manifest_v2(manifest, load_canonical_characters()):
         raise ValueError("VALIDATED_MANIFEST_REQUIRED")
-    if manifest["episode_id"] != "Ep103" or manifest["production_date_sast"] != today or manifest["source_rnd_date_sast"] != today:
-        raise ValueError("CURRENT_EP103_REQUIRED")
-    slide = manifest["slides"][11]
-    if slide["slide_number"] != 12 or slide["panelists"] != ["thabo_mokoena"]:
-        raise ValueError("SINGLE_THABO_SLIDE_12_REQUIRED")
+    if ((expected_episode is not None and manifest["episode_id"] != expected_episode) or
+            manifest["production_date_sast"] != today or manifest["source_rnd_date_sast"] != today):
+        raise ValueError("CURRENT_EPISODE_REQUIRED")
+    if type(slide_number) is not int or not 1 <= slide_number <= 20:
+        raise ValueError("SLIDE_NUMBER_INVALID")
+    slide = manifest["slides"][slide_number - 1]
+    if slide["slide_number"] != slide_number or slide["panelists"] != ["thabo_mokoena"]:
+        raise ValueError("SINGLE_THABO_SLIDE_REQUIRED")
     # The existing material_chain consumes five labelled stages. No invented labels.
     if len(slide["essential_labels"]) != 5:
         raise ValueError("COMPOSITION_BRIDGE_REQUIRES_FIVE_EXPLICIT_LABELS")
-    render = {"slide_number": 12, "total_slides": 20, "speaker": "thabo_mokoena",
+    render = {"slide_number": slide_number, "total_slides": 20, "speaker": "thabo_mokoena",
               "content_type": "material_handoff", "layout_family": "material_chain",
               "headline": slide["headline"], "deck": slide["subheadline"], "quote": slide["main_visual_phrase"],
               "facts": [idea["idea"] for idea in slide["takeaway_ideas"]], "takeaway": slide["core_argument"],
@@ -83,7 +91,7 @@ def compose(render_spec, artifact, destination):
     if not staging.resolve().is_relative_to((ROOT / "assets").resolve()) or staging.is_symlink():
         raise ValueError("Unsafe compositor staging root.")
     staging.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="ep103-12-", dir=staging) as temporary:
+    with tempfile.TemporaryDirectory(prefix="context-art-", dir=staging) as temporary:
         plate = Path(temporary) / "context-art.png"
         shutil.copyfile(artifact, plate)
         spec = {**render_spec, "context_art": {"source": "asset", "path": plate.relative_to(ROOT).as_posix(),
@@ -98,18 +106,21 @@ def compose(render_spec, artifact, destination):
 
 class AttemptLedger:
     """Durable conservative ceiling; ambiguous submission never authorizes retry."""
-    def __init__(self, path):
+    def __init__(self, path, *, providers=("wangp", "comfyui"), maximum=4, single_provider=False):
         self.path = Path(path)
+        self.providers, self.maximum, self.single_provider = tuple(providers), maximum, single_provider
 
     def read(self):
         if not self.path.exists():
             return []
         rows = json.loads(self.path.read_text(encoding="utf-8"))
-        if (not isinstance(rows, list) or len(rows) > 4 or
-                any(not isinstance(row, dict) or row.get("provider") not in {"wangp", "comfyui"} or
+        if (not isinstance(rows, list) or len(rows) > self.maximum or
+                any(not isinstance(row, dict) or row.get("provider") not in self.providers or
                     row.get("outcome") not in {"reserved", "technical_failure", "success", "cancelled", "unresolved"} for row in rows)):
             raise ValueError("Invalid benchmark attempt ledger; fail closed.")
-        for provider in ("wangp", "comfyui"):
+        if self.single_provider and len({r["provider"] for r in rows}) > 1:
+            raise ValueError("Invalid single-provider benchmark ledger.")
+        for provider in self.providers:
             previous = [r for r in rows if r["provider"] == provider]
             if len(previous) > 2 or [r.get("attempt") for r in previous] != list(range(1, len(previous) + 1)):
                 raise ValueError("Invalid benchmark per-provider attempt sequence.")
@@ -123,8 +134,10 @@ class AttemptLedger:
     def reserve(self, provider, diagnosis=None):
         rows = self.read()
         previous = [row for row in rows if row["provider"] == provider]
-        if provider not in {"wangp", "comfyui"} or len(rows) >= 4 or len(previous) >= 2:
+        if provider not in self.providers or len(rows) >= self.maximum or len(previous) >= 2:
             raise ValueError("GENERATION_CEILING_REACHED")
+        if self.single_provider and rows and rows[0]["provider"] != provider:
+            raise ValueError("SECOND_PROVIDER_BENCHMARK_NOT_AUTHORIZED")
         if previous and (previous[-1]["outcome"] != "technical_failure" or not diagnosis or not diagnosis.strip()):
             raise ValueError("DIAGNOSED_TECHNICAL_FAILURE_REQUIRED_FOR_RETRY")
         rows.append({"provider": provider, "outcome": "reserved", "diagnosis": diagnosis, "attempt": len(previous) + 1})
@@ -137,12 +150,15 @@ class AttemptLedger:
         self.save(rows)
 
 
-def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=None, timeout=1800):
+def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=None, timeout=1800,
+                      job_factory=None, models=None, output_root=None, terminal_failure_proven=None):
     index, attempt = ledger.reserve(provider.provider_id, diagnosis)
-    job = generation_job(provider, prompt, attempt, seed)
-    router = GenerationRouter((provider,), models=ModelRegistry((provider.profile.model,)))
+    job = (job_factory or generation_job)(provider, prompt, attempt, seed)
+    router = GenerationRouter((provider,), models=models if models is not None else ModelRegistry((provider.profile.model,)))
     record = {"provider": provider.provider_id, "attempt": attempt, "seed": seed, "job_id": job.job_id,
-              "model_profile": asdict(provider.profile), "lifecycle": [], "human_review": "HUMAN REVIEW REQUIRED",
+              "model_profile": asdict(provider.profile) if hasattr(provider, "profile") else asdict(models.get(provider.provider_id, job.model_preference, job.modality)),
+              "episode_id": job.trace.episode_id, "slide_number": job.trace.slide_number,
+              "lifecycle": [], "human_review": "HUMAN REVIEW REQUIRED",
               "requested_dimensions": [job.output.width, job.output.height]}
     started = time.monotonic()
     try:
@@ -163,13 +179,16 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
                 break
             if time.monotonic() - started > timeout:
                 # Cancellation is requested only when verified; unresolved jobs cannot retry.
-                if provider.profile.cancellation_verified:
+                if provider.capabilities().cancellation:
                     router.cancel(job.job_id)
                 raise TimeoutError("Job remains unresolved after deadline.")
             time.sleep(1)
         if status.state is not JobState.SUCCEEDED:
-            ledger.finish(index, "technical_failure" if status.state is JobState.FAILED else "cancelled", worker_job_id=record["worker_job_id"])
+            retry_safe = status.state is JobState.FAILED and (terminal_failure_proven is None or terminal_failure_proven(status))
+            outcome = "technical_failure" if retry_safe else ("cancelled" if status.state is JobState.CANCELLED else "unresolved")
+            ledger.finish(index, outcome, worker_job_id=record["worker_job_id"])
             record["state"] = status.state.value
+            record["failure_code"] = status.failure.code if status.failure else None
             record["duration_seconds"] = time.monotonic() - started
             return record
         artifact = Path(router.result(job.job_id).artifacts[0].identifier)
@@ -183,7 +202,7 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
         record["duration_seconds"] = time.monotonic() - started
         return record
     ledger.finish(index, "success", worker_job_id=record["worker_job_id"])
-    directory = OUTPUT / provider.provider_id
+    directory = (output_root if output_root is not None else OUTPUT) / provider.provider_id
     directory.mkdir(parents=True, exist_ok=True)
     target = directory / "context-art.png"
     shutil.copyfile(artifact, target)

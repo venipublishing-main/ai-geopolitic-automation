@@ -1,5 +1,11 @@
 # Phase B: generation / worker foundation
 
+This section records the Phase B baseline. Later isolated transports are described
+in [Phase C local benchmark](PHASE_C_BENCHMARK.md) and
+[Phase C.1 free cloud providers](PHASE_C_FREE_CLOUD.md). The generic contracts,
+router and zero-cost policy remain unchanged. C.1 explicitly supplies an approved
+Cloudflare Schnell registry; the generic default registry still starts empty.
+
 AI-Geopolitic owns the generation contract and routing policy. Workers are
 interchangeable implementations of that contract. This phase implements contracts,
 an in-memory coordinator, audits, a deterministic mock and inactive adapter seams.
