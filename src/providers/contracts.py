@@ -123,6 +123,23 @@ class TraceMetadata:
     tags: tuple[tuple[str, str], ...] = ()
 
 
+class UseContext(str, Enum):
+    INTERNAL_BENCHMARK = "INTERNAL_BENCHMARK"
+    PRODUCTION_PUBLISH = "PRODUCTION_PUBLISH"
+
+
+class UseCase(str, Enum):
+    UNSPECIFIED = "UNSPECIFIED"
+    NON_PERSONAL_INFRASTRUCTURE = "NON_PERSONAL_INFRASTRUCTURE"
+
+
+@dataclass(frozen=True)
+class UseRequirements:
+    context: UseContext = UseContext.PRODUCTION_PUBLISH
+    case: UseCase = UseCase.UNSPECIFIED
+    record_obligations: bool = False
+
+
 @dataclass(frozen=True)
 class GenerationJob:
     job_id: str
@@ -138,10 +155,14 @@ class GenerationJob:
     trace: TraceMetadata = field(default_factory=TraceMetadata)
     resources: ResourceRequirements = field(default_factory=ResourceRequirements)
     zero_cost_required: bool = True
+    use: UseRequirements = field(default_factory=UseRequirements)
 
     def validate(self) -> None:
         """Validate before probing any provider; no path/network/model I/O."""
         try:
+            if (not isinstance(self.use, UseRequirements) or not isinstance(self.use.context, UseContext) or
+                    not isinstance(self.use.case, UseCase) or type(self.use.record_obligations) is not bool):
+                raise ValueError("use must contain explicit context/case enums and a recording boolean.")
             for name in ("job_id", "purpose", "prompt"):
                 require_text(getattr(self, name), name)
             if not isinstance(self.modality, Modality):

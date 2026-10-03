@@ -8,6 +8,7 @@ from pathlib import Path
 from ..contracts import (GenerationResult, HealthState, Modality, OutputArtifact, UnsupportedJob,
                          capability_rejections, resource_rejections)
 from .http import CloudError
+from ..licence_policy import model_permission_rejections
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -24,11 +25,15 @@ def validate_cloud_job(provider, job):
     if caps.monetary_cost is not MonetaryCost.ZERO_COST:
         reasons.append("ZERO_COST_UNPROVEN")
     metadata = provider.models.get(provider.provider_id, job.model_preference or caps.default_model_id, job.modality)
-    if (metadata is None or metadata.commercial_output_allowed is not True or not metadata.licence or
-            metadata.attribution_required is None or metadata.known_restrictions):
-        reasons.append("MODEL_PERMISSION_UNPROVEN")
-    elif metadata.attribution_required and not job.output.attribution_allowed:
-        reasons.append("MODEL_ATTRIBUTION_REQUIRED")
+    permission_reasons = model_permission_rejections(metadata, job)
+    if metadata is None or metadata.permission_state is None:
+        # Retain the adapter's established legacy unknown-permission code.
+        if any(r != "MODEL_ATTRIBUTION_REQUIRED" for r in permission_reasons):
+            reasons.append("MODEL_PERMISSION_UNPROVEN")
+        elif permission_reasons:
+            reasons.extend(permission_reasons)
+    else:
+        reasons.extend(permission_reasons)
     if reasons:
         raise UnsupportedJob(tuple(reasons))
 

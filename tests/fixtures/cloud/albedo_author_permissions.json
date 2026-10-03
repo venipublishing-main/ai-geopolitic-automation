@@ -1,0 +1,39 @@
+{
+  "id": 140737,
+  "name": "AlbedoBase XL",
+  "creator": {
+    "username": "albedobond",
+    "image": "https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/963b76cb-fa03-489d-ae4d-c2b9fa39490c/width=96/albedobond.jpeg"
+  },
+  "allowNoCredit": false,
+  "allowCommercialUse": [
+    "Image",
+    "RentCivit",
+    "Rent"
+  ],
+  "allowDerivatives": true,
+  "allowDifferentLicense": false,
+  "modelVersions": [
+    {
+      "id": 1041855,
+      "modelId": 140737,
+      "name": "v3.1-Large",
+      "baseModel": "SDXL 1.0",
+      "files": [
+        {
+          "name": "albedobaseXL_v31Large.safetensors",
+          "hashes": {
+            "AutoV1": "2514E4EB",
+            "AutoV2": "C379D154EB",
+            "SHA256": "C379D154EB476B67B390E31463C41C79AC9E766466315408886EBB7FAA2EA098",
+            "CRC32": "13F84FF3",
+            "BLAKE3": "2DFBCCF1AABAD525A85E2CFE44669D852EB72DE2455BBF557AA69F30A8CD374F",
+            "AutoV3": "2FD2062F17C6",
+            "SHA256_12": "C379D154EB47"
+          }
+        }
+      ]
+    }
+  ],
+  "_fixture_note": "Public exact author permissions and version identity captured 2026-10-03; gallery and unrelated versions omitted."
+}

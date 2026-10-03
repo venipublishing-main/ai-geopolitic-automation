@@ -1,0 +1,48 @@
+{
+  "name": "AlbedoBase XL 3.1",
+  "description": "SDXL Model that doesn't require a refiner. This is the 3.1 version.",
+  "version": "3.1",
+  "config": {
+    "download": [
+      {
+        "file_name": "albedobaseXL_V31Large.safetensors",
+        "file_url": "https://huggingface.co/mirroring/horde_models/resolve/main/albedobaseXL_V31Large.safetensors?download=true",
+        "sha256sum": "C379D154EB476B67B390E31463C41C79AC9E766466315408886EBB7FAA2EA098",
+        "known_slow_download": false
+      }
+    ]
+  },
+  "size_on_disk_bytes": 6776583201,
+  "licensing": {
+    "license_expression": "OpenRAIL++-M",
+    "license_ids": [
+      "OpenRAIL++-M"
+    ],
+    "commercial_use": "allowed_with_conditions",
+    "redistribution": "allowed_with_conditions",
+    "obligations": [
+      "include_license",
+      "responsible_use_restrictions"
+    ],
+    "evidence": [
+      {
+        "source": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+        "checked_at": "2026-08-26"
+      }
+    ],
+    "reviewed_by": "horde-model-reference-license-backfill",
+    "reviewed_at": "2026-08-26",
+    "notes": "Inherited base-model RAIL terms selected from the canonical image-generation baseline."
+  },
+  "baseline": "stable_diffusion_xl",
+  "tags": [],
+  "showcases": [],
+  "trigger": [],
+  "homepage": "https://civitai.com/models/140737?modelVersionId=1041855",
+  "nsfw": true,
+  "style": "generalist",
+  "metadata": {
+    "created_at": 1748224319,
+    "updated_at": 1748258170
+  }
+}

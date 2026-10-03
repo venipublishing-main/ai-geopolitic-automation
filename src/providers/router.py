@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import json
 
 from .contracts import (DuplicateJob, GenerationError, GenerationJob, GenerationProvider,
                         GenerationResult, HealthReport, HealthState, JobState, JobStatus,
@@ -9,6 +10,7 @@ from .contracts import (DuplicateJob, GenerationError, GenerationJob, Generation
                         ResultNotReady, UnknownJob, capability_rejections, require_text,
                         optional_int, resource_rejections)
 from .model_registry import ModelRegistry
+from .licence_policy import model_permission_rejections, permission_audit
 
 
 @dataclass(frozen=True)
@@ -96,16 +98,7 @@ class GenerationRouter:
             return ()
         model_id = job.model_preference or caps.default_model_id
         model = self._models.get(provider_id, model_id, job.modality) if model_id is not None else None
-        reasons = []
-        if model is None or model.commercial_output_allowed is not True or not model.licence:
-            reasons.append("MODEL_COMMERCIAL_PERMISSION_UNPROVEN")
-        elif model.attribution_required is None:
-            reasons.append("MODEL_ATTRIBUTION_UNKNOWN")
-        elif model.attribution_required and not job.output.attribution_allowed:
-            reasons.append("MODEL_ATTRIBUTION_REQUIRED")
-        if model is not None and model.known_restrictions:
-            # Phase C must explicitly implement any restriction-specific handling.
-            reasons.append("MODEL_RESTRICTIONS_UNHANDLED")
+        reasons = list(model_permission_rejections(model, job))
         if model is not None:
             if job.reference_assets and model.reference_image_support is not True:
                 reasons.append("MODEL_REFERENCE_SUPPORT_UNPROVEN")
@@ -246,4 +239,14 @@ class GenerationRouter:
                 optional_int(artifact.height, "artifact.height", 1)
             except ValueError as exc:
                 raise InvalidProviderResponse(str(exc)) from exc
-        return replace(result, job_id=job_id)
+        model = self._models.get(submission.provider_id,
+                                 submission.job.model_preference or submission.capabilities.default_model_id,
+                                 submission.job.modality)
+        audit = permission_audit(model, submission.job)
+        data = result.data
+        if audit is not None:
+            # The registry/context, never worker-provided strings, controls obligations.
+            data = tuple(pair for pair in data if pair[0] not in {"licence_audit", "publication_handoff"}) + (
+                ("licence_audit", json.dumps(audit)),
+                ("publication_handoff", json.dumps(audit["publication_handoff"])))
+        return replace(result, job_id=job_id, data=data)

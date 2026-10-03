@@ -3,8 +3,16 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from enum import Enum
 
 from .contracts import Modality, optional_int, require_text, text_tuple
+
+
+class PermissionState(str, Enum):
+    UNKNOWN = "UNKNOWN"
+    PROHIBITED = "PROHIBITED"
+    ALLOWED = "ALLOWED"
+    ALLOWED_WITH_OBLIGATIONS = "ALLOWED_WITH_OBLIGATIONS"
 
 
 @dataclass(frozen=True)
@@ -22,6 +30,11 @@ class ModelMetadata:
     attribution_required: bool | None = None
     known_restrictions: tuple[str, ...] = ()
     benchmark_score: float | None = None
+    permission_state: PermissionState | None = None
+    creator: str | None = None
+    attribution_text: str | None = None
+    licence_source: str | None = None
+    permission_source: str | None = None
 
     def validate(self) -> None:
         require_text(self.model_id, "model_id")
@@ -36,7 +49,9 @@ class ModelMetadata:
         for name in ("reference_image_support", "image_edit_support", "commercial_output_allowed", "attribution_required"):
             if getattr(self, name) is not None and type(getattr(self, name)) is not bool:
                 raise ValueError(f"{name} must be boolean or None.")
-        for name in ("quantization", "licence"):
+        if self.permission_state is not None and not isinstance(self.permission_state, PermissionState):
+            raise ValueError("permission_state must use the explicit enum.")
+        for name in ("quantization", "licence", "creator", "attribution_text", "licence_source", "permission_source"):
             if getattr(self, name) is not None:
                 require_text(getattr(self, name), name)
         text_tuple(self.known_restrictions, "known_restrictions")

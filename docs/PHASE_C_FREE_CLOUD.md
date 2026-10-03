@@ -9,7 +9,7 @@ workflow is introduced.
 ## Contract and priority
 
 `src/providers/cloud/` implements the unchanged `GenerationProvider` protocol.
-`GenerationRouter` and `ZeroCostPolicy` are unchanged: production accepts only
+`GenerationRouter` retains its selection/lifecycle contract; `ZeroCostPolicy` is unchanged: production accepts only
 `ZERO_COST`, with exact reviewed model permission and current availability.
 The cloud registry is explicitly supplied by the cloud consumer; the generic
 registry remains empty by default. No cloud API/settings leak into neutral jobs.
@@ -115,7 +115,9 @@ definition lists no material restrictions; `include_license` concerns redistribu
 of model/code, with no generated-image attribution obligation identified.
 See [the recorded permission review](HORDE_MODEL_PERMISSION.md) for the exact hash,
 sources, intended contextual-art use, active-model cross-match and limitations.
-Only this Horde model is registered. Other identifiers/unknown permissions retain
+The conditional-permission extension also registers exact AlbedoBase XL 3.1 and
+SDXL 1.0 metadata; see [conditional model permissions](CONDITIONAL_MODEL_PERMISSIONS.md).
+The default adapter still selects compact Schnell. Other identifiers/unknown permissions retain
 the existing fail-closed checks. Transport tests still use clearly labelled
 synthetic metadata where needed; separate tests cover the real reviewed registry
 against offline HTTP fixtures and the recorded official reference snapshots.
@@ -213,7 +215,7 @@ python -m src.phase_c_cloud --execute
 
 Normal tests mock HTTP and prohibit accidental network calls. Full Windows QA
 uses the existing ignored DejaVu/FriBiDi adapter; Linux/CI, requirements, canonical
-assets, renderer code, Manifest/readiness and router contracts remain unchanged.
+assets, renderer code, Manifest/readiness and router lifecycle contracts remain unchanged.
 
 Current validation: Kai bridge **18 passed**; cloud C.1 **116 passed**; local C **64 passed, 1 skipped**
 (opt-in worker discovery); Phase B **172 passed**; Phase A/A.1 **189 passed**;
@@ -241,3 +243,11 @@ post-tests/commit/push conditions have not been met. No visual parity is claimed
 Next-provider candidates remain Phase C.2 only: Pollinations must prove zero price
 for the exact current model; Puter must use only verified free allowance with no
 purchased credits or paid subscription fallback. Neither is implemented here.
+
+The later exact AlbedoBase XL 3.1 internal benchmark passed its mandatory visual
+screen and produced one Ep104 Slide05 candidate. Conditional credit handling,
+the independent one-attempt ledger, live evidence, protected-region checks and
+limited single-provider acceptance are recorded in
+[conditional model permissions](CONDITIONAL_MODEL_PERMISSIONS.md). The preceding
+Flux rejection remains historical evidence; it has not been reversed. Production
+public-credit delivery and human visual quality review remain outstanding.

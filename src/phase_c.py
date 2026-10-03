@@ -21,7 +21,8 @@ from .providers.local.base import LocalWorkerConfig
 from .providers.local.comfyui import ComfyUIProvider
 from .providers.local.image import ImageProfile, inspect_png, nvidia_resources
 from .providers.local.wangp import WanGPProvider
-from .providers.model_registry import ModelMetadata, ModelRegistry
+from .providers.model_registry import ModelMetadata, ModelRegistry, PermissionState
+from .providers.licence_policy import permission_audit
 from .providers.router import GenerationRouter, ZeroCostPolicy
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -189,12 +190,17 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
                       defer_composition=False):
     index, attempt = ledger.reserve(provider.provider_id, diagnosis)
     job = (job_factory or generation_job)(provider, prompt, attempt, seed)
-    router = GenerationRouter((provider,), models=models if models is not None else ModelRegistry((provider.profile.model,)))
+    registry = models if models is not None else ModelRegistry((provider.profile.model,))
+    router = GenerationRouter((provider,), models=registry)
     record = {"provider": provider.provider_id, "attempt": attempt, "seed": seed, "job_id": job.job_id,
               "model_profile": asdict(provider.profile) if hasattr(provider, "profile") else asdict(models.get(provider.provider_id, job.model_preference, job.modality)),
               "episode_id": job.trace.episode_id, "slide_number": job.trace.slide_number,
               "lifecycle": [], "human_review": "HUMAN REVIEW REQUIRED",
               "requested_dimensions": [job.output.width, job.output.height]}
+    audit = permission_audit(registry.get(provider.provider_id,
+                             job.model_preference or provider.capabilities().default_model_id, job.modality), job)
+    if audit is not None:
+        record.update(licence_audit=audit, publication_handoff=audit["publication_handoff"])
     started = time.monotonic()
     try:
         record["resource_before"] = asdict(provider.resource_state())
@@ -227,7 +233,12 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
             record["failure_code"] = status.failure.code if status.failure else None
             record["duration_seconds"] = time.monotonic() - started
             return record
-        artifact = Path(router.result(job.job_id).artifacts[0].identifier)
+        generated = router.result(job.job_id)
+        result_data = dict(generated.data)
+        for key in ("licence_audit", "publication_handoff"):
+            if key in result_data:
+                record[key] = json.loads(result_data[key])
+        artifact = Path(generated.artifacts[0].identifier)
         record["technical_qa"] = inspect_png(artifact, job.output.width, job.output.height)
     except Exception as exc:
         # Lost acknowledgement, malformed status and timeouts may hide a running job.
@@ -271,6 +282,8 @@ def load_workers(path):
         profile_data = dict(value["profile"])
         metadata = dict(profile_data.pop("model"))
         metadata["modality"] = Modality(metadata["modality"])
+        if metadata.get("permission_state") is not None:
+            metadata["permission_state"] = PermissionState(metadata["permission_state"])
         metadata["known_restrictions"] = tuple(metadata.get("known_restrictions", ()))
         for key in ("evidence_urls", "required_model_files"):
             profile_data[key] = tuple(profile_data[key])

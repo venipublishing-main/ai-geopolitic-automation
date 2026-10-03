@@ -14,15 +14,42 @@ from .daily_readiness import DailyBuildReadiness, DailyBuildReadinessResult, cur
 from .phase_c import (AttemptLedger, compile_context_slide, execute_candidate,
                       THABO_MATERIAL_CHAIN, KAI_NETWORK_MESH)
 from .production_inputs import InputSourceError, RcloneDriveInput
-from .providers.contracts import GenerationJob, Modality, OutputRequirements, TraceMetadata, UnsupportedJob
-from .providers.cloud.ai_horde import AIHordeProvider
+from .providers.contracts import (GenerationJob, Modality, OutputRequirements, TraceMetadata, UnsupportedJob,
+                                 UseRequirements, UseContext, UseCase)
+from .providers.licence_policy import permission_audit
+from .providers.cloud.ai_horde import AIHordeProvider, ALBEDO_SETTINGS
 from .providers.cloud.cloudflare_workers_ai import CloudflareWorkersAIProvider
 from .providers.cloud.common import validate_cloud_job
-from .providers.cloud.models import CF_PROVIDER, HORDE_PROVIDER, EVIDENCE
+from .providers.cloud.models import CF_PROVIDER, HORDE_PROVIDER, ALBEDO_MODEL_ID, model_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output/phase-c1"
 DEFAULT_PRIORITY = (CF_PROVIDER, HORDE_PROVIDER)
+ALBEDO_PACKAGE = "Ep104/slide-5/albedo-sdxl"
+
+
+def is_albedo(provider):
+    return provider.provider_id == HORDE_PROVIDER and getattr(provider, "settings", None) == ALBEDO_SETTINGS
+
+
+def albedo_prompt(slide):
+    positive = (
+        "A physical data-centre hosting campus shown as one coherent technical architectural cutaway. "
+        "Remote network users connect through fibre entering the site, visible server and computing "
+        "infrastructure, electrical transformers and substation, industrial cooling equipment and "
+        "cooling pipes, foundations and land/site footprint. Serious black-ink newspaper editorial "
+        "engraving on warm off-white paper, precise cross-hatching, restrained composition, useful "
+        "negative space. No textual communication is required from this image. "
+        + slide["hero_visual"] + " " + " ".join(slide["factual_guardrails"]))
+    negative = (
+        "text, letters, words, typography, caption, label, sign, signage, logo, brand mark, watermark, "
+        "signature, artist signature, copyright mark, cloud icon, fluffy cloud, cartoon cloud, "
+        "literal cloud metaphor, speech bubble, UI, dashboard, infographic text, poster, collage, "
+        "contact sheet, neon, cyberpunk, portrait, panelist, human figure")
+    if "cloud" in positive.lower() or "###" in positive or slide["main_visual_phrase"] in positive:
+        raise ValueError("SDXL_POSITIVE_PROMPT_GUARDRAIL_UNMET")
+    # Actual hordelib SDXL worker splits this delimiter into separate CLIP conditioning.
+    return positive + "###" + negative
 
 
 def cloud_job(provider, prompt, episode, slide_number, attempt=1, seed=None):
@@ -30,7 +57,9 @@ def cloud_job(provider, prompt, episode, slide_number, attempt=1, seed=None):
     job = GenerationJob(f"phase-c1-{episode}-{slide_number}-{provider.provider_id}-{digest}-{attempt}",
                         Modality.IMAGE, "contextual_art", prompt, OutputRequirements("png", 1024, 1024),
                         model_preference=provider.capabilities().default_model_id, seed=seed,
-                        trace=TraceMetadata(episode, slide_number, attempt))
+                        trace=TraceMetadata(episode, slide_number, attempt),
+                        use=UseRequirements(UseContext.INTERNAL_BENCHMARK,
+                            UseCase.NON_PERSONAL_INFRASTRUCTURE, True) if is_albedo(provider) else UseRequirements())
     job.validate()
     return job
 
@@ -130,6 +159,12 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
     ids = tuple(p.provider_id for p in providers)
     if len(set(ids)) != len(ids) or len(set(priority)) != len(priority) or set(priority) != set(ids):
         raise ValueError("PRIORITY_MUST_NAME_EACH_REGISTERED_PROVIDER_ONCE")
+    albedo = any(is_albedo(p) for p in providers)
+    if albedo and (ids != (HORDE_PROVIDER,) or priority != (HORDE_PROVIDER,)):
+        raise ValueError("ALBEDO_REQUIRES_EXCLUSIVE_SINGLE_PROVIDER_BENCHMARK")
+    workspace = OUTPUT / ALBEDO_PACKAGE if albedo else OUTPUT
+    if albedo:
+        defer_composition = True  # Internal benchmark always requires visual review first.
     episode = readiness.manifest["episode_id"] if readiness.manifest else episode_hint
     report = {"mode": "EXECUTE" if execute else "DRY_RUN", "readiness": readiness.to_dict(),
               "created_at_sast_date": current_production_date().isoformat(),
@@ -145,6 +180,14 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
         report["selected_slide"] = number
         report.update(selected_bridge_profile=KAI_NETWORK_MESH if render["speaker"] == "kai_patel" else THABO_MATERIAL_CHAIN,
                       selected_speaker=render["speaker"], selected_layout=render["layout_family"])
+        if albedo:
+            if (episode != "Ep104" or number != 5 or render["speaker"] != "kai_patel" or
+                    readiness.production_date_sast != "2026-10-03"):
+                raise ValueError("AUTHORIZED_ALBEDO_BENCHMARK_TARGET_REQUIRED")
+            prompt = albedo_prompt(readiness.manifest["slides"][4])
+            report.update(execution_context=UseContext.INTERNAL_BENCHMARK.value,
+                          benchmark_package=str(workspace), sampling_plan=asdict(ALBEDO_SETTINGS),
+                          submitted_prompt=prompt, publication_allowed=False)
         compiled = True
     except ValueError as exc:
         report["blockers"].append("CURRENT_SLIDE_BRIDGE_UNAVAILABLE")
@@ -165,18 +208,21 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
             reasons.extend(exc.reasons)
         report["providers"].append({"provider": provider.provider_id, "health": asdict(health),
                                     "monetary_cost": caps.monetary_cost.value, "selected_model": caps.default_model_id,
-                                    "licence": asdict(model) if model else None, "licence_evidence": EVIDENCE[provider.provider_id],
+                                    "licence": asdict(model) if model else None,
+                                    "licence_evidence": model_evidence(provider.provider_id, caps.default_model_id),
+                                    "licence_audit": permission_audit(model, job),
                                     "resources": asdict(resources), "observations": provider.observations(),
                                     "eligibility_blockers": reasons, "eligible": not reasons})
         if not reasons:
             eligible.append(provider)
     if not eligible:
         report["blockers"].append("NO_ELIGIBLE_FREE_CLOUD_PROVIDER")
-    ledger = AttemptLedger(OUTPUT / "attempt-ledger.json", providers=DEFAULT_PRIORITY, maximum=2, single_provider=True)
+    ledger = AttemptLedger(workspace / "attempt-ledger.json", providers=ids if albedo else DEFAULT_PRIORITY,
+                           maximum=1 if albedo else 2, single_provider=True)
     try:
         rows = ledger.read()
         report["generation_attempts_total"] = len(rows)
-        budget_ok = not rows or (len(rows) == 1 and rows[0]["outcome"] == "technical_failure" and
+        budget_ok = not rows or (not albedo and len(rows) == 1 and rows[0]["outcome"] == "technical_failure" and
                                 bool(diagnosis and diagnosis.strip()) and eligible and rows[0]["provider"] == eligible[0].provider_id)
         if not budget_ok:
             report["blockers"].append("GENERATION_BUDGET_BLOCKED")
@@ -185,9 +231,12 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
     if not report["blockers"]:
         report["selected_provider"] = eligible[0].provider_id
         report["predicted_generation_count"] = 1
+        audit = next(p["licence_audit"] for p in report["providers"] if p["provider"] == eligible[0].provider_id)
+        if audit is not None:
+            report.update(licence_audit=audit, publication_handoff=audit["publication_handoff"])
     if execute and not report["blockers"]:
-        OUTPUT.mkdir(parents=True, exist_ok=True)
-        lock = OUTPUT / "benchmark.lock"
+        workspace.mkdir(parents=True, exist_ok=True)
+        lock = workspace / "benchmark.lock"
         try:
             descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         except FileExistsError:
@@ -195,7 +244,7 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
         else:
             try:
                 provider = eligible[0]
-                package = OUTPUT / episode / f"slide-{number}"
+                package = workspace if albedo else OUTPUT / episode / f"slide-{number}"
                 observer = None
                 if provider.provider_id == HORDE_PROVIDER:
                     observer = HordeLifecycleObserver(provider.http, package / provider.provider_id / "lifecycle-progress.json")
@@ -209,10 +258,12 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
                     if observer is not None:
                         provider.http = observer.transport
                 if observer is not None:
+                    result["licence_evidence"] = model_evidence(provider.provider_id, provider.capabilities().default_model_id)
+                    result["sampling_plan"] = asdict(provider.settings)
                     result["provider_lifecycle"] = observer.summary()
                     result["provider_lifecycle"]["retries"] = result["attempt"] - 1
                     generations = result["provider_lifecycle"]["returned_generations"]
-                    result["requested_seed"] = result["seed"]
+                    result["requested_seed"] = provider.settings.seed if is_albedo(provider) else result["seed"]
                     result["seed"] = generations[0].get("seed") if len(generations) == 1 else None
                     if result.get("technical_qa"):
                         result["returned_dimensions"] = [result["technical_qa"]["width"], result["technical_qa"]["height"]]
@@ -220,6 +271,9 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
                     metadata.parent.mkdir(parents=True, exist_ok=True)
                     metadata.write_text(json.dumps(result, indent=2), encoding="utf-8")
                 report["results"].append(result)
+                if result.get("licence_audit"):
+                    report["licence_audit"] = result["licence_audit"]
+                    report["publication_handoff"] = result["publication_handoff"]
                 if result["state"] != "SUCCEEDED" or result.get("composition_blocker"):
                     report["blockers"].append(result.get("failure_code") or "GENERATION_OR_COMPOSITION_FAILED")
             except Exception as exc:
@@ -233,12 +287,33 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
     return report
 
 
+def write_benchmark_report(report, workspace):
+    workspace.mkdir(parents=True, exist_ok=True)
+    (workspace / "benchmark-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    audit = report.get("licence_audit") or next((p.get("licence_audit") for p in report["providers"]
+                                                if p.get("licence_audit")), None)
+    text = f"# Internal contextual-art benchmark\n\nState: {report['state']}\n\n"
+    text += f"Episode: {report['episode_id']}; slide: {report['selected_slide']}. No production publication.\n\n"
+    if audit:
+        text += (f"Model: {audit['model']}; creator: {audit['creator']}; permission: {audit['permission_state']}.\n\n"
+                 f"Required credit: {audit['attribution_text']}\n\n"
+                 f"Evidence: {audit['permission_source']} and {audit['licence_source']}.\n\n"
+                 f"Publication attribution required: {audit['publication_attribution_required']}. "
+                 "Public attribution surface unconfigured; future publishing handoff BLOCKED.\n\n"
+                 f"Use: {audit['use']}; obligations recorded: {audit['obligations_recorded']}.\n\n"
+                 f"Restrictions: {', '.join(audit['known_restrictions'])}.\n\n"
+                 "HUMAN_REVIEW_REQUIRED: declared infrastructure scope does not prove content compliance.\n\n")
+    text += f"Blockers: {report['blockers']}; attempts: {report['generation_attempts_total']}.\n"
+    (workspace / "benchmark-report.md").write_text(text, encoding="utf-8")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--defer-composition", action="store_true", help="Save the one artifact for visual inspection before composition; never dispatch another job.")
     parser.add_argument("--priority", default=",".join(DEFAULT_PRIORITY))
     parser.add_argument("--slide", type=int)
+    parser.add_argument("--horde-profile", choices=("flux", "albedo-sdxl"), default="flux")
     parser.add_argument("--diagnosis", help="Explicit diagnosis for one proven terminal technical failure retry.")
     args = parser.parse_args(argv)
     today, episode = current_production_date(), None
@@ -252,20 +327,24 @@ def main(argv=None):
     except InputSourceError:
         readiness = DailyBuildReadinessResult(today.isoformat(), "BLOCKED", "BUILD_BLOCKED",
                     (Blocker("INPUT_SOURCE_UNAVAILABLE", "Drive inputs unavailable.", "source"),))
-    providers = (CloudflareWorkersAIProvider(), AIHordeProvider())
+    albedo = args.horde_profile == "albedo-sdxl"
+    providers = ((AIHordeProvider(settings=ALBEDO_SETTINGS),) if albedo else
+                 (CloudflareWorkersAIProvider(), AIHordeProvider()))
     try:
-        report = benchmark(readiness, providers, priority=tuple(args.priority.split(",")),
+        priority = (HORDE_PROVIDER,) if albedo and args.priority == ",".join(DEFAULT_PRIORITY) else tuple(args.priority.split(","))
+        report = benchmark(readiness, providers, priority=priority,
                            episode_hint=episode, slide_number=args.slide, execute=args.execute, diagnosis=args.diagnosis,
                            defer_composition=args.defer_composition)
-        OUTPUT.mkdir(parents=True, exist_ok=True)
-        (OUTPUT / "benchmark-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        write_benchmark_report(report, OUTPUT / ALBEDO_PACKAGE if albedo else OUTPUT)
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0 if report["state"] in {"DRY_RUN_READY", "COMPLETED", "ARTIFACT_REVIEW_REQUIRED"} else 1
     except ValueError:
         print(json.dumps({"state": "BLOCKED", "blockers": ["INVALID_CLOUD_BENCHMARK_CONFIGURATION"]}))
         return 1
     finally:
-        providers[0].close()
+        for provider in providers:
+            if hasattr(provider, "close"):
+                provider.close()
 
 
 if __name__ == "__main__":

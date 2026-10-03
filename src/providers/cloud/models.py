@@ -1,6 +1,7 @@
 """Reviewed cloud permissions; active model discovery never grants a licence."""
 from ..contracts import Modality
-from ..model_registry import ModelMetadata, ModelRegistry
+from ..model_registry import ModelMetadata, ModelRegistry, PermissionState
+from ..licence_policy import RESTRICTIONS
 
 CF_MODEL_ID = "@cf/black-forest-labs/flux-1-schnell"
 CF_PROVIDER = "cloudflare_workers_ai"
@@ -43,6 +44,51 @@ EVIDENCE = {
 }
 
 
+ALBEDO_MODEL_ID = "AlbedoBase XL 3.1"
+SDXL_MODEL_ID = "SDXL 1.0"
+SDXL_LICENCE_SOURCE = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/LICENSE.md"
+ALBEDO_PERMISSION_SOURCE = "https://civitai.com/api/v1/models/140737"
+ALBEDO_VERSION_SOURCE = "https://civitai.com/api/v1/model-versions/1041855"
+ALBEDO_CHECKPOINT_SHA256 = "C379D154EB476B67B390E31463C41C79AC9E766466315408886EBB7FAA2EA098"
+ALBEDO_MODEL = ModelMetadata(
+    ALBEDO_MODEL_ID, HORDE_PROVIDER, Modality.IMAGE, licence="CreativeML Open RAIL++-M",
+    commercial_output_allowed=True, attribution_required=True, creator="albedobond",
+    attribution_text="Context illustration generated with AlbedoBase XL 3.1 by albedobond.",
+    permission_state=PermissionState.ALLOWED_WITH_OBLIGATIONS,
+    licence_source=SDXL_LICENCE_SOURCE, permission_source=ALBEDO_PERMISSION_SOURCE,
+    known_restrictions=RESTRICTIONS, reference_image_support=False, image_edit_support=False)
+SDXL_MODEL = ModelMetadata(
+    SDXL_MODEL_ID, HORDE_PROVIDER, Modality.IMAGE, licence="CreativeML Open RAIL++-M",
+    commercial_output_allowed=True, attribution_required=False, creator="Stability AI",
+    permission_state=PermissionState.ALLOWED_WITH_OBLIGATIONS,
+    licence_source=SDXL_LICENCE_SOURCE, permission_source=SDXL_LICENCE_SOURCE,
+    known_restrictions=RESTRICTIONS, reference_image_support=False, image_edit_support=False)
+MODEL_EVIDENCE = {
+    ALBEDO_MODEL_ID: {
+        "model_id": ALBEDO_MODEL_ID, "checkpoint_sha256": ALBEDO_CHECKPOINT_SHA256,
+        "checkpoint_file": "albedobaseXL_V31Large.safetensors", "civitai_version_id": 1041855,
+        "civitai_model_id": 140737, "creator": "albedobond", "reviewed_date": "2026-10-03",
+        "sources": ["https://models.aihorde.net/api/model_references/v2/image_generation/model/AlbedoBase%20XL%203.1",
+                    ALBEDO_VERSION_SOURCE, ALBEDO_PERMISSION_SOURCE, SDXL_LICENCE_SOURCE],
+        "author_permissions": {"allowNoCredit": False, "allowCommercialUse": ["Image", "RentCivit", "Rent"],
+                               "allowDerivatives": True, "allowDifferentLicense": False},
+        "service_note": "Author permits Image and Rent generation uses. No sale or redistribution of weights; no alternate model licence inferred.",
+        "credit_note": "Conservatively require creator credit for generated images; internal audit recording is allowed only for this unpublished benchmark. Future public credit is unresolved.",
+        "licence_note": "Exact Civitai version SHA matches the exact Horde checkpoint; both author permissions and base Attachment A restrictions retained.",
+    },
+    SDXL_MODEL_ID: {
+        "model_id": SDXL_MODEL_ID, "creator": "Stability AI", "reviewed_date": "2026-10-03",
+        "checkpoint_sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+        "sources": ["https://models.aihorde.net/api/model_references/v2/image_generation/model/SDXL%201.0", SDXL_LICENCE_SOURCE],
+        "licence_note": "Licensor claims no rights in output; uses remain subject to Attachment A. Metadata-only fallback, never automatically dispatched.",
+    },
+}
+
+
+def model_evidence(provider_id, model_id):
+    return MODEL_EVIDENCE[model_id] if provider_id == HORDE_PROVIDER and model_id in MODEL_EVIDENCE else EVIDENCE[provider_id]
+
+
 def cloud_registry():
     # Explicit reviewed entries only; dynamic discovery never grants permission.
-    return ModelRegistry((CF_MODEL, HORDE_MODEL))
+    return ModelRegistry((CF_MODEL, HORDE_MODEL, ALBEDO_MODEL, SDXL_MODEL))

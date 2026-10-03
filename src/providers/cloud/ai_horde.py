@@ -2,17 +2,33 @@
 import os
 import time
 import uuid
+from dataclasses import dataclass
 from urllib.parse import quote
 
 from ..contracts import (ActivityState, DuplicateJob, FailureInfo, HealthReport, HealthState, JobState, JobStatus,
                          Modality, MonetaryCost, ProviderCapabilities, ProviderUnavailable, ResourceState,
                          ResultNotReady, UnknownJob, UnsupportedJob, WorkerLocation)
+from ..model_registry import PermissionState
 from .common import image_bytes, save_image, validate_cloud_job
 from .http import CloudError, CloudHTTP
-from .models import HORDE_MODEL_ID, HORDE_PROVIDER, cloud_registry
+from .models import ALBEDO_MODEL_ID, HORDE_MODEL_ID, HORDE_PROVIDER, cloud_registry
 
 HORDE_CANDIDATE = HORDE_MODEL_ID
 ANONYMOUS_KEY = "0000000000"  # Official service's public anonymous credential, not a user secret.
+
+
+@dataclass(frozen=True)
+class HordeImageSettings:
+    model_id: str
+    steps: int
+    cfg_scale: float
+    sampler: str
+    seed: str | None = None
+
+
+FLUX_SETTINGS = HordeImageSettings(HORDE_MODEL_ID, 4, 1, "k_euler")
+# SDXL-family tutorial settings; not claimed as exact-checkpoint author recommendations.
+ALBEDO_SETTINGS = HordeImageSettings(ALBEDO_MODEL_ID, 30, 7.5, "k_euler_a", "1234567890")
 
 
 def horde_status(value, identifier, *, cancellation_ack=False):
@@ -35,9 +51,12 @@ def horde_status(value, identifier, *, cancellation_ack=False):
 class AIHordeProvider:
     provider_id = HORDE_PROVIDER
 
-    def __init__(self, *, api_key=None, artifact_root=None, transport=None, models=None):
+    def __init__(self, *, api_key=None, artifact_root=None, transport=None, models=None, settings=FLUX_SETTINGS):
         from pathlib import Path
         from .common import ROOT
+        if type(settings) is not HordeImageSettings or settings not in (FLUX_SETTINGS, ALBEDO_SETTINGS):
+            raise ValueError("Only explicit reviewed Horde image settings are supported.")
+        self.settings = settings
         self._api_key = api_key or os.getenv("AI_GEOPOLITIC_HORDE_API_KEY") or ANONYMOUS_KEY
         if not isinstance(self._api_key, str) or any(c in self._api_key for c in "\r\n"):
             raise ValueError("Invalid Horde credential configuration.")
@@ -74,25 +93,29 @@ class AIHordeProvider:
 
     def capabilities(self):
         return ProviderCapabilities(modalities=(Modality.IMAGE,), output_formats=("png",), image_generation=True,
-                                    max_width=3072, max_height=3072, model_ids=(HORDE_CANDIDATE,), default_model_id=HORDE_CANDIDATE,
+                                    max_width=3072, max_height=3072, model_ids=(self.settings.model_id,), default_model_id=self.settings.model_id,
                                     cancellation=True, deterministic_seed=False, queue_while_busy=True,
                                     location=WorkerLocation.REMOTE, monetary_cost=MonetaryCost.ZERO_COST)
 
     def resource_state(self):
         active = self.discover()
-        ids = (HORDE_CANDIDATE,) if any(m["name"] == HORDE_CANDIDATE and m["count"] > 0 for m in active) else ()
+        ids = (self.settings.model_id,) if any(m["name"] == self.settings.model_id and m["count"] > 0 for m in active) else ()
         return ResourceState(online=self._online, activity=ActivityState.IDLE, available_model_ids=ids)
 
     def observations(self):
         active = self.discover()
-        candidate = next((m for m in active if m["name"] == HORDE_CANDIDATE), None)
-        metadata = self.models.get(self.provider_id, HORDE_CANDIDATE, Modality.IMAGE)
+        candidate = next((m for m in active if m["name"] == self.settings.model_id), None)
+        metadata = self.models.get(self.provider_id, self.settings.model_id, Modality.IMAGE)
         return {"anonymous": self._api_key == ANONYMOUS_KEY, "reachable": self._online,
                 "monetary_cost": "ZERO_COST", "active_model_count": len(active),
-                "candidate_model": HORDE_CANDIDATE, "candidate_observation": candidate,
+                "candidate_model": self.settings.model_id, "candidate_observation": candidate,
                 "licence_approved": bool(metadata and metadata.commercial_output_allowed is True and metadata.licence
-                                         and metadata.attribution_required is False and not metadata.known_restrictions),
+                                         and (metadata.permission_state in (PermissionState.ALLOWED, PermissionState.ALLOWED_WITH_OBLIGATIONS)
+                                              or (metadata.permission_state is None and metadata.attribution_required is False
+                                                  and not metadata.known_restrictions))),
                 "blocker": self._blocker, "quota": None,
+                "permission_state": metadata.permission_state.value if metadata and metadata.permission_state else None,
+                "permission_note": "Conditional permission is evaluated against the job context; discovery is not approval.",
                 "queue_note": "Model ETA/queue counts are estimates; no per-job availability guarantee.",
                 "seed_note": "No deterministic-seed claim: heterogeneous/batched worker execution can vary.",
                 "anonymous_note": "Official anonymous requests are shared by the service and have lower priority."}
@@ -106,11 +129,17 @@ class AIHordeProvider:
         if job.job_id in self._attempted:
             raise DuplicateJob(job.job_id)
         self._attempted.add(job.job_id)
-        payload = {"prompt": job.prompt, "models": [job.model_preference or HORDE_CANDIDATE],
+        if self.settings == ALBEDO_SETTINGS and (job.prompt.count("###") != 1 or
+                any(not p.strip() for p in job.prompt.split("###"))):
+            raise UnsupportedJob(("SDXL_NEGATIVE_CONDITIONING_REQUIRED",))
+        payload = {"prompt": job.prompt, "models": [job.model_preference or self.settings.model_id],
                    "params": {"n": 1, "width": job.output.width, "height": job.output.height,
-                              "steps": 4, "cfg_scale": 1, "sampler_name": "k_euler", "scheduler": "karras"},
+                              "steps": self.settings.steps, "cfg_scale": self.settings.cfg_scale,
+                              "sampler_name": self.settings.sampler, "scheduler": "karras"},
                    "r2": False, "shared": False, "allow_downgrade": False, "nsfw": False,
                    "censor_nsfw": True, "trusted_workers": True, "validated_backends": True}
+        if self.settings.seed is not None:
+            payload["params"].update(seed=self.settings.seed, karras=True)
         # Seed is not advertised; validate_cloud_job already rejects an explicit deterministic seed.
         try:
             value = self.http.json("POST", "/v2/generate/async", payload, headers=self._headers())
@@ -154,7 +183,7 @@ class AIHordeProvider:
         if not isinstance(generations, list) or len(generations) != 1 or not isinstance(generations[0], dict):
             raise CloudError("HORDE_RESULT_COUNT_INVALID")
         image = generations[0]
-        if image.get("model") != (row["job"].model_preference or HORDE_CANDIDATE) or image.get("censored") is not False or image.get("state") != "ok":
+        if image.get("model") != (row["job"].model_preference or self.settings.model_id) or image.get("censored") is not False or image.get("state") != "ok":
             raise CloudError("HORDE_MODEL_OR_CONTENT_REJECTED")
         metadata = image.get("gen_metadata", [])
         if not isinstance(metadata, list) or any(not isinstance(m, dict) for m in metadata):
