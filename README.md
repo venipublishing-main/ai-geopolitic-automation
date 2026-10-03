@@ -4,8 +4,8 @@ Automated visual-production pipeline for the **AI Geopolitic** editorial project
 
 ## Phase C.1 — Free cloud provider implementation
 
-**Offline implementation; real one-slide acceptance remains blocked.**
-Full Windows QA: **643 passed, 1 skipped** (116 cloud + 64 local Phase C +
+**Narrow Kai Slide 05 bridge implemented; real vertical slice blocked by image content.**
+Full Windows QA: **661 passed, 1 skipped** (18 Kai bridge + 116 cloud + 64 local Phase C +
 172 Phase B + 189 Phase A/A.1 + 102 existing; the skip is opt-in worker discovery).
 Cloudflare Workers AI and AI Horde now implement the existing provider contract
 through isolated stdlib HTTPS transports. The existing router/zero-cost policy
@@ -28,14 +28,23 @@ Ep103/12. Code retains all portrait/copy/layout ownership. A durable two-attempt
 maximum permits only one diagnosed terminal technical retry; unresolved submission
 never permits fallback. Reports/artifacts stay in ignored `output/phase-c1/`.
 
-**2026-10-03 follow-up:** real readiness now passes `BUILD_READY`, Ep104, 20 slides.
-Horde is eligible/zero-cost for the reviewed compact Schnell model; Cloudflare
-may stay unconfigured. Candidate Slide 5 is Kai's physical-campus illustration.
-The current one-slide bridge supports only single-Thabo material chains and
-rejects this candidate with `SINGLE_THABO_SLIDE_REQUIRED`, surfaced as
-`CURRENT_SLIDE_BRIDGE_UNAVAILABLE`. Ep104 has no supported single-Thabo slide.
-Zero real generation or uploads; no push. Next: a reviewed one-slide bridge for
-the current candidate before image inference. See [exact Horde permission review](docs/HORDE_MODEL_PERMISSION.md).
+**2026-10-03 Slide 05 benchmark:** live readiness and Horde-first dry run pass
+`BUILD_READY`, Ep104, 20 validated slides, no blockers and predicted image count 1.
+`KAI_NETWORK_MESH` supports only single Kai on interior Slide 05, with null
+pairing/central relationship; the original `THABO_MATERIAL_CHAIN` profile remains.
+The provisional mapping uses exact Manifest copy and the unchanged approved Kai
+renderer, retaining canonical portrait, purple accent, typography, counter and
+footer. Context art stays in the lower-right background beneath the existing
+network diagram. This does not implement a general 20-slide compiler.
+Real job `af14c755-88db-4dbd-a4ea-6473282d7e92` completed on the single authorized
+attempt (seed `3681541205`, worker `AstralWeaver`). Its nonuniform 1024-square PNG
+passes mechanical QA. Visual inspection found generated lettering and a
+copyright/signature-like mark, plus a large literal fluffy cloud despite the
+Manifest guardrail. The asset was withheld before composition: no final candidate,
+upload, retry or new commit/push. This content failure does not authorize a
+technical retry. Human/operator review remains required; visual parity and the
+real vertical slice are not accepted.
+See [exact Horde permission review](docs/HORDE_MODEL_PERMISSION.md).
 Pollinations/Puter
 remain future Phase C.2 candidates. See [free cloud provider details](docs/PHASE_C_FREE_CLOUD.md).
 

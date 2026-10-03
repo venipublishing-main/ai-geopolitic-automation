@@ -137,18 +137,45 @@ Pillow decodes only PNG/JPEG/WEBP single-frame images of exactly the requested
 size with non-uniform content. Valid pixels convert losslessly to RGB PNG without
 resizing; artifacts are confined to ignored `output/phase-c[1]/` locations.
 
-The existing Phase C material-chain bridge is reused for one validated **current**
-single-Thabo slide with five explicit stage labels and Manifest reasoning family
-`material_chain`. The first compatible Manifest slide is selected, or `--slide N`
-must satisfy the same gates. Other speakers/layouts are explicitly unsupported
-in this vertical slice. No stale Ep103 identity, reconstructed Manifest, invented
-labels or shortened factual copy is accepted. Cloud job trace uses the validated
-current episode and selected slide; only contextual art goes to the provider.
+The bridge has two explicit profiles: `THABO_MATERIAL_CHAIN` preserves the earlier
+single-Thabo mapping with five explicit stage labels and Manifest reasoning family
+`material_chain`. `KAI_NETWORK_MESH` accepts only current Slide 05, single Kai,
+null pairing/central relationship and interior numbering. It maps headline,
+subheadline, main visual phrase, three takeaway ideas and core argument verbatim
+to the approved existing `network_mesh` renderer. This is a provisional benchmark
+compatibility mapping, not a general layout compiler. The renderer retains its
+existing NETWORK/SENSOR/MODEL/NODE/USER/REPAIR diagram labels; Manifest essential
+labels are not silently truncated into its five-node mechanism. Other profiles
+fail closed. No stale identity, reconstructed Manifest, invented factual copy or
+shortened text is accepted. Cloud trace uses the validated current episode/slide.
+
+Kai's background plate occupies `[470,545,940,875]`, under the deterministic mesh.
+It clears the portrait `[96,145,431,505]`, top copy/quote `[485,108,940,530]`, facts
+`[96,555,425,870]` and footer/takeaway starting below y890. Opaque network nodes
+and exact ink/accent foreground draw afterward. Pixel tests use the full recorded
+Ep104 copy and preserve these regions, header/counter and mesh foreground.
+The shared Milestone 5.2 asset hook, temporary assets path, tint, opacity and
+cleanup remain authoritative; no renderer or canonical asset changes are needed.
 
 The shared `execute_candidate` consumer performs artifact QA, ignored temporary
 asset staging and the existing Milestone 5.2 compositor. Code retains portrait,
 accent, text, labels, factual copy, footer and slide number. Human visual review
 is still required; successful transport is not editorial acceptance.
+
+Use `--execute --defer-composition` to hold the one mechanically validated asset
+for visual inspection before invoking the same `phase_c.compose()` function with
+the validated render spec. Exit 0 / `ARTIFACT_REVIEW_REQUIRED` means generation
+succeeded but composition and acceptance remain pending. It does not authorize
+another inference request. The successful attempt remains consumed in the ledger.
+Default composition behaviour is preserved for existing callers.
+
+A benchmark-only pass-through transport observer captures already-issued Horde
+ACK/check/result responses, whitelisting counts, job ID, seed, model and worker
+metadata. It sends no additional requests and stores no credentials, headers,
+payloads or base64. Queue/generation durations are first-observed polling bounds;
+unobserved phases stay null. It does not change the provider or router. Progress
+write failure does not change ACK/status semantics. The ledger persists the real
+job ID immediately after acknowledgement, before polling.
 
 The durable `output/phase-c1/attempt-ledger.json` allows one normal dispatch,
 plus one explicit diagnosed retry after proven terminal technical failure, using
@@ -166,7 +193,10 @@ benchmark, not a restart-safe production scheduler.
 Report: `output/phase-c1/benchmark-report.json`. A successful candidate adds
 `output/phase-c1/<episode>/slide-<N>/<provider>/context-art.png`,
 `slide-composite.png` and `generation-metadata.json`. Adapter originals remain
-under `cloudflare-runtime/` or `horde-runtime/`. No artifacts are committed/uploaded.
+under `cloudflare-runtime/` or `horde-runtime/`. Binaries remain ignored. The
+authorized Ep104 Slide05 package may be copied with existing rclone to
+`AI-Geopolitical/Automation - Temporary Artifacts/Phase C Free Cloud Benchmark/Ep104 Slide05`,
+as a benchmark candidate awaiting human review; never Daily Slides/final archive.
 
 ## Validation and current gates
 
@@ -185,20 +215,28 @@ Normal tests mock HTTP and prohibit accidental network calls. Full Windows QA
 uses the existing ignored DejaVu/FriBiDi adapter; Linux/CI, requirements, canonical
 assets, renderer code, Manifest/readiness and router contracts remain unchanged.
 
-Current validation: cloud C.1 **116 passed**; local C **64 passed, 1 skipped**
+Current validation: Kai bridge **18 passed**; cloud C.1 **116 passed**; local C **64 passed, 1 skipped**
 (opt-in worker discovery); Phase B **172 passed**; Phase A/A.1 **189 passed**;
-full Windows QA **643 passed, 1 skipped in 84.15s**. The additional 102 existing
+full Windows QA **661 passed, 1 skipped in 87.91s** before inference. The additional 102 existing
 renderer/integration tests remain green. `git diff --check` passes.
 
-2026-10-03 follow-up: the repaired live Manifest passes `BUILD_READY`, Ep104,
-20 validated slides. Horde is healthy, zero-cost and eligible for the exact
-reviewed compact Schnell checkpoint; Cloudflare configuration is unnecessary for
-that route. Candidate Slide 5 has Kai and six labels, while the current bridge
-requires a single Thabo with five material-chain labels. Ep104 contains no
-single-Thabo slide. The Horde-first dry run is therefore blocked only by
-`CURRENT_SLIDE_BRIDGE_UNAVAILABLE`, with `SINGLE_THABO_SLIDE_REQUIRED` for Slide 5.
-No image is submitted; no attempt is reserved, no composite/upload exists and no
-push occurs. A supported current-slide composition bridge is still required.
+2026-10-03: the live dry run passes `BUILD_READY`, Ep104, 20 validated slides,
+Slide 05, `kai_patel`, `network_mesh`, eligible zero-cost Horde with the exact
+approved compact Schnell model, 1024-square output and predicted generation count
+1. There are no bridge/readiness blockers; the dry run recorded zero attempts.
+The exact live copy also passed deterministic renderer preflight on Windows with
+the existing ignored DejaVu/FriBiDi font adapter, preserving Linux/CI behaviour.
+Horde completed the one authorized job `af14c755-88db-4dbd-a4ea-6473282d7e92`,
+seed `3681541205`, worker `AstralWeaver` (`8f13e7eb-1950-4a55-925a-e875980aef90`).
+Observed queue duration was 1012.016 seconds, processing 30.422 seconds, and total
+through result retrieval/mechanical QA 1044.985 seconds. These are polling bounds.
+The returned 1024×1024 nonuniform PNG passes mechanical QA. Pre-composition visual
+inspection found generated lettering, a copyright/signature-like mark and a large
+literal fluffy cloud contrary to the Manifest guardrail. Report blocker:
+`CONTEXT_ART_VISUAL_GUARDRAILS_FAILED`. Generation succeeded; candidate acceptance
+did not. The asset is withheld: no final composite, upload, aesthetic retry or new
+commit/push. The three prior local Phase C commits remain intact. Successful-slice
+post-tests/commit/push conditions have not been met. No visual parity is claimed.
 
 Next-provider candidates remain Phase C.2 only: Pollinations must prove zero price
 for the exact current model; Puter must use only verified free allowance with no

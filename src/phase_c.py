@@ -26,6 +26,8 @@ from .providers.router import GenerationRouter, ZeroCostPolicy
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output/phase-c/ep103-slide12"
+THABO_MATERIAL_CHAIN = "THABO_MATERIAL_CHAIN"
+KAI_NETWORK_MESH = "KAI_NETWORK_MESH"
 LOCKED_ART = (
     "Sophisticated editorial engraving, etched newspaper illustration on warm off-white paper. "
     "Crisp dark ink, controlled dense cross-hatching, strong spatial hierarchy, one coherent scene. "
@@ -41,8 +43,9 @@ def compile_slide(readiness: DailyBuildReadinessResult):
     return compile_context_slide(readiness, 12, expected_episode="Ep103")
 
 
-def compile_context_slide(readiness: DailyBuildReadinessResult, slide_number: int, *, expected_episode=None):
-    """Reuse the material-chain bridge for one explicitly supported current slide."""
+def compile_context_slide(readiness: DailyBuildReadinessResult, slide_number: int, *, expected_episode=None,
+                          profile=THABO_MATERIAL_CHAIN):
+    """Two explicit benchmark mappings; this is not a carousel compiler."""
     today = current_production_date().isoformat()
     if (not isinstance(readiness, DailyBuildReadinessResult) or readiness.build != "READY" or
             readiness.state != "BUILD_READY" or readiness.blockers or readiness.production_date_sast != today):
@@ -56,19 +59,36 @@ def compile_context_slide(readiness: DailyBuildReadinessResult, slide_number: in
     if type(slide_number) is not int or not 1 <= slide_number <= 20:
         raise ValueError("SLIDE_NUMBER_INVALID")
     slide = manifest["slides"][slide_number - 1]
-    if slide["slide_number"] != slide_number or slide["panelists"] != ["thabo_mokoena"]:
-        raise ValueError("SINGLE_THABO_SLIDE_REQUIRED")
-    # The existing material_chain consumes five labelled stages. No invented labels.
-    if len(slide["essential_labels"]) != 5:
-        raise ValueError("COMPOSITION_BRIDGE_REQUIRES_FIVE_EXPLICIT_LABELS")
-    render = {"slide_number": slide_number, "total_slides": 20, "speaker": "thabo_mokoena",
-              "content_type": "material_handoff", "layout_family": "material_chain",
+    if profile == THABO_MATERIAL_CHAIN:
+        if slide["slide_number"] != slide_number or slide["panelists"] != ["thabo_mokoena"]:
+            raise ValueError("SINGLE_THABO_SLIDE_REQUIRED")
+        # The existing material_chain consumes five labelled stages. No invented labels.
+        if len(slide["essential_labels"]) != 5:
+            raise ValueError("COMPOSITION_BRIDGE_REQUIRES_FIVE_EXPLICIT_LABELS")
+        speaker, family = "thabo_mokoena", "material_chain"
+    elif profile == KAI_NETWORK_MESH:
+        if slide_number in (1, 20):
+            raise ValueError("KAI_INTERIOR_SLIDE_REQUIRED")
+        if slide_number != 5 or slide["slide_number"] != 5:
+            raise ValueError("KAI_BENCHMARK_SLIDE_05_REQUIRED")
+        if (slide["panelists"] != ["kai_patel"] or slide["pairing_mode"] is not None or
+                slide["central_relationship"] is not None):
+            raise ValueError("SINGLE_KAI_SLIDE_REQUIRED")
+        speaker, family = "kai_patel", "network_mesh"
+    else:
+        raise ValueError("UNSUPPORTED_BENCHMARK_PROFILE")
+    render = {"slide_number": slide["slide_number"], "total_slides": 20, "speaker": speaker,
+              "layout_family": family,
               "headline": slide["headline"], "deck": slide["subheadline"], "quote": slide["main_visual_phrase"],
-              "facts": [idea["idea"] for idea in slide["takeaway_ideas"]], "takeaway": slide["core_argument"],
-              "chain": [{"label": label, "note": ""} for label in slide["essential_labels"]]}
+              "facts": [idea["idea"] for idea in slide["takeaway_ideas"]], "takeaway": slide["core_argument"]}
+    if profile == THABO_MATERIAL_CHAIN:
+        render.update(content_type="material_handoff",
+                      chain=[{"label": label, "note": ""} for label in slide["essential_labels"]])
     fields = ("hero_visual", "core_argument", "visual_psychology_traits", "preferred_visual_reasoning_family",
               "anti_cliche_guardrail", "factual_guardrails")
     prompt = " ".join(f"{key}: {json.dumps(slide[key], ensure_ascii=False)}." for key in fields) + " " + LOCKED_ART
+    if profile == KAI_NETWORK_MESH:
+        prompt += " No Kai likeness. Context infrastructure only, no logos or fake UI."
     return render, prompt
 
 
@@ -86,7 +106,22 @@ def generation_job(provider, prompt, attempt=1, seed=None):
 
 def compose(render_spec, artifact, destination):
     """Stage solely in ignored assets; keep the existing renderer authoritative."""
-    from .render_thabo_layout_family import render
+    if (render_spec.get("speaker"), render_spec.get("layout_family")) == ("thabo_mokoena", "material_chain"):
+        from .render_thabo_layout_family import render
+        box = [96, 104, 940, 875]
+        exclusions = [[96, 104, 631, 350], [675, 126, 940, 418], [96, 365, 555, 525],
+                      [585, 430, 940, 600], [96, 610, 940, 875]]
+    elif (render_spec.get("speaker"), render_spec.get("layout_family")) == ("kai_patel", "network_mesh"):
+        if render_spec.get("slide_number") != 5 or render_spec.get("total_slides") != 20:
+            raise ValueError("KAI_BENCHMARK_SLIDE_05_REQUIRED")
+        from .render_kai_layout_family import render
+        # render_identity_slide.render_kai: portrait x96..431/y145..505;
+        # copy/quote x485..940/y108..530; facts x96..425/y555..870.
+        # The existing opaque network nodes/labels/links draw after this plate.
+        # The lower-right mesh remains authoritative, without another compositor.
+        box, exclusions = [470, 545, 940, 875], []
+    else:
+        raise ValueError("UNSUPPORTED_BENCHMARK_PROFILE")
     staging = ROOT / "assets/_phase_c_runtime"
     if not staging.resolve().is_relative_to((ROOT / "assets").resolve()) or staging.is_symlink():
         raise ValueError("Unsafe compositor staging root.")
@@ -95,9 +130,8 @@ def compose(render_spec, artifact, destination):
         plate = Path(temporary) / "context-art.png"
         shutil.copyfile(artifact, plate)
         spec = {**render_spec, "context_art": {"source": "asset", "path": plate.relative_to(ROOT).as_posix(),
-                "box": [96, 104, 940, 875], "opacity": 0.34, "tint": "ink_accent", "layer": "background", "paper_wash": False,
-                "exclusions": [[96, 104, 631, 350], [675, 126, 940, 418], [96, 365, 555, 525],
-                               [585, 430, 940, 600], [96, 610, 940, 875]]}}
+                "box": box, "opacity": 0.34, "tint": "ink_accent", "layer": "background", "paper_wash": False,
+                "exclusions": exclusions}}
         source = Path(temporary) / "render.json"
         source.write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
         render(source, destination)
@@ -151,7 +185,8 @@ class AttemptLedger:
 
 
 def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=None, timeout=1800,
-                      job_factory=None, models=None, output_root=None, terminal_failure_proven=None):
+                      job_factory=None, models=None, output_root=None, terminal_failure_proven=None,
+                      defer_composition=False):
     index, attempt = ledger.reserve(provider.provider_id, diagnosis)
     job = (job_factory or generation_job)(provider, prompt, attempt, seed)
     router = GenerationRouter((provider,), models=models if models is not None else ModelRegistry((provider.profile.model,)))
@@ -165,6 +200,7 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
         record["resource_before"] = asdict(provider.resource_state())
         router.submit(job)
         record["worker_job_id"] = router.submission(job.job_id).provider_job_id
+        ledger.finish(index, "reserved", worker_job_id=record["worker_job_id"])
         observed_used = []
         while True:
             status = router.status(job.job_id)
@@ -210,12 +246,16 @@ def execute_candidate(provider, render, prompt, ledger, *, seed=None, diagnosis=
                   observed_peak_vram_mb=max(observed_used) if observed_used else None,
                   vram_note="Sampled whole-device usage, not an instrumented process peak.")
     try:
+        if defer_composition:
+            record["composition_review"] = "ARTIFACT VISUAL REVIEW REQUIRED BEFORE COMPOSITION"
+            return record
         composite = directory / "slide-composite.png"
         compose(render, target, composite)
         record["composition_output"] = str(composite)
     except Exception as exc:
         record["composition_blocker"] = type(exc).__name__  # Never regenerate art for copy/layout failure.
-    (directory / "generation-metadata.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    finally:
+        (directory / "generation-metadata.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
     return record
 
 
