@@ -106,13 +106,19 @@ artifact URL is followed. Generic deterministic seed support is false because
 heterogeneous/batched workers do not guarantee deterministic execution. An explicit
 deterministic-seed requirement fails before dispatch.
 
-**No Horde permission entry is shipped.** The official
-[model reference](https://github.com/Haidra-Org/AI-Horde-image-model-reference/blob/main/stable_diffusion.json)
-identifies the compact derivative, but its publisher licence/terms could not be
-verified from the linked [Civitai entry](https://civitai.com/models/637170?modelVersionId=714945).
-The underlying Schnell licence is insufficient evidence for this exact derivative.
-Production rejects it with `MODEL_PERMISSION_UNPROVEN`. Offline tests inject a
-clearly labelled synthetic permission fixture solely to test the transport.
+**The exact compact Schnell checkpoint is now approved.** The original v1 record
+did not provide permission evidence; the current official
+[v2 record](https://models.aihorde.net/api/model_references/v2/image_generation/model/Flux.1-Schnell%20fp8%20%28Compact%29)
+explicitly binds its exact name/hash to Apache-2.0 and `commercial_use=allowed`.
+Its evidence points to the authoritative BFL Schnell card. The official Apache
+definition lists no material restrictions; `include_license` concerns redistribution
+of model/code, with no generated-image attribution obligation identified.
+See [the recorded permission review](HORDE_MODEL_PERMISSION.md) for the exact hash,
+sources, intended contextual-art use, active-model cross-match and limitations.
+Only this Horde model is registered. Other identifiers/unknown permissions retain
+the existing fail-closed checks. Transport tests still use clearly labelled
+synthetic metadata where needed; separate tests cover the real reviewed registry
+against offline HTTP fixtures and the recorded official reference snapshots.
 
 DELETE is request/result cancellation, not a promise to interrupt physical worker
 inference. The official server returns a **pre-cancellation** snapshot; an HTTP
@@ -179,18 +185,20 @@ Normal tests mock HTTP and prohibit accidental network calls. Full Windows QA
 uses the existing ignored DejaVu/FriBiDi adapter; Linux/CI, requirements, canonical
 assets, renderer code, Manifest/readiness and router contracts remain unchanged.
 
-Final validation: cloud C.1 **113 passed**; local C **64 passed, 1 skipped**
+Current validation: cloud C.1 **116 passed**; local C **64 passed, 1 skipped**
 (opt-in worker discovery); Phase B **172 passed**; Phase A/A.1 **189 passed**;
-full Windows QA **640 passed, 1 skipped in 81.66s**. The additional 102 existing
+full Windows QA **643 passed, 1 skipped in 84.15s**. The additional 102 existing
 renderer/integration tests remain green. `git diff --check` passes.
 
-2026-10-03 live discovery: Ep104 human Slide Design metadata is READY, but readiness
-is `BUILD_BLOCKED` / `AUTOMATION_MANIFEST_MISSING`. Cloudflare is `NOT_CONFIGURED`
-and `UNKNOWN`; Horde is reachable/zero-cost with active compact workers but no
-approved licence. Zero generation attempts, images, composites or uploads. Resolve
-the live Manifest and Cloudflare credentials/verified-Free declarations (or
-independently approve the exact Horde model) before a real benchmark. No push is
-authorized until that one-slide benchmark succeeds.
+2026-10-03 follow-up: the repaired live Manifest passes `BUILD_READY`, Ep104,
+20 validated slides. Horde is healthy, zero-cost and eligible for the exact
+reviewed compact Schnell checkpoint; Cloudflare configuration is unnecessary for
+that route. Candidate Slide 5 has Kai and six labels, while the current bridge
+requires a single Thabo with five material-chain labels. Ep104 contains no
+single-Thabo slide. The Horde-first dry run is therefore blocked only by
+`CURRENT_SLIDE_BRIDGE_UNAVAILABLE`, with `SINGLE_THABO_SLIDE_REQUIRED` for Slide 5.
+No image is submitted; no attempt is reserved, no composite/upload exists and no
+push occurs. A supported current-slide composition bridge is still required.
 
 Next-provider candidates remain Phase C.2 only: Pollinations must prove zero price
 for the exact current model; Puter must use only verified free allowance with no

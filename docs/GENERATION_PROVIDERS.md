@@ -4,7 +4,9 @@ This section records the Phase B baseline. Later isolated transports are describ
 in [Phase C local benchmark](PHASE_C_BENCHMARK.md) and
 [Phase C.1 free cloud providers](PHASE_C_FREE_CLOUD.md). The generic contracts,
 router and zero-cost policy remain unchanged. C.1 explicitly supplies an approved
-Cloudflare Schnell registry; the generic default registry still starts empty.
+Cloudflare Schnell and exact Horde compact Schnell registry; the generic default
+registry still starts empty. The Horde approval is grounded in the official v2
+reference record and pinned checkpoint, not a model-family inference.
 
 AI-Geopolitic owns the generation contract and routing policy. Workers are
 interchangeable implementations of that contract. This phase implements contracts,

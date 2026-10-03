@@ -5,7 +5,7 @@ Automated visual-production pipeline for the **AI Geopolitic** editorial project
 ## Phase C.1 — Free cloud provider implementation
 
 **Offline implementation; real one-slide acceptance remains blocked.**
-Full Windows QA: **640 passed, 1 skipped** (113 cloud + 64 local Phase C +
+Full Windows QA: **643 passed, 1 skipped** (116 cloud + 64 local Phase C +
 172 Phase B + 189 Phase A/A.1 + 102 existing; the skip is opt-in worker discovery).
 Cloudflare Workers AI and AI Horde now implement the existing provider contract
 through isolated stdlib HTTPS transports. The existing router/zero-cost policy
@@ -17,8 +17,9 @@ permits one contextual image after current readiness, exact model licence and
 free-cost gates pass. Configurable priority starts Cloudflare → Horde → BLOCK.
 Cloudflare's exact `@cf/black-forest-labs/flux-1-schnell` has a reviewed Apache-2.0
 entry; a token alone cannot prove free cost. Workers Free and free-allocation-only
-declarations are required. Horde supports personal/official anonymous keys, but
-the active compact Schnell derivative stays blocked pending exact licence evidence.
+declarations are required. Horde supports personal/official anonymous keys.
+The exact compact Schnell checkpoint is now approved from the official v2 Horde
+reference's explicit Apache-2.0/commercial permission and its upstream evidence.
 Credentials are environment-only; see [.env.example](.env.example).
 
 The existing one-slide bridge, artifact QA, ledger, staging and asset compositor
@@ -27,11 +28,15 @@ Ep103/12. Code retains all portrait/copy/layout ownership. A durable two-attempt
 maximum permits only one diagnosed terminal technical retry; unresolved submission
 never permits fallback. Reports/artifacts stay in ignored `output/phase-c1/`.
 
-**2026-10-03 live dry run:** Ep104, `BUILD_BLOCKED`,
-`AUTOMATION_MANIFEST_MISSING`; Cloudflare `NOT_CONFIGURED`/`UNKNOWN`; Horde reachable
-and zero-cost but `MODEL_PERMISSION_UNPROVEN`. Zero real generation or uploads.
-Next: resolve the current Manifest and Cloudflare Free configuration (or verify
-the exact Horde derivative), then prove one image/composite. Pollinations/Puter
+**2026-10-03 follow-up:** real readiness now passes `BUILD_READY`, Ep104, 20 slides.
+Horde is eligible/zero-cost for the reviewed compact Schnell model; Cloudflare
+may stay unconfigured. Candidate Slide 5 is Kai's physical-campus illustration.
+The current one-slide bridge supports only single-Thabo material chains and
+rejects this candidate with `SINGLE_THABO_SLIDE_REQUIRED`, surfaced as
+`CURRENT_SLIDE_BRIDGE_UNAVAILABLE`. Ep104 has no supported single-Thabo slide.
+Zero real generation or uploads; no push. Next: a reviewed one-slide bridge for
+the current candidate before image inference. See [exact Horde permission review](docs/HORDE_MODEL_PERMISSION.md).
+Pollinations/Puter
 remain future Phase C.2 candidates. See [free cloud provider details](docs/PHASE_C_FREE_CLOUD.md).
 
 ## Phase C — Controlled local one-slide integration

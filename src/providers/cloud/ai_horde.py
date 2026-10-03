@@ -9,9 +9,9 @@ from ..contracts import (ActivityState, DuplicateJob, FailureInfo, HealthReport,
                          ResultNotReady, UnknownJob, UnsupportedJob, WorkerLocation)
 from .common import image_bytes, save_image, validate_cloud_job
 from .http import CloudError, CloudHTTP
-from .models import HORDE_PROVIDER, cloud_registry
+from .models import HORDE_MODEL_ID, HORDE_PROVIDER, cloud_registry
 
-HORDE_CANDIDATE = "Flux.1-Schnell fp8 (Compact)"
+HORDE_CANDIDATE = HORDE_MODEL_ID
 ANONYMOUS_KEY = "0000000000"  # Official service's public anonymous credential, not a user secret.
 
 

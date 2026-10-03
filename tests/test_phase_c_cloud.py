@@ -19,7 +19,8 @@ from src.providers.cloud import common
 from src.providers.cloud.ai_horde import AIHordeProvider, ANONYMOUS_KEY, HORDE_CANDIDATE, horde_status
 from src.providers.cloud.cloudflare_workers_ai import CloudflareConfig, CloudflareWorkersAIProvider
 from src.providers.cloud.http import CloudError, CloudHTTP, NoRedirects
-from src.providers.cloud.models import CF_MODEL, CF_MODEL_ID, CF_PROVIDER, HORDE_PROVIDER, cloud_registry
+from src.providers.cloud.models import (CF_MODEL, CF_MODEL_ID, CF_PROVIDER, HORDE_PROVIDER, HORDE_MODEL,
+                                       HORDE_CHECKPOINT_SHA256, EVIDENCE, cloud_registry)
 from src.providers.contracts import (DuplicateJob, HealthState, JobState, Modality, MonetaryCost,
                                     ResultNotReady, UnsupportedJob, UnknownJob)
 from src.providers.model_registry import ModelMetadata, ModelRegistry
@@ -112,7 +113,7 @@ def horde(tmp_path, *, approved=True, key=None):
                             licence="TEST FIXTURE ONLY", commercial_output_allowed=True, attribution_required=False)
     wire = Wire()
     provider = AIHordeProvider(api_key=key, artifact_root=tmp_path / "output/phase-c1/horde", transport=wire,
-                              models=ModelRegistry((metadata,)) if approved else cloud_registry())
+                              models=ModelRegistry((metadata,)) if approved else ModelRegistry((CF_MODEL,)))
     return provider, wire
 
 
@@ -187,11 +188,12 @@ def test_router_rejects_nonzero_cost(cf, monkeypatch, cost):
     assert not any(method == "POST" for method, *_ in wire.calls)
 
 
-def test_exact_approved_schnell_registry_no_horde_or_dev():
+def test_exact_approved_schnell_registry_no_unreviewed_derivatives_or_dev():
     registry = cloud_registry()
     assert registry.get(CF_PROVIDER, CF_MODEL_ID, Modality.IMAGE) == CF_MODEL
     assert CF_MODEL.licence == "Apache-2.0" and CF_MODEL.commercial_output_allowed is True
-    assert registry.get(HORDE_PROVIDER, HORDE_CANDIDATE, Modality.IMAGE) is None
+    assert registry.get(HORDE_PROVIDER, HORDE_CANDIDATE, Modality.IMAGE) == HORDE_MODEL
+    assert registry.get(HORDE_PROVIDER, "Flux.1-Schnell", Modality.IMAGE) is None
     assert registry.get(CF_PROVIDER, "@cf/black-forest-labs/flux-1-dev", Modality.IMAGE) is None
 
 
@@ -679,3 +681,59 @@ def test_cf_malformed_success_ack_never_proves_retry_safe(cf, response):
     assert not phase_c_cloud.terminal_failure_proven(status)
     assert not provider.available() and provider.capabilities().monetary_cost is MonetaryCost.UNKNOWN
     assert SECRET not in repr(status) and not provider.artifact_root.exists()
+
+
+def test_reviewed_horde_permission_binds_exact_official_checkpoint_and_terms():
+    directory = Path(__file__).parent / "fixtures/cloud"
+    reference = json.loads((directory / "horde_schnell_v2.json").read_text(encoding="utf-8"))
+    definition = json.loads((directory / "horde_apache_2_definition.json").read_text(encoding="utf-8"))
+    licensing = reference["licensing"]
+    assert reference["name"] == HORDE_MODEL.model_id
+    assert reference["config"]["download"][0]["sha256sum"] == HORDE_CHECKPOINT_SHA256
+    assert licensing["license_expression"] == HORDE_MODEL.licence == definition["license_id"]
+    assert licensing["commercial_use"] == definition["commercial_use"] == "allowed"
+    assert licensing["obligations"] == definition["obligations"] == ["include_license"]
+    assert definition["restrictions"] == [] and HORDE_MODEL.known_restrictions == ()
+    assert definition["canonical_url"] in EVIDENCE[HORDE_PROVIDER]["sources"]
+    assert licensing["evidence"][0]["source"] in EVIDENCE[HORDE_PROVIDER]["sources"]
+    assert licensing["reviewed_at"] == EVIDENCE[HORDE_PROVIDER]["reference_reviewed_at"]
+    assert HORDE_MODEL.commercial_output_allowed is True and HORDE_MODEL.attribution_required is False
+    assert reference["requirements"]["min_steps"] <= 4 <= reference["requirements"]["max_steps"]
+    assert "k_euler" in reference["requirements"]["samplers"] and "karras" in reference["requirements"]["schedulers"]
+
+
+def test_real_reviewed_registry_horde_routing_remains_offline_and_exact(tmp_path):
+    wire = Wire()
+    provider = AIHordeProvider(transport=wire, artifact_root=tmp_path / "output/phase-c1/horde")
+    router = GenerationRouter((provider,), models=cloud_registry())
+    neutral = job(provider)
+    assert router.submit(neutral) == neutral.job_id
+    wire.state = snapshot("success")
+    assert router.result(neutral.job_id).artifacts[0].format == "png"
+    assert wire.calls[-1][1] == "/v2/generate/status/" + REMOTE_ID
+    posts = [payload for method, _, payload, _ in wire.calls if method == "POST"]
+    assert len(posts) == 1 and posts[0]["models"] == [HORDE_MODEL.model_id]
+
+
+def test_live_episode_shape_without_supported_thabo_cannot_dispatch(tmp_path, monkeypatch):
+    readiness = current_ready(monkeypatch)
+    for slide in readiness.manifest["slides"]:
+        slide.update(panelists=["nora"], accent_colours={"nora": "#1769AA"}, pairing_mode=None,
+                     central_relationship=None, shared_ground=None, why_dual=None, panelist_contributions=None,
+                     preferred_visual_reasoning_family="synthesis map")
+    # Current Ep104 has no single-Thabo material-chain slide. Keep that independent gate intact.
+    cf_wire, horde_wire = Wire(), Wire()
+    provider = CloudflareWorkersAIProvider(CloudflareConfig(), transport=cf_wire)
+    other = AIHordeProvider(transport=horde_wire)
+    try:
+        report = phase_c_cloud.benchmark(readiness, [provider, other], slide_number=5,
+                         priority=(HORDE_PROVIDER, CF_PROVIDER), execute=True)
+        assert report["blockers"] == ["CURRENT_SLIDE_BRIDGE_UNAVAILABLE"]
+        assert report["providers"][0]["eligible"] is True
+        assert report["selected_slide"] is None and report["predicted_generation_count"] == 0
+        assert report["requested_slide"] == 5 and report["expected_dimensions"] == [1024, 1024]
+        assert report["bridge_blocker"] == "SINGLE_THABO_SLIDE_REQUIRED"
+        assert report["generation_attempts_total"] == 0 and not report["results"]
+        assert not any(m == "POST" for m, *_ in cf_wire.calls + horde_wire.calls)
+    finally:
+        provider.close()

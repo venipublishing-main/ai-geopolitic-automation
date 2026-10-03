@@ -76,7 +76,8 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
     report = {"mode": "EXECUTE" if execute else "DRY_RUN", "readiness": readiness.to_dict(),
               "created_at_sast_date": current_production_date().isoformat(),
               "episode_id": episode, "episode_source": "validated_manifest" if readiness.manifest else "human_metadata_only",
-              "selected_slide": None, "registered_providers": list(ids), "priority": list(priority),
+              "selected_slide": None, "requested_slide": slide_number, "expected_dimensions": [1024, 1024],
+              "registered_providers": list(ids), "priority": list(priority),
               "providers": [], "blockers": [b.code for b in readiness.blockers], "results": [],
               "predicted_generation_count": 0, "generation_attempts_total": 0,
               "human_review": "HUMAN REVIEW REQUIRED", "drive_upload": None}
@@ -85,8 +86,9 @@ def benchmark(readiness, providers, *, priority=DEFAULT_PRIORITY, episode_hint=N
         number, render, prompt = select_slide(readiness, slide_number)
         report["selected_slide"] = number
         compiled = True
-    except ValueError:
+    except ValueError as exc:
         report["blockers"].append("CURRENT_SLIDE_BRIDGE_UNAVAILABLE")
+        report["bridge_blocker"] = str(exc)
     ordered = sorted(providers, key=lambda p: priority.index(p.provider_id))
     eligible = []
     for provider in ordered:
