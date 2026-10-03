@@ -2,6 +2,39 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Phase C — Controlled local one-slide integration
+
+**Transport/bridge implementation; real-generation acceptance remains open.**
+Full Windows QA: **527 passed, 1 skipped** (463 existing + 64 new offline tests;
+the real-worker discovery smoke check is explicitly opt-in).
+WanGP now has a stdlib localhost MCP v2 adapter; ComfyUI has an official HTTP jobs
+adapter and a fixed core-node-only workflow. Both remain unavailable by default.
+External operator-reviewed profiles must bind runtime discovery, installed model
+files, supported dimensions, hardware requirements and authoritative licence evidence.
+No production model permissions are shipped. The Phase B contract/router, renderers,
+readiness, canonical assets, requirements and GitHub workflows remain unchanged.
+
+`python -m src.phase_c` defaults to preflight/dry run, reads current live Drive
+readiness without a date override and writes its report to
+`output/phase-c/ep103-slide12/`. Only explicit `--execute` permits inference, after
+the current validated Ep103 Slide 12, suitable GPU and reviewed worker gates pass.
+There is no carousel loop. The provisional bridge uses the existing Thabo
+`material_chain` renderer and exact Manifest copy; it requires five explicit
+stage labels and preserves the canonical portrait, accent, footer and 12/20.
+Ignored `assets/_phase_c_runtime/` staging is cleaned after composition.
+
+**2026-10-03 preflight:** Windows detects Intel HD Graphics 530; suitable NVIDIA
+hardware/CUDA/VRAM could not be verified. No WanGP/ComfyUI installation, model
+download or generation was performed. Current Drive readiness is blocked by
+`AUTOMATION_MANIFEST_MISSING`. Zero real generations; no final slide candidates
+or Drive uploads. A blocked report records the measurements and open gates.
+
+Offline transport, permission, lifecycle, bridge, artifact, compositor and budget
+tests accompany the integration. Real worker discovery is explicitly opt-in;
+normal pytest never launches a model. See [Phase C benchmark](docs/PHASE_C_BENCHMARK.md)
+for commands, external profile requirements and limitations. Next: resolve the
+hardware/live-manifest gates and prove this single slide before further development.
+
 ## Phase B — Generation / worker foundation
 
 **Validated — 463 tests passed: 172 Phase B + 189 Phase A/A.1 + 102 existing.**

@@ -221,6 +221,9 @@ __marimo__/
 output/*
 !output/.gitkeep
 
+# Temporary Phase C compositor handoff; never canonical assets.
+assets/_phase_c_runtime/
+
 # Additional environment files
 .env.*
 !.env.example
