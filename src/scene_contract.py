@@ -63,6 +63,18 @@ class SemanticObject:
     related_to: tuple[str, ...]
     annotation: TextPlan  # its zone is also hero-relative
     leader: tuple[tuple[float, float], ...]  # hero-relative, terminal in object zone
+    ownership: str
+    concrete_visual: str
+    compositor_mark: str
+    text_ownership: str = "COMPOSITOR"
+
+    def __post_init__(self):
+        from .semantic_ownership import OWNERS, MARKS, COMPOSITOR_ABSTRACT
+        if (not all(isinstance(v,str) for v in (self.ownership,self.concrete_visual,self.compositor_mark,self.text_ownership)) or
+                self.ownership not in OWNERS or self.compositor_mark not in MARKS or self.text_ownership != "COMPOSITOR" or
+                (self.ownership == COMPOSITOR_ABSTRACT and self.concrete_visual) or
+                (self.ownership != COMPOSITOR_ABSTRACT and not self.concrete_visual.strip())):
+            raise ValueError("SEMANTIC_OWNERSHIP_INVALID")
 
 
 @dataclass(frozen=True)
@@ -109,6 +121,8 @@ class SceneContract:
     configuration_sha256: str
     slide_json: str
     grammar_json: str
+    visual_brief: str
+    depiction_guardrails: tuple[str, ...]
 
     def to_dict(self):
         return asdict(self)
@@ -142,7 +156,8 @@ class SceneContract:
             "semantic_objects": objects, "portrait": portrait,
             "headline": text(data["headline"]), "subheadline": text(data["subheadline"]),
             "phrase": text(data["phrase"]), "takeaways": tuple(text(t) for t in data["takeaways"]),
-            "furniture": tuple(text(t) for t in data["furniture"])})
-        if result.schema_version != 1 or len(result.takeaways) != 3:
+            "furniture": tuple(text(t) for t in data["furniture"]),
+            "depiction_guardrails": tuple(data["depiction_guardrails"])})
+        if result.schema_version != 2 or len(result.takeaways) != 3:
             raise ValueError("SCENE_CONTRACT_SCHEMA_INVALID")
         return result

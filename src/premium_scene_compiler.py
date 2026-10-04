@@ -19,6 +19,7 @@ from .control_documents import Blocker
 from .episode_manifest_v2 import load_canonical_characters, validate_manifest_v2
 from .premium_typography import fit_text
 from .scene_contract import (PortraitPlan, SceneContract, SemanticObject, Zone, canonical_json, digest)
+from .semantic_ownership import reviewed_depiction, visual_brief_for, DEPICTION_GUARDS, PHYSICAL_ARCHITECTURE_CONCEPTS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -27,7 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FAMILY_ALIASES = {
     "system_map": ("systems synthesis", "synthesis map + dependency gates", "synthesis wheel + evidence labels"),
     "evidence_dossier": ("evidence dossier + boundary rail",),
-    "physical_stack": ("architecture stack", "physical / technical system", "physical dependency stack", "synthesis stack"),
+    "physical_stack": ("architecture stack", "physical / technical system", "physical dependency stack"),
+    "layered_system": ("synthesis stack",),
     "dependency_chain": ("network-to-physical transition", "queue/network", "cost curve + consequence chain", "material burden / consequence"),
     "institutional_sequence": ("institutional sequence", "permit ladder + status map", "authority gate + precedent chain"),
     "allocation_flow": ("economic / allocation flow", "capital-flow + retention scorecard", "cost allocation flow", "value_flow"),
@@ -125,6 +127,8 @@ def compile_scene(manifest, slide_number, *, characters=None, grammars=None) -> 
     labels = slide["essential_labels"]
     if len(labels) > 8 or len(set(labels)) != len(labels):
         raise SceneCompileError("LABEL_CAPACITY_EXCEEDED")
+    if family == "physical_stack" and len(set(labels) & PHYSICAL_ARCHITECTURE_CONCEPTS) < 2:
+        raise SceneCompileError("PHYSICAL_STACK_SEMANTICS_REQUIRED")
     percentages = re.findall(r"(\d+(?:\.\d+)?)\s*(?:[–-]\s*(\d+(?:\.\d+)?))?\s*%", slide["portrait_scale_intention"])
     if len(percentages) != 1:
         raise SceneCompileError("PORTRAIT_SCALE_UNSUPPORTED")
@@ -186,10 +190,16 @@ def compile_scene(manifest, slide_number, *, characters=None, grammars=None) -> 
                               minimum=14, parent=hero_pixels)
         anchor = (.30 if col == 0 else .70, annotation_zone.centre[1])
         leader = (anchor, ((anchor[0] + cx) / 2, anchor[1]), zone.centre)
-        links = (f"object_{i - 1}",) if i else ()
-        role = "primary_system" if i == 0 else ("evidence_item" if family == "evidence_dossier" else "ordered_component")
+        links = (f"object_{i - 1}",) if i and family != "layered_system" else ()
+        role = "equal_condition" if family == "layered_system" else (
+            "primary_system" if i == 0 else ("evidence_item" if family == "evidence_dossier" else "ordered_component"))
+        try:
+            depiction = reviewed_depiction(label)
+        except ValueError as exc:
+            raise SceneCompileError(str(exc)) from None
         objects.append(SemanticObject(f"object_{i}", label, zone, role,
-            "left" if col == 0 else "right", 1.0 if i == 0 else .7, links, label_plan, leader))
+            "left" if col == 0 else "right", 1.0 if i == 0 or family == "layered_system" else .7,
+            links, label_plan, leader, depiction.ownership, depiction.concrete_visual, depiction.compositor_mark))
     headline_arrangement = "compact_stacked" if len(slide["headline"]) > 65 else "full_width_two_tier"
     headline_zone = Zone(.04, .105, .96, .245)
     if family == "regional_pathway" and len(slide["headline"]) < 50:
@@ -220,12 +230,13 @@ def compile_scene(manifest, slide_number, *, characters=None, grammars=None) -> 
                       for text, z in zip(furniture_copy, furniture_zones))
     route = "radial" if family == "system_map" else (
         "closed_loop" if family == "feedback_loop" else "branch" if family == "decision_tree" else
-        "parallel" if family in {"comparison_field", "evidence_dossier"} else "ordered_path")
-    return SceneContract(1, manifest["episode_id"], manifest["production_date_sast"], slide_number,
+        "parallel" if family in {"comparison_field", "evidence_dossier", "layered_system"} else "ordered_path")
+    return SceneContract(2, manifest["episode_id"], manifest["production_date_sast"], slide_number,
         panelist, config["name"], config["accent"], tendency, family, route, micro, shape,
-        accent_behaviour, hero, art_region, quiet, tuple(objects), portrait, headline, subheadline, phrase,
+        "equal condition nodes" if family == "layered_system" else accent_behaviour,
+        hero, art_region, quiet, tuple(objects), portrait, headline, subheadline, phrase,
         arrangement, tuple(takeaways), furniture, digest(manifest), digest((config, grammar)),
-        canonical_json(slide), canonical_json(grammar))
+        canonical_json(slide), canonical_json(grammar), visual_brief_for(family,len(labels)), DEPICTION_GUARDS.get(family, ()))
 
 
 def compile_episode(manifest):
@@ -256,38 +267,9 @@ def compile_episode(manifest):
 
 
 def compile_prompt(contract: SceneContract):
-    slide = contract.slide
-    instructions = ["Contextual hero illustration ONLY. Warm off-white editorial engraving, physical editorial depth; restrained grayscale ink.",
-        "No text, letters, numbers, labels, headlines, typography, signatures, logos, watermark, publisher furniture or panelist likeness/portrait.",
-        "No neon, stock infographic, literal fluffy cloud metaphor, UI or dashboard text. Compositor supplies all exact copy and canonical portrait.",
-        "Semantic names below describe objects/concepts to depict, NEVER text to print. Ordered links specify diagram reading order, not additional factual causation.",
-        f"Argument grammar: {contract.reasoning_family}; shape tendency: {contract.shape_language}.",
-        f"Panelist visual logic (style only): {json.loads(contract.grammar_json)['visual_logic']}."]
-    for key in ("slide_role", "core_argument", "hero_visual", "composition_notes", "notices_first",
-                "anti_cliche_guardrail", "density_type_size_note"):
-        instructions.append(f"Semantic brief ({key}; any text/stamp/sign references are concepts, never rendered lettering): {slide[key]}")
-    instructions.extend(f"Guardrail: {g}" for g in slide["factual_guardrails"])
-    instructions.append("Visual psychology: " + "; ".join(slide["visual_psychology_traits"]))
-    instructions.append("Avoid identity-style cliches: " + "; ".join(json.loads(contract.grammar_json)["avoid"]))
-    for zone in contract.quiet_zones:
-        # Renderer contains the square raster inside the hero. Convert shared
-        # hero geometry to raster coordinates, clipping only quiet margins.
-        a = contract.art_region
-        x0, x1 = max(zone.x0, a.x0), min(zone.x1, a.x1)
-        y0, y1 = max(zone.y0, a.y0), min(zone.y1, a.y1)
-        if x0 < x1 and y0 < y1:
-            converted = Zone((x0-a.x0)/(a.x1-a.x0), (y0-a.y0)/(a.y1-a.y0),
-                             (x1-a.x0)/(a.x1-a.x0), (y1-a.y0)/(a.y1-a.y0))
-            instructions.append("Keep raster-relative annotation lane quiet/negative paper: " + canonical_json(asdict(converted)))
-    for obj in contract.semantic_objects:
-        a, z = contract.art_region, obj.zone
-        raster_zone = Zone((z.x0-a.x0)/(a.x1-a.x0), (z.y0-a.y0)/(a.y1-a.y0),
-                           (z.x1-a.x0)/(a.x1-a.x0), (z.y1-a.y0)/(a.y1-a.y0))
-        instructions.append(f"{obj.object_id}: depict concept {canonical_json(obj.label)} in raster-relative zone "
-            + canonical_json(asdict(raster_zone)) + f"; role={obj.visual_role}; importance={obj.importance}; diagram links={canonical_json(obj.related_to)}.")
-    instructions.append(f"Portrait is compositor-owned on page {contract.portrait.side}; leave clean paper at hero transition toward that side.")
-    return "\n".join(instructions)
-
+    # D.1 inspection/QA uses the same ownership-safe conditioning as SDXL.
+    from .premium_sdxl_prompt import compile_sdxl_prompt
+    return compile_sdxl_prompt(contract)
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)

@@ -9,31 +9,40 @@ def _location(x, y):
 
 
 def compile_sdxl_prompt(contract: SceneContract):
-    slide = contract.slide
+    from .semantic_ownership import visual_brief_for, DEPICTION_GUARDS
+    if (contract.visual_brief != visual_brief_for(contract.reasoning_family,len(contract.semantic_objects)) or
+            contract.depiction_guardrails != DEPICTION_GUARDS.get(contract.reasoning_family, ())):
+        raise ValueError("VISUAL_BRIEF_AUTHORITY_MISMATCH")
     if "###" in contract.slide_json:
         raise ValueError("SDXL_DELIMITER_IN_MANIFEST")
     a = contract.art_region
-    positive = ["Black-ink newspaper editorial engraving on warm off-white paper, precise cross-hatching, coherent contextual infrastructure illustration, physical depth.",
-                f"Argument structure: {contract.reasoning_family.replace('_', ' ')}; {contract.shape_language}.",
-                "Semantic brief; all label/sign/stamp names mean concepts, never lettering: " + slide["hero_visual"]]
+    positive = ["ONE COHERENT TEXT-FREE EDITORIAL ILLUSTRATION. Black-ink newspaper engraving on warm off-white paper, precise cross-hatching, physical depth.",
+                "No text, letters, numbers, visible labels, canonical portrait or publishing furniture. The compositor owns those separately.",
+                contract.visual_brief]
     for obj in contract.semantic_objects:
+        # Reviewed concrete descriptions only. Abstract names, label strings,
+        # editorial copy and raw Manifest composition prose never condition SDXL.
+        from .semantic_ownership import reviewed_depiction, COMPOSITOR_ABSTRACT
+        depiction = reviewed_depiction(obj.label)
+        if (obj.ownership, obj.concrete_visual, obj.compositor_mark) != (
+                depiction.ownership, depiction.concrete_visual, depiction.compositor_mark):
+            raise ValueError("SEMANTIC_OWNERSHIP_AUTHORITY_MISMATCH")
+        if obj.ownership == COMPOSITOR_ABSTRACT:
+            continue
         x, y = obj.zone.centre
         x, y = (x-a.x0)/(a.x1-a.x0), (y-a.y0)/(a.y1-a.y0)
-        positive.append(f"Depict the {obj.label} concept in the {_location(x,y)} region (centre {x:.3f},{y:.3f}), emphasis {obj.importance:.1f}.")
+        positive.append(f"Within the shared scene: {obj.concrete_visual}; {_location(x,y)} region (centre {x:.3f},{y:.3f}), emphasis {obj.importance:.1f}.")
     for z in contract.quiet_zones:
         x0, x1 = max(z.x0, a.x0), min(z.x1, a.x1)
         if x0 < x1:
-            positive.append(f"Quiet negative-paper annotation lane across raster x={(x0-a.x0)/(a.x1-a.x0):.3f}..{(x1-a.x0)/(a.x1-a.x0):.3f}.")
-    positive.extend((f"Diagram rhythm: {contract.route_grammar}; {contract.micro_detail}. Connections are reading order, not invented causal facts.",
-        "Clean portrait-side transition toward " + contract.portrait.side + "; portrait and headline are outside this illustration, owned by compositor.",
-        "Editorial purpose: " + slide["core_argument"],
-        "Factual constraints: " + "; ".join(slide["factual_guardrails"]),
-        "Composition: " + slide["composition_notes"],
-        "Attention: " + slide["notices_first"] + "; " + "; ".join(slide["visual_psychology_traits"]),
-        "Anti-cliche instruction: " + slide["anti_cliche_guardrail"]))
+            positive.append(f"Quiet negative-paper margin across raster x={(x0-a.x0)/(a.x1-a.x0):.3f}..{(x1-a.x0)/(a.x1-a.x0):.3f}.")
+    positive.extend(contract.depiction_guardrails)
     negative = ("text, letters, words, typography, captions, labels, signage, logo, branding, watermark, signature, "
                 "copyright mark, fake UI, dashboard, poster, collage, contact sheet, cyberpunk, neon, "
-                "panelist portrait, celebrity likeness, literal fluffy cloud, cartoon cloud, speech bubble")
+                "panelist portrait, celebrity likeness, literal fluffy cloud, cartoon cloud, speech bubble, "
+                "infographic, diagram page, evidence cards, labelled stack, consulting diagram")
+    if contract.reasoning_family == "layered_system":
+        negative += ", pyramid, triangle hierarchy, tiered pyramid, maturity ladder, staircase hierarchy, funnel, pentagon"
     # One delimiter is the existing Horde SDXL CLIP-conditioning handshake.
     return "\n".join(positive) + "###" + negative
 

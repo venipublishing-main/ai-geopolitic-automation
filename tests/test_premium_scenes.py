@@ -117,7 +117,7 @@ def test_same_panelist_different_argument_geometry(manifest, panelist, families)
     plans = []
     for family in families:
         plans.append(compiler.compile_scene(case_manifest(manifest,
-            {"panelist": panelist, "source_slide": 12, "family": family}), 1))
+            {"panelist": panelist, "source_slide": 3 if panelist=="kai_patel" else 12, "family": family}), 1))
     a, b = plans
     assert a.panelist_grammar == b.panelist_grammar
     assert a.portrait.side != b.portrait.side
@@ -184,7 +184,8 @@ def test_prompt_and_render_share_zones_and_exact_copy(manifest, case, raster):
     prompt = compiler.compile_prompt(contract)
     assert "No text, letters" in prompt and "canonical portrait" in prompt
     for obj in contract.semantic_objects:
-        assert obj.label in prompt
+        if obj.ownership != "COMPOSITOR_ABSTRACT":
+            assert obj.concrete_visual in prompt
         assert obj.leader[-1] == obj.zone.centre
         assert obj.annotation_side in {"left", "right"}
         assert .0 < obj.importance <= 1
@@ -197,6 +198,7 @@ def test_prompt_and_render_share_zones_and_exact_copy(manifest, case, raster):
     assert report["hero_qa"]["semantic_placement"] == "PLANNED_NOT_VERIFIED"
     assert [r["label"] for r in report["annotations"]] == contract.slide["essential_labels"]
     assert not any(r["object_placement_verified"] for r in report["annotations"])
+    assert all(r["visible_text_owner"]=="COMPOSITOR" for r in report["annotations"])
     # Repeatability includes raster output and local print texture.
     again, _ = render_preview(contract, manifest, raster, qa)
     assert image.tobytes() == again.tobytes()

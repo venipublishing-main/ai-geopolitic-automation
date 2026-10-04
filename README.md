@@ -2,7 +2,43 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
-## Current status — Phase D.2 three-slide real benchmark
+## Current status — Phase D.2R pre-generation repair
+
+Nora's `synthesis stack` now maps to **layered_system**, with five equal-status
+conditions, parallel annotation geometry and no ranked tiers. Genuine physical
+architecture remains **physical_stack**. SceneContract schema 2 records reviewed
+`GENERATOR_CONCRETE`, `COMPOSITOR_ABSTRACT` or `HYBRID` ownership; every visible label
+is compositor-owned. Unknown ownership blocks. PERMIT/TRUST are abstract, while
+POWER/WATER/LABOUR have explicit concrete depictions.
+
+SDXL conditioning uses a reviewed visual scene brief, concrete depictions, shared
+spatial margins and depiction guardrails. Editorial copy and raw infographic/layout
+prose never enter it. Layered-system prompts explicitly prohibit hierarchy/pyramids.
+The renderer supplies analytical marks from contract ownership, without a Slide 14
+special case. This is a zero-generation repair, not a new visual benchmark.
+
+`--reconcile-job 12` reads only the pinned, acknowledged Diane Horde job via GET.
+It cannot submit, cancel, reserve, replace a seed/model or rewrite the old ledger.
+Repeat reads append separate evidence under `output/phase-d2r/Ep104/`. The live
+check returned HTTP 404: **REMOTE_STATE_UNRESOLVED**, not confirmed failure or
+cancellation. Zero provider POSTs/new generations occurred. Original D.2 and
+D.1/C.2/C.3/C.4 archived evidence remains unchanged (81 hashed files).
+
+```sh
+python -m src.phase_d2_benchmark --repair-preflight
+python -m src.phase_d2_benchmark --reconcile-job 12
+```
+
+The old D.2 execution/report entry points now block mutation of its archived
+package. A new benchmark needs separate authorisation and a separately reviewed
+run path. Publication remains BLOCKED and current daily readiness is NOT_ASSERTED.
+No dependencies or CI workflows change. See [D.2R repair](docs/PHASE_D2R_PRE_GENERATION_REPAIR.md).
+Validation: **24 D.2R tests**, **115 combined D.2R/D.1/D.2 tests** passed.
+Final full Windows QA: **893 passed, 1 skipped in 236.87 s**. The skip remains
+opt-in local-worker discovery. `git diff --check` passes. The ignored repair report
+is `output/phase-d2r/Ep104/repair-report.md`; original evidence is not rewritten.
+
+## Phase D.2 — stopped historical three-slide benchmark
 
 D.2 exercises the generalized SceneContract → spatial SDXL prompt → AI Horde →
 hero QA → premium renderer path for exactly Nora 14, Diane Sterling 12 and Amari

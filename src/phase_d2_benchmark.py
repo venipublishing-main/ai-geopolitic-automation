@@ -69,6 +69,8 @@ def accepted_manifest():
 
 
 def preflight(root=PACKAGE):
+    if Path(root).resolve()==PACKAGE.resolve() and (PACKAGE/"attempt-ledger.json").exists():
+        raise ValueError("ORIGINAL_D2_PACKAGE_IMMUTABLE_USE_REPAIR_PREFLIGHT")
     manifest = accepted_manifest()
     contracts = [compile_scene(manifest, n) for n, _, _ in SELECTION]
     if any(c.panelist != expected for c, (_, expected, _) in zip(contracts, SELECTION)):
@@ -352,6 +354,8 @@ def record_visual_review(number, evidence, *, root=PACKAGE):
 
 
 def benchmark_report(root=PACKAGE):
+    if Path(root).resolve()==PACKAGE.resolve() and (PACKAGE/"attempt-ledger.json").exists():
+        raise ValueError("ORIGINAL_D2_PACKAGE_IMMUTABLE")
     rows=AttemptLedger(root).read()
     report={**AUTHORITY,"real_submitted_generation_count":len(rows),"maximum":3,"slides":[],
             "state":"BENCHMARK_INCOMPLETE_OR_BLOCKED","runtime_reference_dependency":False}
@@ -449,17 +453,44 @@ def verify_evidence(root=PACKAGE):
             "publication_allowed":False}
 
 
+def repair_preflight(root=None):
+    from .horde_reconciliation import REPAIR
+    root=Path(root) if root is not None else REPAIR
+    if root.resolve()==PACKAGE.resolve() or root.resolve().is_relative_to(PACKAGE.resolve()):
+        raise ValueError("REPAIR_CANNOT_WRITE_ORIGINAL_D2")
+    manifest=accepted_manifest()
+    report={**AUTHORITY,"state":"D2R_ZERO_GENERATION_PREFLIGHT_PASSED","provider_submissions":0,
+        "post_calls":0,"generation_calls":0,"original_evidence_rewritten":False,"slides":[]}
+    for number,panelist,directory in SELECTION:
+        contract=compile_scene(manifest,number)
+        prompt=prompt_record(contract)
+        write_json(root/directory/"contract.json",contract.to_dict())
+        write_json(root/directory/"prompt.json",prompt)
+        report["slides"].append({"slide_number":number,"panelist":panelist,"reasoning_family":contract.reasoning_family,
+            "grammar":contract.panelist_grammar,"route":contract.route_grammar,"contract_sha256":contract.sha256,
+            "prompt_sha256":prompt["prompt_sha256"],"ownership":{o.label:o.ownership for o in contract.semantic_objects}})
+    write_json(root/"repair-preflight.json",report)
+    return report
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     mode=parser.add_mutually_exclusive_group()
     mode.add_argument("--execute-next",action="store_true")
     mode.add_argument("--record-review",type=Path)
     mode.add_argument("--report",action="store_true")
+    mode.add_argument("--repair-preflight",action="store_true")
+    mode.add_argument("--reconcile-job",type=int,choices=(12,))
     parser.add_argument("--review-slide",type=int,choices=(14,12,16))
     args=parser.parse_args(argv)
     try:
-        if args.execute_next:
-            result=execute_next()
+        if args.reconcile_job is not None:
+            from .horde_reconciliation import reconcile_job
+            result=reconcile_job(args.reconcile_job)
+        elif args.repair_preflight:
+            result=repair_preflight()
+        elif args.execute_next:
+            raise ValueError("NEW_D2_BENCHMARK_NOT_AUTHORIZED_USE_SEPARATE_REVIEWED_RUN")
         elif args.record_review:
             if args.review_slide is None: parser.error("Review requires --review-slide.")
             result=record_visual_review(args.review_slide,json.loads(args.record_review.read_text(encoding="utf-8")))
@@ -468,9 +499,9 @@ def main(argv=None):
         else:
             _,result=preflight()
         print(json.dumps(result,indent=2,ensure_ascii=True))
-        return 0
+        return 1 if result.get("state")=="REMOTE_STATE_UNRESOLVED" else 0
     except Exception as exc:
-        benchmark_report()
+        # Never mutate the archived D.2 report while reporting a repair/read error.
         print(json.dumps({**AUTHORITY,"state":"STOPPED","code":type(exc).__name__,
                           "reason":str(exc) if isinstance(exc,ValueError) else "Operation failed; no retry authorized."}))
         return 1

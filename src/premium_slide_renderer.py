@@ -122,12 +122,27 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
         points = [_point(p, hero_box) for p in obj.leader]
         draw.line(points, fill=INK, width=1)
         draw.ellipse((centre[0]-3, centre[1]-3, centre[0]+3, centre[1]+3), fill=accent)
+        if obj.visual_role == "equal_condition" or obj.ownership in {"COMPOSITOR_ABSTRACT", "HYBRID"}:
+            # Contract-owned analytical marks, never generated labels or a
+            # slide-specific layout. Equal-sized nodes carry no ranking.
+            x, y = centre
+            draw.ellipse((x-12,y-12,x+12,y+12), fill=PAPER, outline=accent, width=1)
+            if obj.ownership == "GENERATOR_CONCRETE":
+                draw.ellipse((x-3,y-3,x+3,y+3),fill=accent)
+            elif obj.compositor_mark == "document_gate":
+                draw.rectangle((x-5,y-7,x+5,y+7),outline=INK,width=1)
+                draw.line((x-3,y-2,x+3,y-2),fill=INK,width=1)
+                draw.line((x-3,y+2,x+3,y+2),fill=INK,width=1)
+            elif obj.compositor_mark == "equal_link":
+                draw.line((x-7,y-3,x+7,y-3),fill=INK,width=1)
+                draw.line((x-7,y+3,x+7,y+3),fill=INK,width=1)
         # Glyph-local paper release keeps exact labels distinct from art.
         box = obj.annotation.zone.pixels(hero_box)
         draw.rectangle(box, fill=PAPER)
         paint(obj.annotation, INK, parent=hero_box)
         annotation_metadata.append({"label": obj.label, "planned_terminal": centre,
-                                    "object_placement_verified": False})
+                                    "object_placement_verified": False, "ownership":obj.ownership,
+                                    "visible_text_owner":"COMPOSITOR"})
     # Small marks differ by identity grammar, derived from object terminals.
     for i, (x, y) in enumerate(centres):
         if contract.micro_detail in {"repair nodes", "continuity rings"}:

@@ -107,7 +107,8 @@ def test_all_three_preflight_before_no_inference(tmp_path):
         prompt=compile_sdxl_prompt(c)
         assert prompt.count("###")==1 and "watermark" in prompt.split("###")[1]
         assert "REMOTE USERS" not in prompt and "Slide05" not in prompt
-        for obj in c.semantic_objects: assert obj.label in prompt
+        for obj in c.semantic_objects:
+            if obj.ownership != "COMPOSITOR_ABSTRACT": assert obj.concrete_visual in prompt
 
 
 def test_scene_error_before_any_provider_job(tmp_path,monkeypatch):
