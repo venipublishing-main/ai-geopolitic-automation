@@ -51,7 +51,7 @@ def _route(draw, points, grammar, colour):
         draw.line(points, fill=colour, width=3 if grammar == "asymmetric pressure" else 2)
 
 
-def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, content_evidence=None):
+def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, content_evidence=None, generation_receipt=None):
     """Return an internal 1080-square PIL image and honest review metadata.
 
     The caller must supply the full Manifest again. Recompile prevents modified
@@ -61,8 +61,18 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
     authoritative = compile_scene(manifest, contract.slide_number)
     if contract.sha256 != authoritative.sha256:
         raise ValueError("CONTRACT_AUTHORITY_MISMATCH")
-    repeated = inspect_hero(contract, hero_path, compile_prompt(contract), source_kind=qa.source_kind,
-                            content_evidence=content_evidence)
+    if qa.source_kind == "d2_generated_benchmark":
+        from .premium_sdxl_prompt import compile_sdxl_prompt
+        prompt = compile_sdxl_prompt(contract)
+        evidence = content_evidence if isinstance(content_evidence, dict) else {}
+        if (evidence.get("contract_sha256") != contract.sha256 or evidence.get("approved_for_composition") is not True or
+                evidence.get("scene_contract_status") not in {"SCENE_CONTRACT_VISUALLY_COMPATIBLE", "SCENE_CONTRACT_PARTIALLY_COMPATIBLE"} or
+                evidence.get("annotation_anchors_plausible") is not True or evidence.get("composition_safe") is not True):
+            raise ValueError("D2_VISUAL_REVIEW_REQUIRED")
+    else:
+        prompt = compile_prompt(contract)
+    repeated = inspect_hero(contract, hero_path, prompt, source_kind=qa.source_kind,
+                            content_evidence=content_evidence, generation_receipt=generation_receipt)
     if qa != repeated or not repeated.mechanical_passed:
         raise ValueError("HERO_QA_REQUIRED_OR_STALE")
     portrait_path = ROOT / contract.portrait.path
@@ -83,6 +93,20 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
     img.paste(_ink(portrait, pbox[:2], portrait=True), pbox[:2], mask)
     draw = ImageDraw.Draw(img)
     accent = hex_rgb(contract.accent)
+    text_trace = []
+    def paint(plan, colour, *, parent=(0, 0, 1080, 1080)):
+        # Record actual draw invocations, not an OCR claim about the resulting raster.
+        box = plan.zone.pixels(parent)
+        if any(max(box[0], r["bounds"][0]) < min(box[2], r["bounds"][2]) and
+               max(box[1], r["bounds"][1]) < min(box[3], r["bounds"][3]) for r in text_trace):
+            raise ValueError("COPY_COLLISION")
+        face_box = contract.portrait.protected_face.pixels()
+        if max(box[0],face_box[0]) < min(box[2],face_box[2]) and max(box[1],face_box[1]) < min(box[3],face_box[3]):
+            raise ValueError("PROTECTED_FACE_COLLISION")
+        if not (36 <= box[0] < box[2] <= 1044 and 36 <= box[1] < box[3] <= 1079):
+            raise ValueError("COPY_SAFE_MARGIN_VIOLATION")
+        draw_text(draw, plan, colour, parent=parent)
+        text_trace.append({"text":plan.text,"bounds":box,"font_size":plan.font_size,"colour":colour})
     centres = [_point(o.zone.centre, hero_box) for o in contract.semantic_objects]
     if contract.route_grammar == "radial":
         for point in centres[1:]:
@@ -101,7 +125,7 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
         # Glyph-local paper release keeps exact labels distinct from art.
         box = obj.annotation.zone.pixels(hero_box)
         draw.rectangle(box, fill=PAPER)
-        draw_text(draw, obj.annotation, INK, parent=hero_box)
+        paint(obj.annotation, INK, parent=hero_box)
         annotation_metadata.append({"label": obj.label, "planned_terminal": centre,
                                     "object_placement_verified": False})
     # Small marks differ by identity grammar, derived from object terminals.
@@ -112,8 +136,8 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
             draw.line((x-8, y+5, x+8, y-5), fill=accent, width=2)
         else:
             draw.line((x-6, y+8, x+6, y+8), fill=accent, width=1)
-    draw_text(draw, contract.headline, accent)
-    draw_text(draw, contract.subheadline, INK)
+    paint(contract.headline, accent)
+    paint(contract.subheadline, INK)
     phrase_box = contract.phrase.zone.pixels()
     if contract.phrase.treatment == "accent_block":
         draw.rectangle(phrase_box, fill=accent)
@@ -124,7 +148,7 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
         draw.rounded_rectangle(phrase_box, radius=10, outline=accent, width=2)
     else:
         draw.line((phrase_box[0], phrase_box[1], phrase_box[0], phrase_box[3]), fill=accent, width=4)
-    draw_text(draw, contract.phrase, PAPER if contract.phrase.treatment == "accent_block" else accent)
+    paint(contract.phrase, PAPER if contract.phrase.treatment == "accent_block" else accent)
     for i, takeaway in enumerate(contract.takeaways):
         box = takeaway.zone.pixels()
         if contract.takeaway_arrangement == "three_node_sequence":
@@ -136,11 +160,13 @@ def render_preview(contract: SceneContract, manifest, hero_path, qa: HeroQA, *, 
         if contract.takeaway_arrangement == "numbered_vertical_rail":
             from .premium_typography import typeface
             draw.text((box[0]+6, box[1]-16), f"{i+1:02d}", font=typeface("label", 12), fill=accent)
-        draw_text(draw, takeaway, INK)
+        paint(takeaway, INK)
     for furniture in contract.furniture:
-        draw_text(draw, furniture, accent if furniture.text == contract.panelist_name else INK)
+        paint(furniture, accent if furniture.text == contract.panelist_name else INK)
     draw.line((44, 1039, 1036, 1039), fill=accent, width=1)
     return img, {"state": "INTERNAL_PREVIEW_HUMAN_REVIEW_REQUIRED", "contract_sha256": contract.sha256,
         "hero_qa": qa.to_dict(), "annotations": annotation_metadata, "expected_generation_count": 0,
-        "production_publication": "BLOCKED_D1", "portrait_source": contract.portrait.path,
-        "canonical_portrait_sha256": contract.portrait.asset_sha256}
+        "production_publication": qa.production_publication, "portrait_source": contract.portrait.path,
+        "canonical_portrait_sha256": contract.portrait.asset_sha256, "text_draw_trace": text_trace,
+        "pixel_sha256": hashlib.sha256(img.tobytes()).hexdigest(), "accent": contract.accent,
+        "runtime_reference_dependency": False, "legacy_renderer_fallback": False}

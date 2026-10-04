@@ -2,7 +2,39 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
-## Current status — Phase D.1 single-panelist generalisation
+## Current status — Phase D.2 three-slide real benchmark
+
+D.2 exercises the generalized SceneContract → spatial SDXL prompt → AI Horde →
+hero QA → premium renderer path for exactly Nora 14, Diane Sterling 12 and Amari
+Ndlovu 16, in that order. The durable ledger caps the run at three submissions,
+one attempt per target; ambiguous/technical/engineering failures stop, and visual
+failures preserve rejected art without composition or retry. AlbedoBase XL 3.1
+requires fresh exact-model, health, ZERO_COST and conditional-permission gates.
+References from Daily Slides are development comparisons only, never generator
+inputs or renderer dependencies. No new dependency or CI workflow is introduced.
+
+The historical Ep104 snapshot is dated **2026-10-03**:
+`CURRENT_READINESS = NOT_ASSERTED`,
+`SOURCE = ACCEPTED_EP104_HISTORICAL_SNAPSHOT`. Public publication remains BLOCKED;
+credit obligations stay in receipts, outside the raster. Human review is authoritative.
+Ignored outputs and the comparison report live under `output/phase-d2/Ep104/`.
+The run stopped after **two acknowledged submissions**. Nora completed technically
+but failed visual guardrails (generated lettering and an incompatible pyramid);
+composition was withheld. Diane status polling became ambiguous, triggering
+`D2_AMBIGUOUS_STATUS_STOP`; its remote outcome is unknown. Amari was never submitted.
+There are no real generalized renders, retries or further provider calls. The
+three-slide benchmark is incomplete; neither human-review readiness nor D.2 visual
+acceptance is claimed.
+D.2 tests: **36 passed**. D.1: **55**; C.4: **34**; C.3: **34**; C.2: **27**;
+provider/licence: **392**. Full Windows QA: **869 passed, 1 skipped**.
+The skip remains opt-in local-worker discovery. Evidence bindings verify two
+distinct ACKs/two recorded submission requests; all 31 protected historical,
+compiler, portrait and font files remain byte-identical. `git diff --check` passes.
+See [D.2 procedure and architecture](docs/PHASE_D2_THREE_SLIDE_BENCHMARK.md).
+The next step is operator review of the stopped evidence and a separately authorised
+decision about the ambiguous remote job. No further inference or carousel follows.
+
+## Phase D.1 single-panelist generalisation
 
 Deterministic premium SceneContracts now separate panelist tendencies from
 argument geometry for Nora, Diane, Johan, Kai, Thabo and Amari. The illustration
@@ -17,7 +49,7 @@ does not claim current `BUILD_READY`. Publication and human visual QA remain ope
 Six synthetic fixture cases prove architecture, not visual parity or carousel
 acceptance. C.3/C.4 remain accepted historical evidence; Kai Slide 05 tuning is closed.
 D.1 targeted: **55 passed**. Full Windows QA: **833 passed, 1 skipped**.
-D.2 has not started. See [D.1 architecture and validation](docs/PHASE_D1_SINGLE_PANELIST_GENERALISATION.md).
+See [D.1 architecture and validation](docs/PHASE_D1_SINGLE_PANELIST_GENERALISATION.md).
 
 ```sh
 python -m src.premium_scene_compiler --source drive --dry-run

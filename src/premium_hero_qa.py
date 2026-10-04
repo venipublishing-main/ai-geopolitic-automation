@@ -32,11 +32,17 @@ class HeroQA:
         return asdict(self)
 
 
-def inspect_hero(contract: SceneContract, path, prompt, *, source_kind, content_evidence=None) -> HeroQA:
+def inspect_hero(contract: SceneContract, path, prompt, *, source_kind, content_evidence=None, generation_receipt=None) -> HeroQA:
     blockers = []
-    if source_kind not in {"synthetic_fixture", "existing_accepted_asset"}:
+    d2 = source_kind == "d2_generated_benchmark"
+    if source_kind not in {"synthetic_fixture", "existing_accepted_asset", "d2_generated_benchmark"}:
         blockers.append("D1_ASSET_SOURCE_UNSUPPORTED")
-    if prompt != compile_prompt(contract):
+    if d2:
+        from .premium_sdxl_prompt import compile_sdxl_prompt
+        expected_prompt = compile_sdxl_prompt(contract)
+    else:
+        expected_prompt = compile_prompt(contract)
+    if prompt != expected_prompt:
         blockers.append("CONTRACT_PROMPT_MISMATCH")
     dimensions, raster_hash = (0, 0), ""
     try:
@@ -53,6 +59,21 @@ def inspect_hero(contract: SceneContract, path, prompt, *, source_kind, content_
                 blockers.append("HERO_UNIFORM_OR_EMPTY")
     except (OSError, ValueError, Image.DecompressionBombError):
         blockers.append("HERO_RASTER_INVALID")
+    if d2:
+        receipt = generation_receipt if isinstance(generation_receipt, dict) else {}
+        audit = receipt.get("licence_audit", {})
+        if (receipt.get("state") != "GENERATED_AWAITING_VISUAL_REVIEW" or
+                receipt.get("contract_sha256") != contract.sha256 or receipt.get("prompt_sha256") != digest(prompt) or
+                receipt.get("raster_sha256") != raster_hash or dimensions != (1024, 1024) or
+                receipt.get("provider") != "ai_horde" or receipt.get("model") != "AlbedoBase XL 3.1" or
+                receipt.get("slide_number") != contract.slide_number or receipt.get("attempt") != 1 or
+                not receipt.get("provider_job_id") or receipt.get("CURRENT_READINESS") != "NOT_ASSERTED" or
+                receipt.get("SOURCE") != "ACCEPTED_EP104_HISTORICAL_SNAPSHOT" or
+                receipt.get("publication_allowed") is not False or receipt.get("reference_assets") != [] or
+                audit.get("creator") != "albedobond" or audit.get("publication_attribution_required") is not True or
+                audit.get("permission_state") != "ALLOWED_WITH_OBLIGATIONS" or
+                audit.get("use", {}).get("context") != "INTERNAL_BENCHMARK"):
+            blockers.append("D2_GENERATION_RECEIPT_INVALID")
     guard = "NOT_INSPECTED_NO_DETECTOR"
     if content_evidence is not None:
         # Same field names as the existing agent_visual_screen evidence gate.
@@ -69,4 +90,5 @@ def inspect_hero(contract: SceneContract, path, prompt, *, source_kind, content_
         else:
             guard = "PASSED_INSPECTED_EVIDENCE_NOT_AUTOMATIC_DETECTION"
     return HeroQA(contract.sha256, digest(prompt), raster_hash, dimensions, source_kind,
-                  not blockers, tuple(blockers), guard)
+                  not blockers, tuple(blockers), guard,
+                  production_publication="BLOCKED_PUBLIC_ATTRIBUTION_AND_HUMAN_REVIEW" if d2 else "BLOCKED_D1")
