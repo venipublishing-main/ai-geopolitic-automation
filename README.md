@@ -2,6 +2,30 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Current status — Phase D.1 single-panelist generalisation
+
+Deterministic premium SceneContracts now separate panelist tendencies from
+argument geometry for Nora, Diane, Johan, Kai, Thabo and Amari. The illustration
+prompt, mechanical hero QA and internal premium renderer share normalized zones;
+all exact copy and canonical portraits remain compositor-owned. Unknown families,
+invalid inputs and overflow block, with no legacy renderer fallback.
+
+D.1 performs **zero generations/provider submissions**. The explicitly historical
+Ep104 snapshot compiles **13 singles** and blocks **7 duals** with
+`DUAL_PANELIST_NOT_SUPPORTED_D1`; its inspection exit code is 1. Historical replay
+does not claim current `BUILD_READY`. Publication and human visual QA remain open.
+Six synthetic fixture cases prove architecture, not visual parity or carousel
+acceptance. C.3/C.4 remain accepted historical evidence; Kai Slide 05 tuning is closed.
+D.1 targeted: **55 passed**. Full Windows QA: **833 passed, 1 skipped**.
+D.2 has not started. See [D.1 architecture and validation](docs/PHASE_D1_SINGLE_PANELIST_GENERALISATION.md).
+
+```sh
+python -m src.premium_scene_compiler --source drive --dry-run
+python -m src.premium_scene_compiler --accepted-snapshot output/phase-c4/Ep104/slide-05/input/readiness.json --dry-run
+```
+
+The sections below retain earlier milestone history.
+
 ## Phase C.1 — Free cloud provider implementation
 
 **Narrow Kai Slide 05 bridge implemented; real vertical slice blocked by image content.**

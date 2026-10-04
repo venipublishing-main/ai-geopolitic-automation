@@ -1,0 +1,1112 @@
+{
+  "schema_version": 2,
+  "episode_id": "Ep104",
+  "episode_title": "THE AI RACE NOW HAS A SOCIAL-LICENCE PROBLEM",
+  "production_date_sast": "2026-10-03",
+  "source_rnd_date_sast": "2026-10-03",
+  "archive_destination": "Ep104-3October2026",
+  "archive_folder_id": "1c6COZLK2CMIT71sJgetsuRG2SLjmxa1c",
+  "slides": [
+    {
+      "slide_number": 1,
+      "panelists": [
+        "nora"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Factual hook; frame the paradox without overclaiming.",
+      "core_argument": "AI strategy increasingly depends on whether host communities accept the physical and financial conditions of data-centre expansion.",
+      "headline": "THE AI RACE NOW HAS A SOCIAL-LICENCE PROBLEM",
+      "subheadline": "National AI ambition is colliding with local questions about power, water, land and who pays.",
+      "hero_visual": "Data-centre campus inside a four-way dependency map: GRID / WATER / LAND / COMMUNITY, with national-strategy pressure above and local-permission gates below.",
+      "essential_labels": [
+        "NATIONAL AI RACE",
+        "LOCAL HOST",
+        "GRID",
+        "WATER",
+        "LAND",
+        "PERMISSION"
+      ],
+      "main_visual_phrase": "COMPUTE NEEDS A PLACE TO LAND.",
+      "takeaway_ideas": [
+        {
+          "idea": "AI strategy is physical",
+          "intended_visual_treatment": "primary callout"
+        },
+        {
+          "idea": "host conditions can bottleneck",
+          "intended_visual_treatment": "gate markers"
+        },
+        {
+          "idea": "legitimacy is part of capacity",
+          "intended_visual_treatment": "synthesis rail."
+        }
+      ],
+      "accent_colours": {
+        "nora": "#1769AA"
+      },
+      "factual_guardrails": [
+        "“Social licence” is analytical framing, not a formal legal status."
+      ],
+      "composition_notes": "Calm central systems map; portrait 20–22%; strong negative space.",
+      "visual_psychology_traits": [
+        "evidence + synthesis"
+      ],
+      "notices_first": "mismatch between national ambition and local hosting",
+      "preferred_visual_reasoning_family": "synthesis map + dependency gates",
+      "anti_cliche_guardrail": "no glowing AI city or protest spectacle.",
+      "portrait_scale_intention": "20–22%",
+      "density_type_size_note": "medium; headline dominant; visible 01/20."
+    },
+    {
+      "slide_number": 2,
+      "panelists": [
+        "nora"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Establish the fresh AWS trigger and evidence boundary.",
+      "core_argument": "AWS announced more than US$1bn over five years for U.S. data-centre communities; this is a company commitment, not proof that impacts are resolved.",
+      "headline": "AWS JUST PUT $1 BILLION BEHIND COMMUNITY ACCEPTANCE",
+      "subheadline": "“Built Together” links data-centre growth to education, skills, energy affordability and water projects.",
+      "hero_visual": "Evidence dossier stamped ANNOUNCED, with >$1BN feeding four community channels.",
+      "essential_labels": [
+        ">$1BN",
+        "5 YEARS",
+        "EDUCATION",
+        "SKILLS",
+        "ENERGY",
+        "WATER"
+      ],
+      "main_visual_phrase": "THE HOST COMMUNITY IS NOW PART OF THE BUILD.",
+      "takeaway_ideas": [
+        {
+          "idea": "commitment",
+          "intended_visual_treatment": "large evidence card"
+        },
+        {
+          "idea": "targets ≠ outcomes",
+          "intended_visual_treatment": "caveat strip"
+        },
+        {
+          "idea": "community investment is strategic infrastructure",
+          "intended_visual_treatment": "interpretation note."
+        }
+      ],
+      "accent_colours": {
+        "nora": "#1769AA"
+      },
+      "factual_guardrails": [
+        "Do not call the $1bn compensation for harm; do not present programme targets as completed outcomes."
+      ],
+      "composition_notes": "Evidence-file architecture; portrait 20%.",
+      "visual_psychology_traits": [
+        "attribution, known/unknown, claim/outcome"
+      ],
+      "notices_first": "THE HOST COMMUNITY IS NOW PART OF THE BUILD.",
+      "preferred_visual_reasoning_family": "evidence dossier + boundary rail",
+      "anti_cliche_guardrail": "no celebratory corporate imagery.",
+      "portrait_scale_intention": "20%",
+      "density_type_size_note": "medium-low; visible 02/20."
+    },
+    {
+      "slide_number": 3,
+      "panelists": [
+        "kai_patel"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Replace abstract “compute” with the physical dependency stack.",
+      "core_argument": "AI capability depends on a chain of physical systems outside the model.",
+      "headline": "A DATA CENTRE IS NOT JUST A BUILDING FULL OF CHIPS",
+      "subheadline": "Compute depends on electricity, substations, cooling, water strategy, fibre, land and construction.",
+      "hero_visual": "Exploded stack: MODEL DEMAND → RACKS → COOLING → SUBSTATION → GRID → GENERATION, with FIBRE and LAND as lateral dependencies.",
+      "essential_labels": [
+        "MODEL",
+        "RACKS",
+        "COOLING",
+        "FIBRE",
+        "SUBSTATION",
+        "GRID",
+        "GENERATION"
+      ],
+      "main_visual_phrase": "SOFTWARE SITS ON A PHYSICAL STACK.",
+      "takeaway_ideas": [
+        {
+          "idea": "every layer can bottleneck",
+          "intended_visual_treatment": "node warnings"
+        },
+        {
+          "idea": "model progress does not erase infrastructure",
+          "intended_visual_treatment": "side note"
+        },
+        {
+          "idea": "interfaces create control points",
+          "intended_visual_treatment": "architecture key."
+        }
+      ],
+      "accent_colours": {
+        "kai_patel": "#6540A4"
+      },
+      "factual_guardrails": [
+        "Do not imply all facilities share one cooling, water or power profile."
+      ],
+      "composition_notes": "Engineered vertical stack; portrait ~21%.",
+      "visual_psychology_traits": [
+        "architecture, interfaces, infrastructure control"
+      ],
+      "notices_first": "SOFTWARE SITS ON A PHYSICAL STACK.",
+      "preferred_visual_reasoning_family": "architecture stack",
+      "anti_cliche_guardrail": "no Matrix code or neon server corridor.",
+      "portrait_scale_intention": "20–22%",
+      "density_type_size_note": "medium-high but diagram-led; visible 03/20."
+    },
+    {
+      "slide_number": 4,
+      "panelists": [
+        "johan_vosloo",
+        "thabo_mokoena"
+      ],
+      "pairing_mode": "SYNTHESIS_COMPLEMENTARY",
+      "shared_ground": "strategic national build-out can create local infrastructure consequences",
+      "panelist_contributions": {
+        "johan_vosloo": "authority, permitting, reliability",
+        "thabo_mokoena": "bills, disruption and who carries burdens"
+      },
+      "central_relationship": "synthesize",
+      "why_dual": "Two improve the slide by connecting governance to lived material consequence",
+      "slide_role": "A project may be strategically valuable nationally while still creating local questions about prices, infrastructure and burden-sharing.",
+      "core_argument": "A project may be strategically valuable nationally while still creating local questions about prices, infrastructure and burden-sharing.",
+      "headline": "NATIONAL URGENCY LANDS ON LOCAL INFRASTRUCTURE",
+      "subheadline": "The strategy is national. The substation, water system and electricity bill are local.",
+      "hero_visual": "Upper layer NATIONAL AI STRATEGY; lower layer municipal grid, homes, water pipes and permit desk; arrows converge on one site.",
+      "essential_labels": [
+        "NATIONAL STRATEGY",
+        "MUNICIPAL GRID",
+        "RATEPAYER",
+        "WATER",
+        "PERMIT"
+      ],
+      "main_visual_phrase": "GRAND STRATEGY MEETS THE METER.",
+      "takeaway_ideas": [
+        {
+          "idea": "implementation",
+          "intended_visual_treatment": "Johan authority rail"
+        },
+        {
+          "idea": "local burden",
+          "intended_visual_treatment": "Thabo pathway"
+        },
+        {
+          "idea": "legitimacy",
+          "intended_visual_treatment": "central bridge."
+        }
+      ],
+      "accent_colours": {
+        "johan_vosloo": "#173C68",
+        "thabo_mokoena": "#A73528"
+      },
+      "factual_guardrails": [
+        "Do not assume every project raises household bills; frame as allocation/infrastructure risk."
+      ],
+      "composition_notes": "Two visual grammars converging, not face-off.",
+      "visual_psychology_traits": [
+        "Johan authority chain + Thabo burden map"
+      ],
+      "notices_first": "GRAND STRATEGY MEETS THE METER.",
+      "preferred_visual_reasoning_family": "converging governance + burden map",
+      "anti_cliche_guardrail": "no flag-versus-protester binary.",
+      "portrait_scale_intention": "16–18% each",
+      "density_type_size_note": "medium; visible 04/20."
+    },
+    {
+      "slide_number": 5,
+      "panelists": [
+        "kai_patel"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Lock the episode’s “physical cloud” doctrine.",
+      "core_argument": "AI services can be remote while hosting constraints remain geographically local.",
+      "headline": "“THE CLOUD” STILL NEEDS MEGAWATTS, PIPES AND LAND",
+      "subheadline": "Remote computation does not make the physical hosting layer disappear.",
+      "hero_visual": "User network flows into a cutaway campus showing fibre, transformers, cooling and water infrastructure.",
+      "essential_labels": [
+        "REMOTE USERS",
+        "FIBRE",
+        "COMPUTE",
+        "COOLING",
+        "POWER",
+        "LAND"
+      ],
+      "main_visual_phrase": "THE CLOUD HAS AN ADDRESS.",
+      "takeaway_ideas": [
+        {
+          "idea": "remote use, local footprint",
+          "intended_visual_treatment": "paired labels"
+        },
+        {
+          "idea": "bottlenecks persist",
+          "intended_visual_treatment": "constraint icons"
+        },
+        {
+          "idea": "geography matters",
+          "intended_visual_treatment": "map inset."
+        }
+      ],
+      "accent_colours": {
+        "kai_patel": "#6540A4"
+      },
+      "factual_guardrails": [
+        "Cooling and water systems vary; do not imply one fixed footprint."
+      ],
+      "composition_notes": "Network-to-site transition; portrait 20%.",
+      "visual_psychology_traits": [
+        "hidden physical layer beneath digital abstraction"
+      ],
+      "notices_first": "THE CLOUD HAS AN ADDRESS.",
+      "preferred_visual_reasoning_family": "network-to-physical transition",
+      "anti_cliche_guardrail": "no literal fluffy cloud or cyberpunk glow.",
+      "portrait_scale_intention": "20%",
+      "density_type_size_note": "medium-low; visible 05/20."
+    },
+    {
+      "slide_number": 6,
+      "panelists": [
+        "kai_patel"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Explain the grid-connection bottleneck before the cost debate.",
+      "core_argument": "Large new loads can require connection capacity, substations, transmission and generation planning beyond the data-centre site.",
+      "headline": "THE NEXT BOTTLENECK MAY BE THE GRID QUEUE",
+      "subheadline": "Compute can be financed faster than power infrastructure can always be planned, connected and reinforced.",
+      "hero_visual": "Large-load connection blocks queue toward a constrained substation gate, with transmission and generation behind it.",
+      "essential_labels": [
+        "NEW LOAD",
+        "CONNECTION",
+        "SUBSTATION",
+        "TRANSMISSION",
+        "GENERATION",
+        "TIME"
+      ],
+      "main_visual_phrase": "CAPITAL MOVES FASTER THAN WIRES.",
+      "takeaway_ideas": [
+        {
+          "idea": "connection is a system problem",
+          "intended_visual_treatment": "node map"
+        },
+        {
+          "idea": "reinforcement needs coordination",
+          "intended_visual_treatment": "sequence arrows"
+        },
+        {
+          "idea": "scarcity shifts leverage",
+          "intended_visual_treatment": "small callout."
+        }
+      ],
+      "accent_colours": {
+        "kai_patel": "#6540A4"
+      },
+      "factual_guardrails": [
+        "Do not state universal queue lengths or build times."
+      ],
+      "composition_notes": "Horizontal systems queue; portrait ~20%.",
+      "visual_psychology_traits": [
+        "bottleneck architecture and control points"
+      ],
+      "notices_first": "CAPITAL MOVES FASTER THAN WIRES.",
+      "preferred_visual_reasoning_family": "queue/network",
+      "anti_cliche_guardrail": "no fake dashboard or meaningless circuitry.",
+      "portrait_scale_intention": "20%",
+      "density_type_size_note": "medium; visible 06/20."
+    },
+    {
+      "slide_number": 7,
+      "panelists": [
+        "diane_sterling",
+        "thabo_mokoena"
+      ],
+      "pairing_mode": "QUALIFIED_TENSION",
+      "shared_ground": "additional infrastructure must be financed",
+      "panelist_contributions": {
+        "diane_sterling": "cost causation, tariff design, incentives",
+        "thabo_mokoena": "risk of costs being socialised while gains concentrate"
+      },
+      "central_relationship": "partially_overlap",
+      "why_dual": "Central tension: what counts as fair allocation and who has bargaining power",
+      "slide_role": "The political economy begins when grid expansion, generation and supporting infrastructure need a payer.",
+      "core_argument": "The political economy begins when grid expansion, generation and supporting infrastructure need a payer.",
+      "headline": "WHO PAYS FOR THE EXTRA MEGAWATTS?",
+      "subheadline": "Hyperscaler, utility, taxpayer or ratepayer — cost allocation can decide whether the build remains politically durable.",
+      "hero_visual": "Infrastructure invoice split into four payment channels with different downstream consequences.",
+      "essential_labels": [
+        "HYPERSCALER",
+        "UTILITY",
+        "TAXPAYER",
+        "RATEPAYER",
+        "GRID UPGRADE"
+      ],
+      "main_visual_phrase": "THE BILL IS PART OF THE ARCHITECTURE.",
+      "takeaway_ideas": [
+        {
+          "idea": "price signals matter",
+          "intended_visual_treatment": "Diane green ledger"
+        },
+        {
+          "idea": "socialised risk matters",
+          "intended_visual_treatment": "Thabo red flow"
+        },
+        {
+          "idea": "rules shape legitimacy",
+          "intended_visual_treatment": "shared centre."
+        }
+      ],
+      "accent_colours": {
+        "diane_sterling": "#176B4A",
+        "thabo_mokoena": "#A73528"
+      },
+      "factual_guardrails": [
+        "Do not claim one party universally bears these costs."
+      ],
+      "composition_notes": "Balanced dual portraits; ledger and burden flows meet centrally.",
+      "visual_psychology_traits": [
+        "Diane allocation map + Thabo who-pays/who-gains chain"
+      ],
+      "notices_first": "THE BILL IS PART OF THE ARCHITECTURE.",
+      "preferred_visual_reasoning_family": "allocation ledger + burden flow",
+      "anti_cliche_guardrail": "no dollar rain or simplistic corporation-vs-people framing.",
+      "portrait_scale_intention": "17–18% each",
+      "density_type_size_note": "medium-high; visible 07/20."
+    },
+    {
+      "slide_number": 8,
+      "panelists": [
+        "johan_vosloo"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Ground the debate in the current FERC/PJM institutional case.",
+      "core_argument": "FERC required PJM to revisit parts of a backstop procurement proposal linked to a projected 6,800 MW shortfall, with cost allocation and protection of existing customers central.",
+      "headline": "THE GRID RULEBOOK IS BEING REWRITTEN UNDER AI PRESSURE",
+      "subheadline": "FERC told PJM to revisit parts of a plan tied to a projected 6,800 MW shortfall.",
+      "hero_visual": "Regulatory order above an authority chain: FERC → PJM → utilities → large new loads / existing customers.",
+      "essential_labels": [
+        "FERC",
+        "PJM",
+        "6,800 MW",
+        "COST ALLOCATION",
+        "EXISTING CUSTOMERS"
+      ],
+      "main_visual_phrase": "CAPACITY NEEDS RULES BEFORE IT NEEDS RHETORIC.",
+      "takeaway_ideas": [
+        {
+          "idea": "regulator intervened",
+          "intended_visual_treatment": "authority seal"
+        },
+        {
+          "idea": "allocation unresolved",
+          "intended_visual_treatment": "decision fork"
+        },
+        {
+          "idea": "durability matters",
+          "intended_visual_treatment": "precedent rail."
+        }
+      ],
+      "accent_colours": {
+        "johan_vosloo": "#173C68"
+      },
+      "factual_guardrails": [
+        "Do not say FERC ordered data centres to fund all new power infrastructure."
+      ],
+      "composition_notes": "Sober institutional map; portrait 22%.",
+      "visual_psychology_traits": [
+        "authority, implementation, precedent"
+      ],
+      "notices_first": "CAPACITY NEEDS RULES BEFORE IT NEEDS RHETORIC.",
+      "preferred_visual_reasoning_family": "authority chain + decision tree",
+      "anti_cliche_guardrail": "no gavels or theatrical courtroom imagery.",
+      "portrait_scale_intention": "22%",
+      "density_type_size_note": "medium; visible 08/20."
+    },
+    {
+      "slide_number": 9,
+      "panelists": [
+        "diane_sterling"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Explain why ratepayer protection is an investment-design problem.",
+      "core_argument": "Poor cost allocation can create backlash and policy instability; transparent pricing can protect existing customers while allowing investment.",
+      "headline": "CHEAP COMPUTE CANNOT DEPEND ON HIDDEN PUBLIC COSTS",
+      "subheadline": "If new infrastructure costs are opaque, political resistance can become part of the project’s risk premium.",
+      "hero_visual": "Two cost pathways: transparent incremental-cost pricing versus hidden cross-subsidy, each feeding different investment-risk outcomes.",
+      "essential_labels": [
+        "NEW LOAD",
+        "INCREMENTAL COST",
+        "CROSS-SUBSIDY",
+        "RATEPAYER",
+        "INVESTMENT RISK"
+      ],
+      "main_visual_phrase": "PRICE THE BURDEN OR POLITICISE IT.",
+      "takeaway_ideas": [
+        {
+          "idea": "transparent pricing",
+          "intended_visual_treatment": "primary curve"
+        },
+        {
+          "idea": "hidden subsidy",
+          "intended_visual_treatment": "risk warning"
+        },
+        {
+          "idea": "durable investment needs credible allocation",
+          "intended_visual_treatment": "conclusion box."
+        }
+      ],
+      "accent_colours": {
+        "diane_sterling": "#176B4A"
+      },
+      "factual_guardrails": [
+        "Present this as economic analysis, not a claim that hidden subsidy exists in every project."
+      ],
+      "composition_notes": "Quantitative but editorial; portrait 21%.",
+      "visual_psychology_traits": [
+        "incentives, opportunity cost, second-order effects"
+      ],
+      "notices_first": "PRICE THE BURDEN OR POLITICISE IT.",
+      "preferred_visual_reasoning_family": "cost curve + consequence chain",
+      "anti_cliche_guardrail": "no stock ticker wallpaper.",
+      "portrait_scale_intention": "20–22%",
+      "density_type_size_note": "medium; visible 09/20."
+    },
+    {
+      "slide_number": 10,
+      "panelists": [
+        "kai_patel",
+        "thabo_mokoena"
+      ],
+      "pairing_mode": "SYNTHESIS_COMPLEMENTARY",
+      "shared_ground": "water and cooling are engineering choices with real community consequences",
+      "panelist_contributions": {
+        "kai_patel": "cooling architecture varies",
+        "thabo_mokoena": "resource claims become political when communities experience scarcity or unequal access"
+      },
+      "central_relationship": "synthesize",
+      "why_dual": "water and cooling are engineering choices with real community consequences",
+      "slide_role": "Water is not one fixed “data-centre footprint”; it is a design and local-resource governance question.",
+      "core_argument": "Water is not one fixed “data-centre footprint”; it is a design and local-resource governance question.",
+      "headline": "WATER IS A DESIGN CHOICE — AND A PUBLIC CONSEQUENCE",
+      "subheadline": "Cooling systems differ, but host communities still care about what is withdrawn, replenished and disclosed.",
+      "hero_visual": "Three cooling-path branches feed one local watershed/community map; technical choices lead to different local implications.",
+      "essential_labels": [
+        "COOLING DESIGN",
+        "WITHDRAWAL",
+        "REPLENISHMENT",
+        "LOCAL SUPPLY",
+        "DISCLOSURE"
+      ],
+      "main_visual_phrase": "ENGINEERING CHOICES BECOME POLITICAL CHOICES.",
+      "takeaway_ideas": [
+        {
+          "idea": "design varies",
+          "intended_visual_treatment": "Kai branch"
+        },
+        {
+          "idea": "scarcity is local",
+          "intended_visual_treatment": "Thabo pathway"
+        },
+        {
+          "idea": "disclosure matters",
+          "intended_visual_treatment": "shared data panel."
+        }
+      ],
+      "accent_colours": {
+        "kai_patel": "#6540A4",
+        "thabo_mokoena": "#A73528"
+      },
+      "factual_guardrails": [
+        "Do not imply all facilities consume the same water or that replenishment equals identical local replacement."
+      ],
+      "composition_notes": "Technical branches above, lived-resource layer below.",
+      "visual_psychology_traits": [
+        "Kai architecture + Thabo material-resource consequence"
+      ],
+      "notices_first": "ENGINEERING CHOICES BECOME POLITICAL CHOICES.",
+      "preferred_visual_reasoning_family": "cooling branches + lived-resource layer",
+      "anti_cliche_guardrail": "no giant water droplet or drought melodrama.",
+      "portrait_scale_intention": "15–17% each",
+      "density_type_size_note": "medium-high; visible 10/20."
+    },
+    {
+      "slide_number": 11,
+      "panelists": [
+        "johan_vosloo"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Clarify the moratorium story without overstating it.",
+      "core_argument": "Reuters reported more than 100 U.S. data-centre moratoriums under consideration; consideration is not enactment, but it signals that local approval is strategically relevant.",
+      "headline": "A MORATORIUM PROPOSAL IS NOT A BAN — BUT IT IS A SIGNAL",
+      "subheadline": "More than 100 data-centre moratoriums were reportedly under consideration across the United States.",
+      "hero_visual": "Permit map with three states: PROPOSED / REVIEWING / APPROVED, emphasizing institutional process rather than “blocked” imagery.",
+      "essential_labels": [
+        "PROPOSED",
+        "REVIEW",
+        "PERMIT",
+        "LOCAL AUTHORITY",
+        "NOT ENACTED"
+      ],
+      "main_visual_phrase": "PROCESS CAN BECOME A BOTTLENECK.",
+      "takeaway_ideas": [
+        {
+          "idea": "proposal ≠ enacted ban",
+          "intended_visual_treatment": "large distinction"
+        },
+        {
+          "idea": "local authority matters",
+          "intended_visual_treatment": "institutional nodes"
+        },
+        {
+          "idea": "uncertainty visible",
+          "intended_visual_treatment": "evidence note."
+        }
+      ],
+      "accent_colours": {
+        "johan_vosloo": "#173C68"
+      },
+      "factual_guardrails": [
+        "Explicitly say “under consideration,” not “100 bans.”"
+      ],
+      "composition_notes": "Ordered map/process ladder; portrait 21%.",
+      "visual_psychology_traits": [
+        "implementation, precedent, local authority"
+      ],
+      "notices_first": "PROCESS CAN BECOME A BOTTLENECK.",
+      "preferred_visual_reasoning_family": "permit ladder + status map",
+      "anti_cliche_guardrail": "no barricades or sensational “AI banned” imagery.",
+      "portrait_scale_intention": "20–22%",
+      "density_type_size_note": "medium-low; visible 11/20."
+    },
+    {
+      "slide_number": 12,
+      "panelists": [
+        "diane_sterling"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Present the strongest good-faith economic case for hosting.",
+      "core_argument": "Data centres can bring construction activity, skilled work, tax revenue and infrastructure investment; the quality, durability and distribution of those gains should be measured.",
+      "headline": "HOST COMMUNITIES CAN GAIN — IF THE VALUE ACTUALLY LANDS",
+      "subheadline": "Jobs, tax base, skills and infrastructure are real potential benefits, but they should be measured rather than assumed.",
+      "hero_visual": "Investment inflow branches into CONSTRUCTION / SKILLS / TAX BASE / INFRASTRUCTURE, then a LOCAL RETENTION meter.",
+      "essential_labels": [
+        "CAPITAL",
+        "JOBS",
+        "SKILLS",
+        "TAX",
+        "LOCAL RETENTION"
+      ],
+      "main_visual_phrase": "INVESTMENT IS NOT THE SAME AS LOCAL VALUE.",
+      "takeaway_ideas": [
+        {
+          "idea": "benefits can be real",
+          "intended_visual_treatment": "green inflow"
+        },
+        {
+          "idea": "durability matters",
+          "intended_visual_treatment": "retention gauge"
+        },
+        {
+          "idea": "measurement beats slogans",
+          "intended_visual_treatment": "metrics rail."
+        }
+      ],
+      "accent_colours": {
+        "diane_sterling": "#176B4A"
+      },
+      "factual_guardrails": [
+        "Do not attach unverified job or tax figures to AWS or any specific project."
+      ],
+      "composition_notes": "Polished capital-flow map; portrait 22%.",
+      "visual_psychology_traits": [
+        "investment, productivity, measurable returns"
+      ],
+      "notices_first": "INVESTMENT IS NOT THE SAME AS LOCAL VALUE.",
+      "preferred_visual_reasoning_family": "capital-flow + retention scorecard",
+      "anti_cliche_guardrail": "no handshake stock imagery or dollar signs.",
+      "portrait_scale_intention": "22%",
+      "density_type_size_note": "medium; visible 12/20."
+    },
+    {
+      "slide_number": 13,
+      "panelists": [
+        "johan_vosloo",
+        "thabo_mokoena"
+      ],
+      "pairing_mode": "SUPPORTIVE_CONVERGENT",
+      "shared_ground": "trust requires inspectable commitments rather than vague promises",
+      "panelist_contributions": {
+        "johan_vosloo": "institutional durability, reporting and enforceability",
+        "thabo_mokoena": "material distribution, household protection, labour and bargaining"
+      },
+      "central_relationship": "converge",
+      "why_dual": "trust requires inspectable commitments rather than vague promises",
+      "slide_role": "Community benefits become more credible when obligations, infrastructure commitments and reporting are defined, measurable and enforceable.",
+      "core_argument": "Community benefits become more credible when obligations, infrastructure commitments and reporting are defined, measurable and enforceable.",
+      "headline": "A PROMISE IS NOT A HOST-COMMUNITY AGREEMENT",
+      "subheadline": "Durable legitimacy needs rules for benefits, reporting, costs and consequences.",
+      "hero_visual": "Community-benefit compact with four schedules: POWER / WATER / JOBS / REPORTING, signed across operator, government and community columns.",
+      "essential_labels": [
+        "OBLIGATION",
+        "METRIC",
+        "REPORTING",
+        "REVIEW",
+        "ENFORCEMENT"
+      ],
+      "main_visual_phrase": "TRUST NEEDS TERMS.",
+      "takeaway_ideas": [
+        {
+          "idea": "define obligations",
+          "intended_visual_treatment": "Johan clauses"
+        },
+        {
+          "idea": "track distribution",
+          "intended_visual_treatment": "Thabo strip"
+        },
+        {
+          "idea": "review/enforce",
+          "intended_visual_treatment": "shared compliance loop."
+        }
+      ],
+      "accent_colours": {
+        "johan_vosloo": "#173C68",
+        "thabo_mokoena": "#A73528"
+      },
+      "factual_guardrails": [
+        "Present this as a governance model, not a claim that all jurisdictions use such agreements."
+      ],
+      "composition_notes": "Contract as hero object; supportive dual portraits.",
+      "visual_psychology_traits": [
+        "Johan institutional contract + Thabo benefit/burden ledger"
+      ],
+      "notices_first": "TRUST NEEDS TERMS.",
+      "preferred_visual_reasoning_family": "contract + compliance loop",
+      "anti_cliche_guardrail": "no ceremonial handshake or protest shorthand.",
+      "portrait_scale_intention": "16–18% each",
+      "density_type_size_note": "medium-high; visible 13/20."
+    },
+    {
+      "slide_number": 14,
+      "panelists": [
+        "nora"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Synthesize the episode mechanisms into one clean framework.",
+      "core_argument": "“Social licence” is not one attitude; it emerges from multiple physical and institutional conditions.",
+      "headline": "THE SOCIAL-LICENCE STACK HAS FIVE LAYERS",
+      "subheadline": "Permit. Power. Water. Labour. Trust.",
+      "hero_visual": "Five-layer stack, each paired with an evidence question and failure mode.",
+      "essential_labels": [
+        "PERMIT",
+        "POWER",
+        "WATER",
+        "LABOUR",
+        "TRUST"
+      ],
+      "main_visual_phrase": "NO SINGLE LAYER CAN CARRY THE BUILD.",
+      "takeaway_ideas": [
+        {
+          "idea": "physical capacity",
+          "intended_visual_treatment": "upper layers"
+        },
+        {
+          "idea": "distribution/accountability",
+          "intended_visual_treatment": "lower layers"
+        },
+        {
+          "idea": "failure anywhere can slow the system",
+          "intended_visual_treatment": "side cascade."
+        }
+      ],
+      "accent_colours": {
+        "nora": "#1769AA"
+      },
+      "factual_guardrails": [
+        "This five-layer stack is the episode’s analytical framework, not an official industry standard."
+      ],
+      "composition_notes": "Balanced five-layer systems diagram; portrait 20%.",
+      "visual_psychology_traits": [
+        "synthesis, categorisation, evidence structure"
+      ],
+      "notices_first": "NO SINGLE LAYER CAN CARRY THE BUILD.",
+      "preferred_visual_reasoning_family": "synthesis stack",
+      "anti_cliche_guardrail": "no glossy consultancy pentagon.",
+      "portrait_scale_intention": "20%",
+      "density_type_size_note": "medium-low; visible 14/20."
+    },
+    {
+      "slide_number": 15,
+      "panelists": [
+        "johan_vosloo"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Test whether rapid infrastructure expansion changes the need for durable local rules.",
+      "core_argument": "Even strategically important infrastructure still depends on permitting, grid rules, cost allocation and workable implementation.",
+      "headline": "STRATEGIC URGENCY STILL NEEDS LOCAL RULES",
+      "subheadline": "Faster build-out depends on rules that can survive scrutiny and implementation.",
+      "hero_visual": "A PRIORITY BUILD arrow passes through gates labelled PERMIT / GRID RULES / WATER / COST ALLOCATION before reaching the data centre.",
+      "essential_labels": [
+        "PRIORITY BUILD",
+        "PERMIT",
+        "GRID",
+        "COST",
+        "LOCAL RULES"
+      ],
+      "main_visual_phrase": "URGENCY STILL NEEDS RULES.",
+      "takeaway_ideas": [
+        {
+          "idea": "strategic importance",
+          "intended_visual_treatment": "priority band"
+        },
+        {
+          "idea": "institutional process",
+          "intended_visual_treatment": "gate sequence"
+        },
+        {
+          "idea": "durable implementation",
+          "intended_visual_treatment": "precedent warning."
+        }
+      ],
+      "accent_colours": {
+        "johan_vosloo": "#173C68"
+      },
+      "factual_guardrails": [
+        "Do not imply that urgency overrides applicable legal or regulatory processes."
+      ],
+      "composition_notes": "Ordered gate architecture; portrait 22%.",
+      "visual_psychology_traits": [
+        "authority, precedent, implementation"
+      ],
+      "notices_first": "URGENCY STILL NEEDS RULES.",
+      "preferred_visual_reasoning_family": "authority gate + precedent chain",
+      "anti_cliche_guardrail": "no flags, soldiers or militarised imagery.",
+      "portrait_scale_intention": "22%",
+      "density_type_size_note": "medium; visible 15/20."
+    },
+    {
+      "slide_number": 16,
+      "panelists": [
+        "amari_ndlovu"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Bring the debate into a live South African case.",
+      "core_argument": "Reuters reported approval in July of two proposed Equinix data centres at King Air Industria in Cape Town despite objections over disclosure and resource use; the proposed development could require about 170 MW if built.",
+      "headline": "SOUTH AFRICA IS ALREADY INSIDE THIS DEBATE",
+      "subheadline": "Cape Town’s proposed Equinix expansion turns AI infrastructure politics into a local African infrastructure question.",
+      "hero_visual": "Cape Town regional map linking the proposed site to grid, water, fibre and municipal authority, with a clear PROPOSED / APPROVED FOR DEVELOPMENT — NOT OPERATING status rail.",
+      "essential_labels": [
+        "CAPE TOWN",
+        "KING AIR INDUSTRIA",
+        "~170 MW PROPOSED",
+        "GRID",
+        "WATER",
+        "APPROVAL"
+      ],
+      "main_visual_phrase": "AFRICA IS NOT WATCHING FROM THE SIDELINES.",
+      "takeaway_ideas": [
+        {
+          "idea": "live local case",
+          "intended_visual_treatment": "map anchor"
+        },
+        {
+          "idea": "resource disclosure matters",
+          "intended_visual_treatment": "transparency panel"
+        },
+        {
+          "idea": "hosting creates bargaining choices",
+          "intended_visual_treatment": "agency callout."
+        }
+      ],
+      "accent_colours": {
+        "amari_ndlovu": "#A47B19"
+      },
+      "factual_guardrails": [
+        "Do not say the project is fully built or operational; keep ~170 MW as a reported proposed requirement."
+      ],
+      "composition_notes": "Layered regional map with institutional overlays; portrait 22%.",
+      "visual_psychology_traits": [
+        "African agency, spatial power, centre/periphery"
+      ],
+      "notices_first": "AFRICA IS NOT WATCHING FROM THE SIDELINES.",
+      "preferred_visual_reasoning_family": "layered local map + sovereignty framework",
+      "anti_cliche_guardrail": "no decorative Africa silhouette or empty heritage motifs.",
+      "portrait_scale_intention": "22%",
+      "density_type_size_note": "medium; visible 16/20."
+    },
+    {
+      "slide_number": 17,
+      "panelists": [
+        "amari_ndlovu",
+        "johan_vosloo"
+      ],
+      "pairing_mode": "SYNTHESIS_COMPLEMENTARY",
+      "shared_ground": "host-state leverage is strongest when bargaining power is converted into durable rules",
+      "panelist_contributions": {
+        "amari_ndlovu": "value capture, local capability and avoidance of enclave infrastructure",
+        "johan_vosloo": "enforceable obligations, predictable permitting and long-term institutional capacity"
+      },
+      "central_relationship": "synthesize",
+      "why_dual": "host-state leverage is strongest when bargaining power is converted into durable rules",
+      "slide_role": "African governments have choices beyond “approve” or “reject”: condition access, co-invest, reserve domestic capacity, require infrastructure commitments and set transparent resource rules.",
+      "core_argument": "African governments have choices beyond “approve” or “reject”: condition access, co-invest, reserve domestic capacity, require infrastructure commitments and set transparent resource rules.",
+      "headline": "AFRICAN HOST STATES HAVE MORE THAN TWO CHOICES",
+      "subheadline": "Approve. Condition. Co-invest. Reserve capacity. Negotiate infrastructure.",
+      "hero_visual": "Five-path decision tree leading to different capability outcomes.",
+      "essential_labels": [
+        "APPROVE",
+        "CONDITION",
+        "CO-INVEST",
+        "RESERVE",
+        "NEGOTIATE"
+      ],
+      "main_visual_phrase": "HOSTING CAN BE BARGAINING POWER.",
+      "takeaway_ideas": [
+        {
+          "idea": "agency is a menu",
+          "intended_visual_treatment": "Amari route map"
+        },
+        {
+          "idea": "rules create credibility",
+          "intended_visual_treatment": "Johan institutional rail"
+        },
+        {
+          "idea": "domestic capability",
+          "intended_visual_treatment": "shared endpoint."
+        }
+      ],
+      "accent_colours": {
+        "amari_ndlovu": "#A47B19",
+        "johan_vosloo": "#173C68"
+      },
+      "factual_guardrails": [
+        "Present these as policy options, not a recommendation that every state adopt all of them."
+      ],
+      "composition_notes": "Decision tree with two complementary reasoning rails.",
+      "visual_psychology_traits": [
+        "Amari sovereignty map + Johan implementation ladder"
+      ],
+      "notices_first": "HOSTING CAN BE BARGAINING POWER.",
+      "preferred_visual_reasoning_family": "sovereignty decision tree + implementation rail",
+      "anti_cliche_guardrail": "no “Africa versus Big Tech” boxing-match frame.",
+      "portrait_scale_intention": "16–18% each",
+      "density_type_size_note": "medium-high; visible 17/20."
+    },
+    {
+      "slide_number": 18,
+      "panelists": [
+        "thabo_mokoena",
+        "diane_sterling"
+      ],
+      "pairing_mode": "QUALIFIED_TENSION",
+      "shared_ground": "value capture should be measured across the whole local system",
+      "panelist_contributions": {
+        "thabo_mokoena": "ownership, labour share, public infrastructure burden and distribution",
+        "diane_sterling": "investment returns, tax base, productivity and opportunity cost"
+      },
+      "central_relationship": "partially_overlap",
+      "why_dual": "value capture should be measured across the whole local system",
+      "slide_role": "A host jurisdiction should be able to see where value and costs flow across hyperscaler, utility, municipality, worker and user.",
+      "core_argument": "A host jurisdiction should be able to see where value and costs flow across hyperscaler, utility, municipality, worker and user.",
+      "headline": "WHO CAPTURES THE VALUE — AND WHO CARRIES THE COST?",
+      "subheadline": "The same project can generate investment while distributing benefits and burdens very differently.",
+      "hero_visual": "Five-node value-and-cost circulation map: HYPERSCALER / UTILITY / MUNICIPALITY / WORKER / USER.",
+      "essential_labels": [
+        "CAPITAL",
+        "TAX",
+        "WAGES",
+        "GRID COST",
+        "PUBLIC BENEFIT",
+        "COMPUTE ACCESS"
+      ],
+      "main_visual_phrase": "GROWTH AND DISTRIBUTION ARE DIFFERENT QUESTIONS.",
+      "takeaway_ideas": [
+        {
+          "idea": "total value",
+          "intended_visual_treatment": "Diane green flow"
+        },
+        {
+          "idea": "distribution",
+          "intended_visual_treatment": "Thabo red flow"
+        },
+        {
+          "idea": "net local capability",
+          "intended_visual_treatment": "shared balance."
+        }
+      ],
+      "accent_colours": {
+        "thabo_mokoena": "#A73528",
+        "diane_sterling": "#176B4A"
+      },
+      "factual_guardrails": [
+        "No invented percentages, margins or project-specific distribution figures."
+      ],
+      "composition_notes": "Circular flows rather than adversarial split-screen.",
+      "visual_psychology_traits": [
+        "Diane capital-flow analysis + Thabo ownership/burden analysis"
+      ],
+      "notices_first": "GROWTH AND DISTRIBUTION ARE DIFFERENT QUESTIONS.",
+      "preferred_visual_reasoning_family": "circular value-and-cost flow",
+      "anti_cliche_guardrail": "no money bags, fists or simplistic good/bad score.",
+      "portrait_scale_intention": "16–18% each",
+      "density_type_size_note": "high but modular; visible 18/20."
+    },
+    {
+      "slide_number": 19,
+      "panelists": [
+        "amari_ndlovu",
+        "diane_sterling"
+      ],
+      "pairing_mode": "QUALIFIED_TENSION",
+      "shared_ground": "the same infrastructure investment can produce very different local-development outcomes",
+      "panelist_contributions": {
+        "amari_ndlovu": "local agency, capability and development pathway",
+        "diane_sterling": "investment flows, infrastructure economics and opportunity cost"
+      },
+      "central_relationship": "partially_overlap",
+      "why_dual": "Two improve the slide by separating the investment case from the local-development outcome",
+      "slide_role": "Compare two possible local-development outcomes from the same data-centre investment.",
+      "core_argument": "The same data-centre investment can produce different local-development outcomes depending on whether local capability is built around it.",
+      "headline": "TWO FUTURES CAN START WITH THE SAME DATA CENTRE",
+      "subheadline": "One mainly hosts external compute. The other builds more local capability around the same infrastructure.",
+      "hero_visual": "One data-centre project branches into two future-state diagrams: HOSTING-ONLY and LOCAL-CAPABILITY BUILD.",
+      "essential_labels": [
+        "HOSTING",
+        "LOCAL SKILLS",
+        "GRID INVESTMENT",
+        "DOMESTIC ACCESS",
+        "CAPITAL"
+      ],
+      "main_visual_phrase": "THE BUILD IS THE SAME. THE DEVELOPMENT PATH IS NOT.",
+      "takeaway_ideas": [
+        {
+          "idea": "investment can accelerate build-out"
+        },
+        {
+          "idea": "local capability depends on surrounding agreements and infrastructure"
+        },
+        {
+          "idea": "these are scenarios, not predictions."
+        }
+      ],
+      "accent_colours": {
+        "amari_ndlovu": "#A47B19",
+        "diane_sterling": "#176B4A"
+      },
+      "factual_guardrails": [
+        "Do not present either future as inevitable."
+      ],
+      "composition_notes": "Balanced two-path future-state fork.",
+      "visual_psychology_traits": [
+        "Amari traces local agency and capability; Diane traces investment and economic consequences"
+      ],
+      "notices_first": "THE BUILD IS THE SAME. THE DEVELOPMENT PATH IS NOT.",
+      "preferred_visual_reasoning_family": "two-path future-state fork",
+      "anti_cliche_guardrail": "no inevitable-outcome framing.",
+      "portrait_scale_intention": "16–18% each",
+      "density_type_size_note": "medium-high; visible 19/20."
+    },
+    {
+      "slide_number": 20,
+      "panelists": [
+        "nora"
+      ],
+      "pairing_mode": null,
+      "shared_ground": null,
+      "panelist_contributions": {},
+      "central_relationship": null,
+      "why_dual": null,
+      "slide_role": "Close with the episode doctrine and the test for durable hosting.",
+      "core_argument": "Compute capacity depends not only on chips, but also on power, water, cost allocation, institutions and durable host-community conditions.",
+      "headline": "COMPUTE SOVEREIGNTY REQUIRES LEGITIMATE HOSTING CONDITIONS",
+      "subheadline": "Chips matter. So do megawatts, water, rules, costs and public trust.",
+      "hero_visual": "Six-node wheel — CHIPS / POWER / WATER / GRID RULES / LOCAL VALUE / TRUST — converging on DURABLE COMPUTE.",
+      "essential_labels": [
+        "CHIPS",
+        "POWER",
+        "WATER",
+        "RULES",
+        "VALUE",
+        "TRUST"
+      ],
+      "main_visual_phrase": "IF THE HOSTING SYSTEM FAILS, THE COMPUTE STRATEGY FAILS WITH IT.",
+      "takeaway_ideas": [
+        {
+          "idea": "physical capacity",
+          "intended_visual_treatment": "left arc"
+        },
+        {
+          "idea": "institutional durability",
+          "intended_visual_treatment": "right arc"
+        },
+        {
+          "idea": "durable compute",
+          "intended_visual_treatment": "centre."
+        }
+      ],
+      "accent_colours": {
+        "nora": "#1769AA"
+      },
+      "factual_guardrails": [
+        "This is the episode’s analytical doctrine, not a formal definition."
+      ],
+      "composition_notes": "Clean synthesis wheel; strong negative space; calmer finish.",
+      "visual_psychology_traits": [
+        "evidence synthesis"
+      ],
+      "notices_first": "IF THE HOSTING SYSTEM FAILS, THE COMPUTE STRATEGY FAILS WITH IT.",
+      "preferred_visual_reasoning_family": "synthesis wheel + evidence labels",
+      "anti_cliche_guardrail": "no triumphant globe, glowing AI brain or flag montage.",
+      "portrait_scale_intention": "20–22%",
+      "density_type_size_note": "medium-low; visible 20/20."
+    }
+  ]
+}
