@@ -45,6 +45,20 @@ def v3_fixture() -> DailyDocuments:
         f"ARCHIVE FOLDER ID: {ARCHIVE}\n"
         "=== END DAILY PAYLOAD ===\n"
     )
+    human_lines = []
+    for number, slide in enumerate(manifest["slides"], start=1):
+        cast = " + ".join(slide["panelists"])
+        if len(slide["panelists"]) == 2:
+            cast += f" — authorised {slide['pairing_mode']} dual"
+        human_lines.extend((
+            f"SLIDE {number:02d} /10 — {slide['slide_role']}",
+            f"CASTING: {cast}",
+            f"CORE ARGUMENT: {slide['core_argument']}",
+            f"HEADLINE: {slide['headline']}",
+            f"HERO VISUAL: {slide['hero_visual']}",
+            "",
+        ))
+    human_text = "\n".join(human_lines) + "\n"
     design = (
         "Current v3 controls outside the payload\n"
         "=== BEGIN DAILY PAYLOAD ===\n"
@@ -56,7 +70,7 @@ def v3_fixture() -> DailyDocuments:
         "ARCHIVE DESTINATION: Ep136-4November2026\n"
         f"ARCHIVE FOLDER ID: {ARCHIVE}\n"
         "STATUS: READY FOR CAROUSEL RENDERING\n"
-        "TEN HUMAN BRIEFS: synthetic, not approved publication artwork\n"
+        f"{human_text}"
         f"{V3_INTEGRITY_GATE}\n"
         f"{V3_MANIFEST_BEGIN}\n"
         + json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n"
@@ -92,6 +106,29 @@ def alter_manifest(docs, change):
                           + json.dumps(manifest, ensure_ascii=False) + "\n"
                           + docs.slide_design[end:])
 
+
+
+def test_all_ten_human_briefs_must_exist():
+    docs = v3_fixture()
+    edited = docs.slide_design.replace("SLIDE 10 /10 — ", "UNNUMBERED 10 — ", 1)
+    assert "HUMAN_BRIEF_COUNT_INVALID" in codes(
+        check(DailyDocuments(docs.rnd, edited)))
+
+
+def test_human_casting_and_headline_must_match_manifest():
+    docs = v3_fixture()
+    edited = docs.slide_design.replace("CASTING: nora", "CASTING: kai_patel", 1)
+    assert "HUMAN_MANIFEST_MISMATCH" in codes(
+        check(DailyDocuments(docs.rnd, edited)))
+    edited = docs.slide_design.replace("HEADLINE: ", "HEADLINE: WRONG ", 1)
+    assert "HUMAN_MANIFEST_MISMATCH" in codes(
+        check(DailyDocuments(docs.rnd, edited)))
+
+
+def test_instructions_outside_payload_can_repeat_gate_language():
+    docs = v3_fixture()
+    edited = "Standing instructions: DESIGN INTEGRITY GATE: PASS\n" + docs.slide_design
+    assert check(DailyDocuments(docs.rnd, edited)).ready
 
 def test_current_v3_contract_ready_with_verified_external_assets():
     result = check()
