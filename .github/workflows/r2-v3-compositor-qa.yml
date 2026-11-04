@@ -1,0 +1,27 @@
+name: R2 v3 3x4 zero-generation compositor QA
+
+on:
+  push:
+    branches:
+      - feat/r2-v3-3x4-compositor-20261104
+  pull_request:
+    branches:
+      - feat/v3-10-slide-readiness-20261104
+
+permissions:
+  contents: read
+
+jobs:
+  r2-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install offline testing dependencies
+        run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - name: Run R1b plus R2 pure deterministic tests
+        run: python -m pytest -q tests/test_daily_readiness.py tests/test_v3_readiness.py tests/test_v3_drive_proof.py tests/test_v3_compositor.py
