@@ -55,7 +55,20 @@ def v3_fixture() -> DailyDocuments:
             f"CASTING: {cast}",
             f"CORE ARGUMENT: {slide['core_argument']}",
             f"HEADLINE: {slide['headline']}",
+            f"SUBHEADLINE: {slide['subheadline']}",
             f"HERO VISUAL: {slide['hero_visual']}",
+            f"ESSENTIAL LABELS: {' | '.join(slide['essential_labels'])}",
+            f"MAIN VISUAL PHRASE: {slide['main_visual_phrase']}",
+            f"THREE TAKEAWAY IDEAS: {' / '.join(item['idea'] for item in slide['takeaway_ideas'])}",
+            f"ACCENT(S): {'; '.join(slug + ' ' + slide['accent_colours'][slug] for slug in slide['panelists'])}",
+            f"FACTUAL GUARDRAILS: {'; '.join(slide['factual_guardrails'])}",
+            f"COMPOSITION: {slide['composition_notes']}",
+            f"VISUAL PSYCHOLOGY: {'; '.join(slide['visual_psychology_traits'])}",
+            f"NOTICES FIRST: {slide['notices_first']}",
+            f"PREFERRED REASONING FAMILY: {slide['preferred_visual_reasoning_family']}",
+            f"ANTI-CLICHÉ: {slide['anti_cliche_guardrail']}",
+            f"PORTRAIT SCALE: {slide['portrait_scale_intention']}",
+            f"DENSITY / TYPE: {slide['density_type_size_note']}",
             "",
         ))
     human_text = "\n".join(human_lines) + "\n"
@@ -107,6 +120,28 @@ def alter_manifest(docs, change):
                           + docs.slide_design[end:])
 
 
+
+
+@pytest.mark.parametrize("label", [
+    "CASTING", "CORE ARGUMENT", "HEADLINE", "SUBHEADLINE", "HERO VISUAL",
+    "ESSENTIAL LABELS", "MAIN VISUAL PHRASE", "THREE TAKEAWAY IDEAS",
+    "ACCENT(S)", "FACTUAL GUARDRAILS", "COMPOSITION", "VISUAL PSYCHOLOGY",
+    "NOTICES FIRST", "PREFERRED REASONING FAMILY", "ANTI-CLICHÉ",
+    "PORTRAIT SCALE", "DENSITY / TYPE",
+])
+def test_every_human_field_must_match_manifest(label):
+    docs = v3_fixture()
+    original = next(line for line in docs.slide_design.splitlines()
+                    if line.startswith(label + ":"))
+    changed = docs.slide_design.replace(original, original + " ALTERED", 1)
+    assert "HUMAN_MANIFEST_MISMATCH" in codes(check(DailyDocuments(docs.rnd, changed)))
+
+
+def test_human_slide_role_must_match_manifest():
+    docs = v3_fixture()
+    changed = docs.slide_design.replace("SLIDE 01 /10 — opening",
+                                        "SLIDE 01 /10 — unrelated", 1)
+    assert "HUMAN_MANIFEST_MISMATCH" in codes(check(DailyDocuments(docs.rnd, changed)))
 
 def test_all_ten_human_briefs_must_exist():
     docs = v3_fixture()
