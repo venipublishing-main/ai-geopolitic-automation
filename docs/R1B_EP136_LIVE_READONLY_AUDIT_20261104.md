@@ -20,7 +20,7 @@ This report records live read-only Drive observations from connected Veni Publis
 - All ten `SLIDE XX /10` human briefs are present, ordered. A read-only comparison against corresponding manifest objects checked slide role and 17 labelled fields per slide: CASTING, CORE ARGUMENT, HEADLINE, SUBHEADLINE, HERO VISUAL, ESSENTIAL LABELS, MAIN VISUAL PHRASE, THREE TAKEAWAY IDEAS, ACCENT(S), FACTUAL GUARDRAILS, COMPOSITION, VISUAL PSYCHOLOGY, NOTICES FIRST, PREFERRED REASONING FAMILY, ANTI-CLICHÉ, PORTRAIT SCALE, DENSITY / TYPE. **180/180 comparisons matched**.
 - Canonical identity registry readback: each of the six active Drive IDs resolves to an `image/png` of the expected `*_CANONICAL_PANELIST.png` name under exact parent `1CYYVI5jXH0lgJBPmqP3VqE9mKrbUva5J`. This verifies IDs, names, location and MIME, **not byte-level alpha channels, dimensions or pixel identities**.
 - Archive folder listing contains 20 items: ten `Ep136_Slide01of10.png`–`Ep136_Slide10of10.png`, six `ReelFrame01of06.png`–`ReelFrame06of06.png`, and four episode documents (R&D, Slide Design, Reel Design, Captions). All sixteen raster entries were listed as `image/png`. No file contents were changed.
-- Ep136 images were published/accepted in the manual production process; this audit does **not** claim they were produced by the automation.
+- Ep136 images were accepted and archived in the manual production process; this audit does **not** claim they were produced by the automation or published to Instagram.
 
 ## CI evidence
 
