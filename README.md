@@ -19,6 +19,23 @@ This branch introduces `src.v3_readiness.V3DailyBuildReadiness`, an explicit
 folder and exact portrait files exist. Without those callbacks, BUILD stays
 **BLOCKED**. The old CLI is not a v3 deployment entry point.
 
+R1b now additionally provides `src.v3_drive_readiness`, a **read-only**
+authenticated-rclone executable using the current Google Drive native document
+IDs (rather than guessed paths), archive ID/name/parent proof, and canonical
+portrait Drive ID/PNG transparency checks. It invokes only bounded `lsjson`
+and `cat` reads. To use it on a machine with an authorized rclone remote:
+
+```sh
+python -m pip install -r requirements.txt
+python -m src.v3_drive_readiness --json
+```
+
+This is a **readiness diagnostic**. It does not render, archive, approve or
+publish; a real configured rclone run still needs to be observed before
+calling the live adapter operational.
+
+See [R1b authenticated Drive runtime](docs/V3_DRIVE_R1B_RUNTIME.md).
+
 See [v3 R1 contract and next steps](docs/V3_READINESS_R1.md).
 CI workflow: `.github/workflows/v3-readiness-tests.yml`. This work does
 not run providers, change image pixels, or touch the publishing pipeline.
