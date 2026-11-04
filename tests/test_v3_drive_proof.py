@@ -1,4 +1,4 @@
-"""No-network proof for the authenticated Drive R1b boundary."""
+"""Offline regression coverage for the read-only authenticated Drive R1b boundary."""
 from __future__ import annotations
 
 import io
@@ -9,8 +9,9 @@ from datetime import date
 import pytest
 from PIL import Image
 
-from src.production_inputs import InputSourceError, MemoryInput, RcloneDriveInput
+from src.production_inputs import InputSourceError
 from src.v3_drive_proof import (
+    DAILY_OPERATIONS_FOLDER_ID, V3_DAILY_NATIVE_IDS,
     EPISODE_ARCHIVE_PARENT_ID, PANELIST_FILENAMES, PANELIST_FOLDER_ID,
     RcloneV3DriveProof,
 )
@@ -33,7 +34,7 @@ def png_bytes(*, transparent: bool = True) -> bytes:
 
 
 class FakeReadOnlyRclone:
-    """Emulates two authenticated parent lists and explicit image-byte reads."""
+    """Three authenticated parent listings plus native text and PNG reads."""
     def __init__(self, *, image: bytes | None = None):
         self.image = image if image is not None else png_bytes()
         self.calls = []
@@ -44,6 +45,15 @@ class FakeReadOnlyRclone:
             {"ID": file_id, "Name": PANELIST_FILENAMES[slug], "IsDir": False,
              "MimeType": "image/png", "Size": len(self.image)}
             for slug, file_id in V3_PORTRAIT_IDS.items()
+        ]
+        docs = v3_fixture()
+        self.documents = {
+            "Daily R&D.txt": docs.rnd.replace("fixture_v3_archive", ARCHIVE_ID),
+            "Daily Slide Design.txt": docs.slide_design.replace("fixture_v3_archive", ARCHIVE_ID),
+        }
+        self.daily_list = [
+            {"ID": native_id, "Name": name, "IsDir": False, "MimeType": "text/plain"}
+            for name, native_id in V3_DAILY_NATIVE_IDS.values()
         ]
         self.error = None
 
@@ -64,14 +74,24 @@ class FakeReadOnlyRclone:
             if "--dirs-only" in args:
                 assert parent == EPISODE_ARCHIVE_PARENT_ID
                 value = self.archive_list
+            elif parent == DAILY_OPERATIONS_FOLDER_ID:
+                assert "--files-only" in args
+                assert "--drive-export-formats" in args
+                value = self.daily_list
             else:
                 assert "--files-only" in args
                 assert parent == PANELIST_FOLDER_ID
                 value = self.portraits
             return subprocess.CompletedProcess(args, 0, json.dumps(value))
         assert args[1] == "cat"
-        assert parent == PANELIST_FOLDER_ID
         assert args[2].startswith("ai_geopolitic_drive:")
+        if parent == DAILY_OPERATIONS_FOLDER_ID:
+            assert "--drive-export-formats" in args
+            name = args[2].split(":", 1)[1]
+            assert name in self.documents
+            assert kwargs.get("encoding") == "utf-8-sig"
+            return subprocess.CompletedProcess(args, 0, self.documents[name])
+        assert parent == PANELIST_FOLDER_ID
         assert args[2].endswith(".png")
         assert "encoding" not in kwargs
         return subprocess.CompletedProcess(args, 0, self.image)
@@ -89,7 +109,7 @@ def test_archive_requires_exact_id_folder_name_type_and_parent(monkeypatch):
     assert not proof.archive_folder_exists(ARCHIVE_ID, "Ep135-3November2026")
     assert not proof.archive_folder_exists("1invalidfolderid", ARCHIVE_NAME)
     assert not proof.archive_folder_exists(ARCHIVE_ID, "other-folder")
-    assert len(fake.calls) == 1  # per-read immutable snapshot
+    assert len(fake.calls) == 1  # per-run read-only listing cache
     fake.archive_list[0]["IsDir"] = False
     assert not RcloneV3DriveProof().archive_folder_exists(ARCHIVE_ID, ARCHIVE_NAME)
 
@@ -100,7 +120,6 @@ def test_all_six_exact_portrait_ids_have_png_bytes_and_real_transparency(monkeyp
         assert proof.portrait_asset_exists(slug, file_id)
     assert not proof.portrait_asset_exists("nora", V3_PORTRAIT_IDS["kai_patel"])
     assert not proof.portrait_asset_exists("made_up", V3_PORTRAIT_IDS["nora"])
-    # Exactly one list request plus one read per assigned portrait.
     assert sum(args[1] == "lsjson" for args, _ in fake.calls) == 1
     assert sum(args[1] == "cat" for args, _ in fake.calls) == 6
 
@@ -148,48 +167,63 @@ def test_read_failure_blocks_without_leaking_rclone_stderr(monkeypatch):
 
 
 def test_malformed_remote_listing_blocks(monkeypatch):
-    proof, fake = verifier(monkeypatch)
-    def broken(args, **kwargs):
-        return subprocess.CompletedProcess(args, 0, "{malformed")
-    monkeypatch.setattr(subprocess, "run", broken)
+    proof, _ = verifier(monkeypatch)
+    monkeypatch.setattr(subprocess, "run", lambda args, **kwargs:
+                        subprocess.CompletedProcess(args, 0, "{malformed"))
     with pytest.raises(InputSourceError):
         proof.archive_folder_exists(ARCHIVE_ID, ARCHIVE_NAME)
 
 
+def test_pinned_native_daily_documents_are_exported_by_exact_id(monkeypatch):
+    proof, fake = verifier(monkeypatch)
+    docs = proof.read()
+    assert "Ep136" in docs.rnd
+    assert "DESIGN INTEGRITY GATE: PASS" in docs.slide_design
+    assert any(args[1] == "lsjson" and DAILY_OPERATIONS_FOLDER_ID in args
+               for args, _ in fake.calls)
+    assert sum(args[1] == "cat" for args, _ in fake.calls) == 2
+
+
+@pytest.mark.parametrize("tamper", ["id", "name", "duplicate", "missing"])
+def test_native_document_ambiguous_or_wrong_identity_blocks_before_read(monkeypatch, tamper):
+    proof, fake = verifier(monkeypatch)
+    entry = fake.daily_list[0]
+    if tamper == "id":
+        entry["ID"] = V3_DAILY_NATIVE_IDS["slide_design"][1]
+    elif tamper == "name":
+        entry["Name"] = "Daily R&D REPLACEMENT.txt"
+    elif tamper == "duplicate":
+        fake.daily_list.append(entry.copy())
+    else:
+        fake.daily_list.remove(entry)
+    with pytest.raises(InputSourceError):
+        proof.read()
+    assert all(args[1] != "cat" for args, _ in fake.calls)
+
+
 def test_runtime_wires_real_callbacks_and_returns_metadata_only(monkeypatch, capsys):
     proof, fake = verifier(monkeypatch)
-    docs = v3_fixture()
-    # This fixture uses a deliberately synthetic archive ID. Substitute only
-    # the declared identity; the JSON and two human document IDs must agree.
-    design = docs.slide_design.replace("fixture_v3_archive", ARCHIVE_ID)
-    rnd = docs.rnd.replace("fixture_v3_archive", ARCHIVE_ID)
-    result = verify_authenticated(MemoryInput(rnd, design), proof, production_date=TODAY)
+    result = verify_authenticated(proof, proof, production_date=TODAY)
     assert result.ready
     assert len(result.manifest["slides"]) == 10
     assert all(args[1] in ("lsjson", "cat") for args, _ in fake.calls)
-
-    monkeypatch.setattr(RcloneDriveInput, "from_environment", classmethod(
-        lambda cls: RcloneDriveInput("ai_geopolitic_drive", "Control/Daily R&D.txt",
-                                    "Control/Daily Slide Design.txt")
-    ))
-    monkeypatch.setattr(RcloneDriveInput, "read", lambda self: type(docs)(rnd, design))
-    # CLI uses real current SAST day; deterministic tests inject it at the function.
-    # Here only verify that the summary never includes raw slide copy.
-    if date.today() == TODAY:
-        assert main(["--json"]) == 0
-        output = json.loads(capsys.readouterr().out)
-        assert output["slide_count"] == 10
-        assert output["generation_performed"] is False
-        assert "SYNTHETIC V3 CONTRACT REGRESSION" not in json.dumps(output)
+    monkeypatch.setattr("src.v3_drive_readiness.current_production_date", lambda: TODAY)
+    assert main(["--json"]) == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["slide_count"] == 10
+    assert output["generation_performed"] is False
+    assert output["publishing_performed"] is False
+    assert "SYNTHETIC V3 CONTRACT REGRESSION" not in json.dumps(output)
 
 
-def test_no_env_paths_means_closed_cli(monkeypatch, capsys):
-    monkeypatch.delenv("AI_GEOPOLITIC_RND_PATH", raising=False)
-    monkeypatch.delenv("AI_GEOPOLITIC_SLIDE_DESIGN_PATH", raising=False)
+def test_missing_rclone_credentials_fails_closed(monkeypatch, capsys):
+    monkeypatch.setattr(subprocess, "run", lambda args, **kwargs:
+                        (_ for _ in ()).throw(FileNotFoundError("private executable path")))
     assert main(["--json"]) == 1
     value = json.loads(capsys.readouterr().out)
     assert value["build"] == "BLOCKED"
     assert value["blockers"][0]["code"] == "INPUT_SOURCE_UNAVAILABLE"
+    assert "private executable path" not in json.dumps(value)
 
 
 def test_invalid_remote_name_is_rejected_without_shell_or_network():
