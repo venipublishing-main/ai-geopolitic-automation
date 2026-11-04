@@ -16,7 +16,8 @@ from .production_inputs import (DailyDocuments, InputSourceError, LocalFileInput
                                 ProductionInput, RcloneDriveInput)
 
 RND_SUCCESS_STATUSES = frozenset({"COMPLETE", "R&D COMPLETE", "READY FOR SLIDE DESIGN",
-                                 "R&D COMPLETE — READY FOR 20-SLIDE DESIGN"})
+                                 "R&D COMPLETE — READY FOR 20-SLIDE DESIGN",
+                                 "R&D COMPLETE — READY FOR 10-SLIDE DESIGN"})
 DESIGN_READY_STATUS = "READY FOR CAROUSEL RENDERING"
 DESIGN_READY_STATUSES = frozenset({DESIGN_READY_STATUS,
                                   "20-SLIDE BLUEPRINT COMPLETE — READY FOR MANUAL RENDERING"})
@@ -52,8 +53,11 @@ class DailyBuildReadinessResult:
 
 
 class DailyBuildReadiness:
-    def __init__(self, characters: dict | None = None):
+    def __init__(self, characters: dict | None = None, *, expected_slide_count: int = 20):
+        if expected_slide_count not in (10, 20):
+            raise ValueError("Unsupported production slide count.")
         self.characters = load_canonical_characters() if characters is None else characters
+        self.expected_slide_count = expected_slide_count
 
     def check(self, source: ProductionInput, *, production_date: date | None = None) -> DailyBuildReadinessResult:
         today = production_date if production_date is not None else current_production_date()
@@ -116,7 +120,7 @@ class DailyBuildReadiness:
                         (doc.archive_folder_id and not re.fullmatch(r"[A-Za-z0-9_-]+", doc.archive_folder_id))):
                 block("ARCHIVE_FOLDER_MISSING", "Require a valid Drive archive folder ID.", f"{kind}.archive_folder_id")
         if manifest_parsed:
-            blockers.extend(validate_manifest_v2(manifest, self.characters))
+            blockers.extend(validate_manifest_v2(manifest, self.characters, expected_count=self.expected_slide_count))
             if isinstance(manifest, dict):
                 for kind, doc in (("rnd", rnd), ("slide_design", design)):
                     if not doc:

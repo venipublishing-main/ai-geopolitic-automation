@@ -30,7 +30,14 @@ def nonblank(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
-def validate_manifest_v2(manifest: object, characters: dict) -> list[Blocker]:
+def validate_manifest_v2(manifest: object, characters: dict, *, expected_count: int = 20) -> list[Blocker]:
+    """Validate the closed v2 field set with an explicitly selected episode length.
+
+    20 is the frozen historical automation contract. Active Drive v3 callers
+    explicitly request 10; schema_version and JSON field names remain unchanged.
+    """
+    if expected_count not in (10, 20):
+        raise ValueError("Only historical 20-slide or active v3 10-slide contracts are supported.")
     errors: list[Blocker] = []
 
     def check(ok, code, message, path):
@@ -63,8 +70,8 @@ def validate_manifest_v2(manifest: object, characters: dict) -> list[Blocker]:
           "ARCHIVE_FOLDER_MISSING", "Require a nonblank Drive folder ID (not a URL).", "archive_folder_id")
     slides = manifest.get("slides")
     if not isinstance(slides, list):
-        return errors + [Blocker("SLIDE_COUNT_INVALID", "slides must be an array of exactly 20 objects.", "slides")]
-    check(len(slides) == 20, "SLIDE_COUNT_INVALID", "Require exactly 20 slides.", "slides")
+        return errors + [Blocker("SLIDE_COUNT_INVALID", f"slides must be an array of exactly {expected_count} objects.", "slides")]
+    check(len(slides) == expected_count, "SLIDE_COUNT_INVALID", f"Require exactly {expected_count} slides.", "slides")
     for index, slide in enumerate(slides, 1):
         path = f"slides[{index - 1}]"
         if not isinstance(slide, dict):
