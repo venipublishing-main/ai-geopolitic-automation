@@ -101,7 +101,7 @@ def check_human_briefs(text: str, manifest: dict) -> list[Blocker]:
     payload = extract_block(text, PAYLOAD_BEGIN, PAYLOAD_END, "DAILY_PAYLOAD")
     lines = payload.split(V3_MANIFEST_BEGIN, 1)[0].splitlines()
     headings = [(i, int(m.group(1))) for i, line in enumerate(lines)
-                if (m := re.fullmatch(r"SLIDE\\s+(\\d{2})\\s*/\\s*10\\s+—\\s+.+", line.strip()))]
+                if (m := re.fullmatch(r"SLIDE\s+(\d{2})\s*/\s*10\s+—\s+.+", line.strip()))]
     if [number for _, number in headings] != list(range(1, 11)):
         return [Blocker("HUMAN_BRIEF_COUNT_INVALID",
                         "Require exactly ten ordered numbered human briefs.",
