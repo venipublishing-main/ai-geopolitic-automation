@@ -12,7 +12,7 @@ from datetime import date
 
 from .control_documents import Blocker, ControlDocumentError, parse_daily_metadata
 from .daily_readiness import DailyBuildReadinessResult, current_production_date
-from .production_inputs import DailyDocuments, InputSourceError, RcloneDriveInput
+from .production_inputs import DailyDocuments, InputSourceError, ProductionInput
 from .v3_drive_proof import RcloneV3DriveProof
 from .v3_readiness import V3DailyBuildReadiness
 
@@ -23,7 +23,7 @@ def blocked(today: date, code: str, message: str) -> DailyBuildReadinessResult:
 
 
 def verify_authenticated(
-    source: RcloneDriveInput,
+    source: ProductionInput,
     proof: RcloneV3DriveProof,
     *,
     production_date: date | None = None,
@@ -57,11 +57,13 @@ def main(argv: list[str] | None = None) -> int:
     today = current_production_date()
 
     try:
-        source = RcloneDriveInput.from_environment()
         proof = RcloneV3DriveProof(
-            remote=source.remote, executable=source.executable, timeout=source.timeout,
+            remote=os.environ.get("AI_GEOPOLITIC_DRIVE_REMOTE", "ai_geopolitic_drive"),
+            executable=os.environ.get("AI_GEOPOLITIC_RCLONE", "rclone"),
         )
-        result = verify_authenticated(source, proof, production_date=today)
+        # The same pinned-ID authenticated client reads both current native
+        # Google Docs and verifies the independent archive / portrait objects.
+        result = verify_authenticated(proof, proof, production_date=today)
     except InputSourceError:
         result = blocked(today, "INPUT_SOURCE_UNAVAILABLE",
                          "Drive proof cannot start; check local authorized rclone configuration.")
