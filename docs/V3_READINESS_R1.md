@@ -17,6 +17,7 @@ The frozen historical 20-slide automation is left as the default for the old `Da
 - Slide Design must say exactly `STATUS: READY FOR CAROUSEL RENDERING`.
 - Within the unique Daily Slide Design payload there must be exactly one `DESIGN INTEGRITY GATE: PASS`.
 - Exactly one manifest block must occur **inside** the payload, after the gate, using the currently approved literal delimiter lines `[BEGIN AUTOMATION MANIFEST JSON marker]` and `[END AUTOMATION MANIFEST JSON marker]`. Legacy `=== BEGIN AUTOMATION MANIFEST JSON ===` is not accepted by the v3 gate.
+- The ten human briefs must be numbered SLIDE 01 /10 through SLIDE 10 /10 in order. The labelled CASTING, CORE ARGUMENT, HEADLINE and HERO VISUAL lines must match the corresponding Manifest object exactly; dual CASTING also states its authorised pairing mode.
 - `schema_version` stays integer 2, with the same closed top-level and per-slide keys; slides must be exactly **10**, numbered 1 through 10. One or two canonical panelists, approved pairing modes, exact source facts and three takeaways per slide are validated by the existing strict schema validator.
 - Current canonical accents are: Nora `#336BA3`; Diane `#204F39`; Johan `#253852`; Kai `#7352A8`; Thabo `#89301D`; Amari `#8B6E2C`.
 - The active PNG portrait **Drive IDs** are pinned in `src/v3_readiness.py`. Old repo portraits, JPEGs and historical accent colours are not the active identity authority.
@@ -57,7 +58,7 @@ No production Drive checker is wired in this milestone. The existing legacy `pyt
 python -m pytest -q tests/test_daily_readiness.py tests/test_v3_readiness.py
 ```
 
-The new tests build a synthetic ten-slide Ep136-shaped envelope from frozen local fixtures; they do not commit the live Daily Slide Design or re-render accepted Ep136 assets. Cases cover valid single/dual casting, legacy 20-slide compatibility, wrong slide counts, stale dates, invalid gates, wrong marker forms and location, v3 accents, closed schema, remote lookup failure and absent proof callbacks.
+The new tests build a synthetic ten-slide Ep136-shaped envelope from frozen local fixtures; they do not commit the live Daily Slide Design or re-render accepted Ep136 assets. Cases cover valid single/dual casting, ten ordered human briefs and essential copy synchronization, legacy 20-slide compatibility, wrong slide counts, stale dates, invalid gates, wrong marker forms and location, v3 accents, closed schema, remote lookup failure and absent proof callbacks.
 
 ## Next engineering gates
 
