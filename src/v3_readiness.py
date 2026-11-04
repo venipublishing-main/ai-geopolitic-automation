@@ -7,6 +7,7 @@ a syntactically correct Drive ID is NOT evidence that an asset exists.
 from __future__ import annotations
 
 from collections.abc import Callable
+import re
 from datetime import date
 
 from .control_documents import (
@@ -95,6 +96,35 @@ def normalize_v3_design(text: str) -> tuple[str, list[Blocker]]:
     return normalized, issues
 
 
+def check_human_briefs(text: str, manifest: dict) -> list[Blocker]:
+    """Check ordered human brief headers and essential Manifest v2 alignment."""
+    payload = extract_block(text, PAYLOAD_BEGIN, PAYLOAD_END, "DAILY_PAYLOAD")
+    lines = payload.split(V3_MANIFEST_BEGIN, 1)[0].splitlines()
+    headings = [(i, int(m.group(1))) for i, line in enumerate(lines)
+                if (m := re.fullmatch(r"SLIDE\\s+(\\d{2})\\s*/\\s*10\\s+—\\s+.+", line.strip()))]
+    if [number for _, number in headings] != list(range(1, 11)):
+        return [Blocker("HUMAN_BRIEF_COUNT_INVALID",
+                        "Require exactly ten ordered numbered human briefs.",
+                        "slide_design.human_briefs")]
+    problems = []
+    for i, (start, number) in enumerate(headings):
+        block = lines[start:headings[i + 1][0] if i + 1 < 10 else len(lines)]
+        slide = manifest["slides"][i]
+        cast = " + ".join(slide["panelists"])
+        if len(slide["panelists"]) == 2:
+            cast += f" — authorised {slide['pairing_mode']} dual"
+        for label, expected in (("CASTING", cast), ("HEADLINE", slide["headline"]),
+                                ("CORE ARGUMENT", slide["core_argument"]),
+                                ("HERO VISUAL", slide["hero_visual"])):
+            values = [line.split(":", 1)[1].strip() for line in block
+                      if line.startswith(label + ":")]
+            if values != [expected]:
+                problems.append(Blocker("HUMAN_MANIFEST_MISMATCH",
+                                        f"Human {label} differs on slide {number:02d}.",
+                                        f"slide_design.slide_{number:02d}"))
+    return problems
+
+
 class V3DailyBuildReadiness(DailyBuildReadiness):
     """Validate v3 semantics, then require actual archive and portrait evidence.
 
@@ -115,6 +145,8 @@ class V3DailyBuildReadiness(DailyBuildReadiness):
             DailyDocuments(documents.rnd, normalized_design), production_date=production_date
         )
         blockers = list(result.blockers) + issues
+        if result.ready and not issues:
+            blockers.extend(check_human_briefs(documents.slide_design, result.manifest))
 
         # The historical status was deliberately permissive; v3 is not.
         try:
