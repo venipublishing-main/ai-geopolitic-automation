@@ -150,10 +150,8 @@ def test_duplicate_integrity_gate_blocks():
 
 def test_manifest_must_follow_integrity_gate():
     docs = v3_fixture()
-    changed = docs.slide_design.replace(V3_INTEGRITY_GATE,
-                                        "PLACEHOLDER", 1).replace(
-        V3_MANIFEST_BEGIN, V3_INTEGRITY_GATE + "\n" + V3_MANIFEST_BEGIN,
-        1).replace("PLACEHOLDER", V3_INTEGRITY_GATE, 1)
+    changed = docs.slide_design.replace(V3_INTEGRITY_GATE + "\n", "", 1).replace(
+        V3_MANIFEST_END + "\n", V3_MANIFEST_END + "\n" + V3_INTEGRITY_GATE + "\n", 1)
     assert "AUTOMATION_MANIFEST_POSITION_INVALID" in codes(
         check(DailyDocuments(docs.rnd, changed)))
 
