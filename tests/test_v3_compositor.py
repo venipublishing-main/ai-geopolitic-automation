@@ -126,6 +126,17 @@ def test_single_slide_is_exact_3_by_4_with_ten_markers_and_footer(monkeypatch):
     assert len(qc["portrait_sha256"]) == 1
 
 
+
+@pytest.mark.parametrize("slide_number", range(1, 11))
+def test_all_ten_slide_roles_and_pagination_positions(monkeypatch, slide_number):
+    result = render(synthetic_inputs(monkeypatch, slide_number))
+    assert result.qc["slide_number"] == slide_number
+    assert result.qc["counter"] == f"{slide_number:02d}/10"
+    assert result.qc["filled_marker_index"] == slide_number
+    assert result.qc["pagination_markers"] == 10
+    assert result.qc["size"] == [1080, 1440]
+
+
 def test_repeat_execution_is_byte_deterministic(monkeypatch):
     inputs = synthetic_inputs(monkeypatch)
     a = render(inputs)
