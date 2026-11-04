@@ -2,6 +2,28 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
+## Active v3 recovery — 4 November 2026 (R0/R1 development branch)
+
+The current Drive editorial authority has changed to exactly **10 independent
+1080×1440 carousel PNGs**, plus **6 independent 1080×1920 reel frames**.
+The manually approved Ep128 visuals, six transparent portrait PNGs, current
+accent colours, and closed 10-slide Manifest v2 govern all new production.
+The historical 20-slide / 1080×1080 automation remains an archived engineering
+baseline, not permission to publish current episodes.
+
+This branch introduces `src.v3_readiness.V3DailyBuildReadiness`, an explicit
+**no-generation** input/readiness validator. The historical
+`src.daily_readiness.DailyBuildReadiness` and its fixtures still default to
+20 slides. The v3 gate requires current payload markers, the integrity PASS,
+10 ordered slides, current canon, and authenticated callbacks to prove archive
+folder and exact portrait files exist. Without those callbacks, BUILD stays
+**BLOCKED**. The old CLI is not a v3 deployment entry point.
+
+See [v3 R1 contract and next steps](docs/V3_READINESS_R1.md).
+CI workflow: `.github/workflows/v3-readiness-tests.yml`. This work does
+not run providers, change image pixels, or touch the publishing pipeline.
+
+
 ## Current status — Phase D.2R pre-generation repair
 
 Nora's `synthesis stack` now maps to **layered_system**, with five equal-status
