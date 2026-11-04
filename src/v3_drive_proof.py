@@ -13,12 +13,17 @@ from dataclasses import dataclass, field
 
 from PIL import Image, UnidentifiedImageError
 
-from .production_inputs import InputSourceError
+from .production_inputs import DailyDocuments, InputSourceError
 from .v3_readiness import V3_PORTRAIT_IDS
 
 # Immutable Drive parents from the 4 November 2026 production canon.
 EPISODE_ARCHIVE_PARENT_ID = "1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q"
 PANELIST_FOLDER_ID = "1CYYVI5jXH0lgJBPmqP3VqE9mKrbUva5J"
+DAILY_OPERATIONS_FOLDER_ID = "1oVynOtXYo0YQCAZ9Mcvhs0OM5lpF_c7J"
+V3_DAILY_NATIVE_IDS = {
+    "rnd": ("Daily R&D.txt", "1GBvuPF_C4Lna5sZiE5FSthv10J0gmorqdiTnbBgcds4"),
+    "slide_design": ("Daily Slide Design.txt", "19PgSfKDLCSZt0YrjVbXDHz-nkN728CxBjkySEh4GVNs"),
+}
 PANELIST_FILENAMES = {
     "nora": "Nora_CANONICAL_PANELIST.png",
     "diane_sterling": "Diane_Sterling_CANONICAL_PANELIST.png",
@@ -86,6 +91,42 @@ class RcloneV3DriveProof:
                 raise InputSourceError("Malformed authenticated Drive metadata listing.") from exc
             self._list_cache[cache_key] = data
         return self._list_cache[cache_key]
+
+
+    def read(self) -> DailyDocuments:
+        """Read pinned, unique native Daily Ops Docs as UTF-8 TXT exports.
+
+        This is deliberately not a path search: exact Google Drive IDs and
+        parent folder are verified before reading the current production state.
+        """
+        raw = self._run([
+            "lsjson", f"{self.remote}:", "--drive-root-folder-id",
+            DAILY_OPERATIONS_FOLDER_ID, "--files-only", "--drive-export-formats",
+            "txt", "--no-modtime",
+        ])
+        try:
+            listing = json.loads(raw)
+            if not isinstance(listing, list) or not all(isinstance(x, dict) for x in listing):
+                raise ValueError("Malformed native document listing.")
+            if len(listing) > 500:
+                raise ValueError("Unexpectedly large Daily Operations listing.")
+        except (ValueError, TypeError) as exc:
+            raise InputSourceError("Malformed Daily Operations document listing.") from exc
+
+        texts = {}
+        for kind, (name, doc_id) in V3_DAILY_NATIVE_IDS.items():
+            matches = [x for x in listing if x.get("ID") == doc_id or x.get("Name") == name]
+            if (len(matches) != 1 or matches[0].get("ID") != doc_id
+                    or matches[0].get("Name") != name or matches[0].get("IsDir") is not False):
+                raise InputSourceError("Required canonical Daily Operations document was not verified.")
+            content = self._run([
+                "cat", f"{self.remote}:{name}", "--drive-root-folder-id",
+                DAILY_OPERATIONS_FOLDER_ID, "--drive-export-formats", "txt",
+            ])
+            if not isinstance(content, str) or not content.strip():
+                raise InputSourceError("Daily Operations export returned no UTF-8 text.")
+            texts[kind] = content
+        return DailyDocuments(texts["rnd"], texts["slide_design"])
 
     def archive_folder_exists(self, folder_id: str, expected_archive_name: str) -> bool:
         if not isinstance(folder_id, str) or not ID_PATTERN.fullmatch(folder_id):
