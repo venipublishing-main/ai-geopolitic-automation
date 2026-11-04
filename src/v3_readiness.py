@@ -113,12 +113,35 @@ def check_human_briefs(text: str, manifest: dict) -> list[Blocker]:
         cast = " + ".join(slide["panelists"])
         if len(slide["panelists"]) == 2:
             cast += f" — authorised {slide['pairing_mode']} dual"
-        for label, expected in (("CASTING", cast), ("HEADLINE", slide["headline"]),
-                                ("CORE ARGUMENT", slide["core_argument"]),
-                                ("HERO VISUAL", slide["hero_visual"])):
+        if headings[i][1] != number or lines[start].split("—", 1)[-1].strip().casefold() != slide["slide_role"].strip().casefold():
+            problems.append(Blocker("HUMAN_MANIFEST_MISMATCH",
+                                    f"Human role differs on slide {number:02d}.",
+                                    f"slide_design.slide_{number:02d}"))
+        expected = {
+            "CASTING": cast,
+            "CORE ARGUMENT": slide["core_argument"],
+            "HEADLINE": slide["headline"],
+            "SUBHEADLINE": slide["subheadline"],
+            "HERO VISUAL": slide["hero_visual"],
+            "ESSENTIAL LABELS": " | ".join(slide["essential_labels"]),
+            "MAIN VISUAL PHRASE": slide["main_visual_phrase"],
+            "THREE TAKEAWAY IDEAS": " / ".join(item["idea"] for item in slide["takeaway_ideas"]),
+            "ACCENT(S)": "; ".join(
+                f"{slug} {slide['accent_colours'][slug]}" for slug in slide["panelists"]
+            ),
+            "FACTUAL GUARDRAILS": "; ".join(slide["factual_guardrails"]),
+            "COMPOSITION": slide["composition_notes"],
+            "VISUAL PSYCHOLOGY": "; ".join(slide["visual_psychology_traits"]),
+            "NOTICES FIRST": slide["notices_first"],
+            "PREFERRED REASONING FAMILY": slide["preferred_visual_reasoning_family"],
+            "ANTI-CLICHÉ": slide["anti_cliche_guardrail"],
+            "PORTRAIT SCALE": slide["portrait_scale_intention"],
+            "DENSITY / TYPE": slide["density_type_size_note"],
+        }
+        for label, value in expected.items():
             values = [line.split(":", 1)[1].strip() for line in block
                       if line.startswith(label + ":")]
-            if values != [expected]:
+            if values != [value]:
                 problems.append(Blocker("HUMAN_MANIFEST_MISMATCH",
                                         f"Human {label} differs on slide {number:02d}.",
                                         f"slide_design.slide_{number:02d}"))
