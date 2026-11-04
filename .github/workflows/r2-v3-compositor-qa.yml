@@ -1,0 +1,37 @@
+name: R2 v3 3x4 zero-generation compositor QA
+
+on:
+  push:
+    branches:
+      - feat/r2-v3-3x4-compositor-20261104
+  pull_request:
+    branches:
+      - feat/v3-10-slide-readiness-20261104
+
+permissions:
+  contents: read
+
+jobs:
+  r2-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install offline testing dependencies
+        run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - name: Run R1b plus R2 pure deterministic tests
+        env:
+          R2_SYNTHETIC_QA_PREVIEW: output/r2-qa/SYNTHETIC_NONPUBLISHABLE_QA_01.png
+        run: python -m pytest -q tests/test_daily_readiness.py tests/test_v3_readiness.py tests/test_v3_drive_proof.py tests/test_v3_compositor.py
+      - name: Save synthetic nonpublishable compositor proof for QA review
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-synthetic-nonpublishable-3x4
+          path: output/r2-qa/SYNTHETIC_NONPUBLISHABLE_QA_01.png
+          retention-days: 2
+          if-no-files-found: error

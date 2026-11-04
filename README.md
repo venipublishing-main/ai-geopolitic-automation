@@ -41,6 +41,30 @@ CI workflow: `.github/workflows/v3-readiness-tests.yml`. This work does
 not run providers, change image pixels, or touch the publishing pipeline.
 
 
+## R2 draft-only premium compositor — new development branch
+
+`src.v3_compositor.compose_r2_slide` is a **pure single-slide 1080×1440 PNG
+compositor**, not a replacement for the still-unbuilt bespoke background-art
+generator. The caller supplies an approved ten-slide Manifest v2, exactly one
+scene-specific human-free hero PNG, an explicit portrait aperture/visual plan,
+the original assigned transparent portrait PNG bytes, and a hydrated actual
+Ep128 reference image. Six exact portrait SHA-256 hashes and the inspected
+Ep128 Slide 01/09 reference SHA-256 hashes are pinned in
+`src.v3_canon_assets`. Foreign assets, opaque portraits, generic/missing hero
+plans and overflowed copy fail closed.
+
+The composited image has a consistent masthead, episode/date, 10 uniform dots
+with one filled, XX/10, full footer, headline, subhead and evidence labels.
+Portraits remain proportionally scaled with their original alpha and colours.
+The output includes a QC receipt but deliberately remains
+`visual_review=REQUIRED` and `publication_authorised=false`.
+
+The separate `.github/workflows/r2-v3-compositor-qa.yml` runs offline synthetic
+R2 regressions plus the R1b baseline; any artifact is synthetic and
+**NOT FOR PUBLICATION**. No provider credits, Drive writes or publishing APIs
+are involved. Real Ep128 artistic fidelity and human approval remain separate
+review gates. See [R2 development contract](docs/R2_COMPOSITOR_3X4_20261104.md).
+
 ## Current status — Phase D.2R pre-generation repair
 
 Nora's `synthesis stack` now maps to **layered_system**, with five equal-status
