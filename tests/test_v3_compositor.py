@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import io
 import json
+import os
+from pathlib import Path
 from hashlib import sha256
 
 import pytest
@@ -108,6 +110,11 @@ def test_single_slide_is_exact_3_by_4_with_ten_markers_and_footer(monkeypatch):
         assert img.size == (1080, 1440)
         assert img.getpixel(RAIL_CENTRES[0]) == (51, 107, 163)  # Nora canon accent
         assert img.getpixel(RAIL_CENTRES[1]) != (51, 107, 163)
+    preview = os.environ.get("R2_SYNTHETIC_QA_PREVIEW")
+    if preview:
+        target = Path(preview)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(result.png_bytes)
     qc = result.qc
     assert qc["counter"] == "01/10"
     assert qc["pagination_markers"] == 10
