@@ -36,6 +36,7 @@ ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{10,100}\Z")
 REMOTE_PATTERN = re.compile(r"[A-Za-z0-9_-]{1,100}\Z")
 ARCHIVE_NAME_PATTERN = re.compile(r"Ep[0-9]{1,6}-[0-9]{1,2}[A-Za-z]+[0-9]{4}\Z")
 MAX_PORTRAIT_BYTES = 8 * 1024 * 1024
+MAX_DAILY_TEXT_BYTES = 1 * 1024 * 1024
 MAX_IMAGE_PIXELS = 12_000_000
 
 
@@ -122,8 +123,9 @@ class RcloneV3DriveProof:
             content = self._run([
                 "cat", f"{self.remote}:{name}", "--drive-root-folder-id",
                 DAILY_OPERATIONS_FOLDER_ID, "--drive-export-formats", "txt",
+                "--count", str(MAX_DAILY_TEXT_BYTES + 1),
             ])
-            if not isinstance(content, str) or not content.strip():
+            if not isinstance(content, str) or not content.strip() or len(content.encode("utf-8")) > MAX_DAILY_TEXT_BYTES:
                 raise InputSourceError("Daily Operations export returned no UTF-8 text.")
             texts[kind] = content
         return DailyDocuments(texts["rnd"], texts["slide_design"])
@@ -156,7 +158,7 @@ class RcloneV3DriveProof:
             return False
         # File bytes are read only after the ID, parent and MIME listing matches.
         raw = self._run(["cat", f"{self.remote}:{target_name}", "--drive-root-folder-id",
-                         PANELIST_FOLDER_ID], binary=True)
+                         PANELIST_FOLDER_ID, "--count", str(MAX_PORTRAIT_BYTES + 1)], binary=True)
         if not isinstance(raw, bytes) or len(raw) != size or len(raw) > MAX_PORTRAIT_BYTES:
             return False
         try:
