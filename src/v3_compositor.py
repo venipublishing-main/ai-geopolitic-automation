@@ -175,7 +175,9 @@ def _portrait_image(png: bytes) -> Image.Image:
 def _validate_plan(slide: dict, plan: R2SlidePlan) -> None:
     if plan.slide_number != slide["slide_number"]:
         raise R2CompositionError("Plan and Manifest slide numbers disagree.")
-    if plan.hero_family != slide["preferred_visual_reasoning_family"] or not plan.visual_id.strip():
+    if (not isinstance(plan.hero_family, str)
+            or plan.hero_family != slide["preferred_visual_reasoning_family"]
+            or not isinstance(plan.visual_id, str) or not plan.visual_id.strip()):
         raise R2CompositionError("Argument-specific hero family or bespoke design ID absent/mismatched.")
     if not plan.background_human_free_reviewed:
         raise R2CompositionError("Background-only human-free scene must be reviewed before portrait insertion.")
@@ -326,6 +328,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "hero_visual_id": plan.visual_id,
         "hero_family": plan.hero_family,
         "portrait_sha256": hashes,
+        "portrait_apertures": {p.slug: list(p.box) for p in plan.placements},
         "ep128_reference_id": plan.ep128_reference_id,
         "ep128_reference_sha256": verified_ref,
         "hero_png_sha256": sha256(hero_png).hexdigest(),
