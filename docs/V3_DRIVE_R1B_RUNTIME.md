@@ -2,7 +2,7 @@
 
 **Date:** 4 November 2026 (SAST)  
 **PR:** #1, draft against `automation-v2`  
-**State:** Implementation available for a local authorized Drive run; no real rclone-OAuth execution observed in this connected development runtime.
+**State:** R1b authenticated read-only diagnostic **PASSED on 4 November 2026** in operator-reported Windows PowerShell output. See [live acceptance evidence](R1B_AUTHENTICATED_LIVE_ACCEPTANCE_20261104.md).
 
 ## Purpose
 
@@ -56,7 +56,7 @@ A successful result means **BUILD INPUTS ARE READY** for the current SAST episod
 
 Tests in `tests/test_v3_drive_proof.py` inject a fake subprocess rather than requesting Google credentials. They cover exact native text ID matching, archive folder ID/name/parent, six canonical PNG identities, transparency, corrupted/opaque images, duplicate names and IDs, bad MIME, wrong sizes, missing OAuth/rclone, malformed responses and a full read-only CLI path. R1 tests still check the historical 20-slide and active ten-slide contracts independently.
 
-These tests validate the *implementation*, not the owner's current live rclone authorization. **No Google OAuth token or rclone config has been placed in GitHub, a test fixture or the recovery diary.** A live run on an authenticated machine must produce a sanitized `READY` result before the runtime integration is considered operational.
+These tests validate the *implementation*, not the owner's current live rclone authorization. **No Google OAuth token or rclone config has been placed in GitHub, a test fixture or the recovery diary.** The 4 November 2026 local authenticated run returned `READY` / `BUILD_READY`, `Ep136`, ten slides and no blockers, with no generation or publishing. These are date-specific inputs; every future episode requires a fresh run.
 
 ## Remaining safety and design boundaries
 
@@ -64,6 +64,6 @@ These tests validate the *implementation*, not the owner's current live rclone a
 - Verified `image/png` transparency is not byte-for-byte agreement with the originally approved canonical pixels. A later compositor/QC stage must preserve canonical pixels.
 - Image dimensions of archived 10× carousel and 6× reel outputs, visual design quality, human acceptance and Meta publishing remain separate later gates.
 - The current roster and Drive IDs come from 4 November v3 authority; later canon revisions must update this pinned boundary explicitly.
-- This PR must remain draft/unmerged until review and a live configured-run checkpoint. No background monitoring or automatic execution is enabled.
+- The live configured-run checkpoint passed on 4 November 2026, but this PR remains draft/unmerged until normal code review and integration approval. No background monitoring or automatic execution is enabled.
 
 **Authority:** [Automation v3](https://docs.google.com/document/d/1s4VrG66Z3V-uidPzqtr6VqlKYGTUY6pr0uyHMmfsagg/edit) • [Production Contract v3](https://docs.google.com/document/d/1b3gN0qELVsZtTbe8TAlnhai1EigiuOhexecI7cIyVmY/edit) • [Recovery Handover](https://docs.google.com/document/d/14-Pr08MGMiW0d-hMCQWcLGIPxXpq4QZyZGw0qZHdMmY/edit)
