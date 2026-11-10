@@ -76,9 +76,9 @@ def synthetic_inputs(monkeypatch, slide_number=1):
     monkeypatch.setitem(v3_canon_assets.EP128_VERIFIED_REFERENCES,
                         refid, sha256(ref).hexdigest())
     if len(slide["panelists"]) == 1:
-        boxes = [(72, 478, 605, 1080)]
+        boxes = [(72, 438, 605, 963)]
     else:
-        boxes = [(55, 492, 500, 1080), (554, 492, 1000, 1080)]
+        boxes = [(55, 425, 500, 972), (554, 425, 1000, 972)]
     plan = R2SlidePlan(
         slide_number=slide_number,
         visual_id=f"SYNTHETIC-R2-{slide_number:02d}",
@@ -107,7 +107,7 @@ def test_single_slide_is_exact_3_by_4_with_ten_markers_and_footer(monkeypatch):
     with Image.open(io.BytesIO(result.png_bytes)) as img:
         assert img.format == "PNG"
         assert img.mode == "RGB"
-        assert img.size == (1080, 1440)
+        assert img.size == (1080, 1350)
         assert img.getpixel(RAIL_CENTRES[0]) == (51, 107, 163)  # Nora canon accent
         assert img.getpixel(RAIL_CENTRES[1]) != (51, 107, 163)
     preview = os.environ.get("R2_SYNTHETIC_QA_PREVIEW")
@@ -118,6 +118,7 @@ def test_single_slide_is_exact_3_by_4_with_ten_markers_and_footer(monkeypatch):
     qc = result.qc
     assert qc["counter"] == "01/10"
     assert qc["pagination_markers"] == 10
+    assert qc["render_integrity_status"] == "RENDER_QC_PENDING"
     assert qc["filled_marker_index"] == 1
     assert qc["footer"] == "The event is factual. The interpretation ideological."
     assert qc["visual_review"] == "REQUIRED"
@@ -134,7 +135,7 @@ def test_all_ten_slide_roles_and_pagination_positions(monkeypatch, slide_number)
     assert result.qc["counter"] == f"{slide_number:02d}/10"
     assert result.qc["filled_marker_index"] == slide_number
     assert result.qc["pagination_markers"] == 10
-    assert result.qc["size"] == [1080, 1440]
+    assert result.qc["size"] == [1080, 1350]
 
 
 def test_repeat_execution_is_byte_deterministic(monkeypatch):
@@ -205,8 +206,8 @@ def test_no_unreviewed_or_generic_background_allowed(monkeypatch):
 
 
 @pytest.mark.parametrize("box", [
-    (0, 478, 605, 1080), (72, 478, 1050, 1080),
-    (72, 180, 605, 1080), (72, 478, 605, 1390), (72, 478, 160, 660),
+    (0, 438, 605, 950), (72, 438, 1050, 950),
+    (72, 180, 605, 950), (72, 438, 605, 1200), (72, 438, 160, 660),
 ])
 def test_portrait_never_crosses_text_safe_zones(monkeypatch, box):
     m, plan, hero, portraits, ref = synthetic_inputs(monkeypatch)
