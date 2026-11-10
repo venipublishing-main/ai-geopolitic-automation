@@ -5,6 +5,8 @@ on:
     branches:
       - feat/r2-v3-3x4-compositor-20261104
       - feat/r2-1-v3-1-4x5-render-qc-20261110
+      - feat/r2-1-v3-1-4x5-render-qc-20261110
+      - feat/r2-2-v31-scene-layering-20261110
   pull_request:
     branches:
       - feat/v3-10-slide-readiness-20261104
