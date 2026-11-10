@@ -265,6 +265,11 @@ def test_foreground_engraving_preserves_canonical_silhouette_pixels(monkeypatch)
         assert original.getpixel((350, 650)) == layered.getpixel((350, 650))
         # Elsewhere the analytical foreground is deliberately visible.
         assert original.getpixel((900, 650)) != layered.getpixel((900, 650))
+    preview = os.environ.get("R2_LAYER_QA_PREVIEW")
+    if preview:
+        target = Path(preview)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(composed.png_bytes)
     assert composed.qc["foreground_png_sha256"] == sha256(foreground).hexdigest()
     assert composed.qc["foreground_protected_portrait_pixels"] > 0
     assert composed.qc["publication_authorised"] is False
