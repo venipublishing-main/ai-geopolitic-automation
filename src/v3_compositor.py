@@ -19,6 +19,7 @@ from typing import Mapping
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
 from .v3_scene_layers import prepare_foreground_layer, protect_canonical_pixels
+from .v3_adaptive_layout import LetteringSurface, validate_arrangement, compose_material_lettering
 
 from .episode_manifest_v2 import validate_manifest_v2
 from .v3_canon_assets import verify_portrait_bytes, verify_reference_bytes
@@ -53,6 +54,8 @@ class R2SlidePlan:
     placements: tuple[PortraitPlacement, ...]
     ep128_reference_id: str
     background_human_free_reviewed: bool = False
+    arrangement: str = "legacy"
+    material_surface: LetteringSurface | None = None
 
 
 @dataclass(frozen=True)
@@ -183,6 +186,9 @@ def _validate_plan(slide: dict, plan: R2SlidePlan) -> None:
         raise R2CompositionError("Argument-specific hero family or bespoke design ID absent/mismatched.")
     if not plan.background_human_free_reviewed:
         raise R2CompositionError("Background-only human-free scene must be reviewed before portrait insertion.")
+    validate_arrangement(plan.arrangement, plan.placements, HERO_BOX)
+    if plan.material_surface is not None and plan.arrangement == "legacy":
+        raise R2CompositionError("Material lettering needs explicit argument-responsive geometry.")
     expected = set(slide["panelists"])
     actual = [p.slug for p in plan.placements]
     if len(actual) != len(expected) or set(actual) != expected:
@@ -228,7 +234,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
                      portrait_pngs: Mapping[str, bytes], ep128_reference_png: bytes,
                      foreground_layer_png: bytes | None = None,
                      foreground_reviewed: bool = False) -> R2Composite:
-    """Compose one non-publishable 1080x1440 draft; never calls an image provider.
+    """Compose one non-publishable 1080x1350 draft; never calls an image provider.
 
     The exact canonical input hashes and one hydrated Ep128 reference are
     mandatory. Background humans cannot be reliably detected programmatically;
@@ -289,6 +295,20 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         canvas.alpha_composite(protected, dest=(HERO_BOX[0], HERO_BOX[1]))
 
     accent = _hex(slide["accent_colours"][slide["panelists"][0]])
+    material_receipt = None
+    if plan.material_surface is not None:
+        material_receipt = compose_material_lettering(
+            canvas,
+            exact_phrase=slide["main_visual_phrase"],
+            surface=plan.material_surface,
+            hero_box=HERO_BOX,
+            raw_hero=hero,
+            portrait_boxes=[p.box for p in plan.placements],
+            portrait_occupancy=silhouette_occupancy,
+            ink=INK,
+            accent=accent,
+            font_loader=_font,
+        )
     draw = ImageDraw.Draw(canvas)
     # Fixed publication furniture, separate from bespoke background hero artwork.
     draw.rectangle((46, 28, 135, 118), fill=(*GOLD, 255), outline=(*INK, 255), width=2)
@@ -307,15 +327,24 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     draw.line((52, 387, 1028, 387), fill=(*accent, 255), width=4)
     draw.line((48, 999, 1032, 999), fill=INK, width=2)
 
-    _draw_copy(draw, slide["main_visual_phrase"], x=52, y=1017,
-               width=975, height=54, lines=1, start=35, minimum=22,
-               role="headline", colour=(*accent, 255))
-    _draw_copy(draw, slide["subheadline"], x=52, y=1081,
-               width=975, height=72, lines=2, start=27, minimum=19,
-               role="serif", colour=INK)
+    if material_receipt is None:
+        _draw_copy(draw, slide["main_visual_phrase"], x=52, y=1017,
+                   width=975, height=54, lines=1, start=35, minimum=22,
+                   role="headline", colour=(*accent, 255))
+        _draw_copy(draw, slide["subheadline"], x=52, y=1081,
+                   width=975, height=72, lines=2, start=27, minimum=19,
+                   role="serif", colour=INK)
+        evidence_y = 1168
+    else:
+        # Exact key phrase is inked into its reviewed physical scene; don't
+        # repeat it as a disconnected typographic strip below the hero.
+        _draw_copy(draw, slide["subheadline"], x=52, y=1037,
+                   width=975, height=97, lines=3, start=30, minimum=19,
+                   role="serif", colour=INK)
+        evidence_y = 1150
     labels = "  •  ".join(slide["essential_labels"])
-    _draw_copy(draw, labels, x=52, y=1168, width=975, height=57,
-               lines=2, start=20, minimum=15, role="sans", colour=MUTED)
+    _draw_copy(draw, labels, x=52, y=evidence_y, width=975, height=76,
+               lines=3, start=20, minimum=15, role="sans", colour=MUTED)
 
     # Exactly ten identical rail circles; the XX/10 text counter appears once,
     # separate from the progress dots (v3.1 publication-furniture contract).
@@ -351,6 +380,8 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "footer": FOOTER,
         "hero_visual_id": plan.visual_id,
         "hero_family": plan.hero_family,
+        "arrangement": plan.arrangement,
+        "material_lettering": material_receipt,
         "portrait_sha256": hashes,
         "portrait_apertures": {p.slug: list(p.box) for p in plan.placements},
         "ep128_reference_id": plan.ep128_reference_id,
