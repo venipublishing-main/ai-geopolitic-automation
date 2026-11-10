@@ -30,3 +30,12 @@ This is a layering primitive, not a scene generator or final flexible layout eng
 One synthetic proof with flat placeholder portrait geometry does **not** establish premium Ep128 quality. Do not publish, archive or equate it with an accepted slide.
 
 No manual ledger change, accepted episode archive mutation, image provider spend or source portrait rewrite is performed.
+
+## Observed verification — 10 November 2026
+
+- [GitHub Actions run #42841499717](https://github.com/venipublishing-main/ai-geopolitic-automation/actions/runs/42841499717): **224 passed, zero failed**, scoped R1b/R2/R2.1/R2.2 suite on Python 3.12.
+- Retrieved the GitHub artifact `r2-layered-scene-synthetic-nonpublishable`, decoded and visually inspected the actual 1080×1350 PNG. The authored red horizontal demonstration mark is visibly present across the background but is clipped at the synthetic portrait silhouette. The portrait colour/shape is not overpainted.
+- This fixture has no realistic panelist and no argument-specific premium hero; its aesthetic is **NOT accepted**. It is engineering-only proof of layering, shape and identity-protection behaviour.
+- R2.2 still needs layout geometry variation, material-integrated typesetting and a genuine source-portrait/bespoke-art human-reviewed proof before premium visual acceptance.
+
+The automation branch and PR #4 remain drafts; no manual directory files, accepted episode assets, publication or providers were touched.
