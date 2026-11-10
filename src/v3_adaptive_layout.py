@@ -134,7 +134,12 @@ def compose_material_lettering(
     fitted = None
     for size in range(45, 19, -1):
         font = font_loader(size, "headline")
-        lines = _wrap_exact(painter, exact_phrase, font, sw - 62)
+        try:
+            lines = _wrap_exact(painter, exact_phrase, font, sw - 62)
+        except AdaptiveLayoutError as exc:
+            if "cannot fit" in str(exc):
+                continue
+            raise
         lineheight = round(size * 1.22)
         if len(lines) <= 3 and len(lines) * lineheight <= sh - 54:
             fitted = (font, lines, size, lineheight)
