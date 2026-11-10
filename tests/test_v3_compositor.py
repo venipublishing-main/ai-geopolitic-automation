@@ -241,3 +241,54 @@ def test_exact_manifest_validation_before_composition(monkeypatch):
     with pytest.raises(R2CompositionError, match="Manifest"):
         compose_r2_slide(m, plan, hero_png=hero,
                          portrait_pngs=portraits, ep128_reference_png=ref)
+
+def test_foreground_engraving_preserves_canonical_silhouette_pixels(monkeypatch):
+    manifest, plan, hero, portraits, reference = synthetic_inputs(monkeypatch)
+    base = compose_r2_slide(
+        manifest, plan, hero_png=hero, portrait_pngs=portraits,
+        ep128_reference_png=reference,
+    )
+    layer = Image.new("RGBA", (HERO_BOX[2] - HERO_BOX[0], HERO_BOX[3] - HERO_BOX[1]),
+                      (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    # Cross both the source portrait silhouette and the background.
+    d.rectangle((0, 210, layer.width - 1, 280), fill=(190, 15, 20, 230))
+    foreground = png_of(layer)
+    composed = compose_r2_slide(
+        manifest, plan, hero_png=hero, portrait_pngs=portraits,
+        ep128_reference_png=reference,
+        foreground_layer_png=foreground, foreground_reviewed=True,
+    )
+    with Image.open(io.BytesIO(base.png_bytes)) as original, \
+         Image.open(io.BytesIO(composed.png_bytes)) as layered:
+        # Inside synthetic silhouette = unchanged source appearance.
+        assert original.getpixel((350, 650)) == layered.getpixel((350, 650))
+        # Elsewhere the analytical foreground is deliberately visible.
+        assert original.getpixel((900, 650)) != layered.getpixel((900, 650))
+    assert composed.qc["foreground_png_sha256"] == sha256(foreground).hexdigest()
+    assert composed.qc["foreground_protected_portrait_pixels"] > 0
+    assert composed.qc["publication_authorised"] is False
+
+
+def test_unreviewed_foreground_cannot_be_composited(monkeypatch):
+    manifest, plan, hero, portraits, reference = synthetic_inputs(monkeypatch)
+    layer = Image.new("RGBA", (984, 599), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).line((0, 80, 983, 80), fill=(50, 40, 40, 200), width=3)
+    with pytest.raises(R2CompositionError, match="foreground|Foreground"):
+        compose_r2_slide(
+            manifest, plan, hero_png=hero, portrait_pngs=portraits,
+            ep128_reference_png=reference, foreground_layer_png=png_of(layer),
+            foreground_reviewed=False,
+        )
+
+
+def test_foreground_stretching_is_forbidden(monkeypatch):
+    manifest, plan, hero, portraits, reference = synthetic_inputs(monkeypatch)
+    wrong = Image.new("RGBA", (980, 603), (0, 0, 0, 0))
+    ImageDraw.Draw(wrong).line((0, 20, 979, 20), fill=(50, 40, 40, 200), width=3)
+    with pytest.raises(ValueError, match="exactly match"):
+        compose_r2_slide(
+            manifest, plan, hero_png=hero, portrait_pngs=portraits,
+            ep128_reference_png=reference, foreground_layer_png=png_of(wrong),
+            foreground_reviewed=True,
+        )
