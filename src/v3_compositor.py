@@ -18,6 +18,8 @@ from typing import Mapping
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
+from .v3_scene_layers import prepare_foreground_layer, protect_canonical_pixels
+
 from .episode_manifest_v2 import validate_manifest_v2
 from .v3_canon_assets import verify_portrait_bytes, verify_reference_bytes
 from .v3_readiness import V3_PORTRAIT_IDS, v3_characters
@@ -223,7 +225,9 @@ def _paper_grain(canvas: Image.Image, seed: int) -> None:
 
 
 def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
-                     portrait_pngs: Mapping[str, bytes], ep128_reference_png: bytes) -> R2Composite:
+                     portrait_pngs: Mapping[str, bytes], ep128_reference_png: bytes,
+                     foreground_layer_png: bytes | None = None,
+                     foreground_reviewed: bool = False) -> R2Composite:
     """Compose one non-publishable 1080x1440 draft; never calls an image provider.
 
     The exact canonical input hashes and one hydrated Ep128 reference are
@@ -255,6 +259,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     ).hexdigest()[:8], 16))
     canvas.paste(hero, (HERO_BOX[0], HERO_BOX[1]))
     canvas = canvas.convert("RGBA")
+    silhouette_occupancy = Image.new("L", (WIDTH, HEIGHT), 0)
     for placement in plan.placements:
         portrait = portraits[placement.slug]
         x0, y0, x1, y1 = placement.box
@@ -267,6 +272,21 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         left = x0 + ((x1 - x0) - size[0]) // 2
         top = y1 - size[1]
         canvas.alpha_composite(portrait, dest=(left, top))
+        silhouette_occupancy.paste(portrait.getchannel("A"), (left, top))
+
+    foreground_protected_pixels = 0
+    if foreground_layer_png is not None:
+        if not foreground_reviewed:
+            raise R2CompositionError(
+                "Foreground linework requires explicit pre-composite illustration review."
+            )
+        layer = prepare_foreground_layer(
+            foreground_layer_png,
+            (HERO_BOX[2] - HERO_BOX[0], HERO_BOX[3] - HERO_BOX[1]),
+        )
+        occupancy = silhouette_occupancy.crop(HERO_BOX)
+        protected, foreground_protected_pixels = protect_canonical_pixels(layer, occupancy)
+        canvas.alpha_composite(protected, dest=(HERO_BOX[0], HERO_BOX[1]))
 
     accent = _hex(slide["accent_colours"][slide["panelists"][0]])
     draw = ImageDraw.Draw(canvas)
@@ -336,6 +356,9 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "ep128_reference_id": plan.ep128_reference_id,
         "ep128_reference_sha256": verified_ref,
         "hero_png_sha256": sha256(hero_png).hexdigest(),
+        "foreground_png_sha256": sha256(foreground_layer_png).hexdigest() if foreground_layer_png else None,
+        "foreground_reviewed": foreground_reviewed if foreground_layer_png else None,
+        "foreground_protected_portrait_pixels": foreground_protected_pixels,
         "output_png_sha256": sha256(data).hexdigest(),
         "visual_review": "REQUIRED",
         "editorial_approval": "NOT_GRANTED",
