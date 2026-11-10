@@ -1,4 +1,4 @@
-"""R2 deterministic, draft-only 3:4 compositor. Zero generation / publishing.
+"""R2 deterministic, draft-only active 4:5 compositor. Zero generation / publishing.
 
 The R2 stage only COMPOSITES separately supplied bespoke hero artwork and exact
 hash-pinned original transparent panelist PNGs. It never invents artwork or
@@ -22,14 +22,14 @@ from .episode_manifest_v2 import validate_manifest_v2
 from .v3_canon_assets import verify_portrait_bytes, verify_reference_bytes
 from .v3_readiness import V3_PORTRAIT_IDS, v3_characters
 
-WIDTH, HEIGHT = 1080, 1440
-HERO_BOX = (48, 426, 1032, 1118)
+WIDTH, HEIGHT = 1080, 1350
+HERO_BOX = (48, 399, 1032, 998)
 PAPER = (245, 242, 234)
 INK = (20, 21, 20)
 MUTED = (78, 72, 65)
 GOLD = (143, 102, 26)
 FOOTER = "The event is factual. The interpretation ideological."
-RAIL_CENTRES = tuple((72 + 60 * i, 1381) for i in range(10))
+RAIL_CENTRES = tuple((76 + 43 * i, 1292) for i in range(10))
 
 
 class R2CompositionError(ValueError):
@@ -276,47 +276,51 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     draw.text((155, 32), "AI GEOPOLITIC", font=_font(51, "headline"), fill=INK)
     draw.text((158, 92), "ANALYSIS. DIALOGUE. CIVILIZATION.",
               font=_font(17, "sans"), fill=MUTED)
-    draw.text((670, 108), f"{manifest['episode_id'].upper()}  |  {_date_label(manifest['production_date_sast'])}",
-              font=_font(15, "sans"), fill=INK)
+    dateline = f"{manifest['episode_id'].upper()}  |  {_date_label(manifest['production_date_sast'])}"
+    dateline_font, _, _ = _fitted(draw, dateline, 500, 27, 1, 17, 13, "sans")
+    draw.text((1032 - int(_width(draw, dateline, dateline_font)), 111),
+              dateline, font=dateline_font, fill=INK)
     draw.line((48, 145, 1032, 145), fill=INK, width=2)
 
-    _draw_copy(draw, slide["headline"], x=52, y=167, width=976, height=230,
-               lines=3, start=86, minimum=46, role="headline", colour=INK)
-    draw.line((52, 409, 1028, 409), fill=(*accent, 255), width=4)
-    draw.line((48, 1119, 1032, 1119), fill=INK, width=2)
+    _draw_copy(draw, slide["headline"], x=52, y=167, width=976, height=204,
+               lines=3, start=78, minimum=42, role="headline", colour=INK)
+    draw.line((52, 387, 1028, 387), fill=(*accent, 255), width=4)
+    draw.line((48, 999, 1032, 999), fill=INK, width=2)
 
-    _draw_copy(draw, slide["main_visual_phrase"], x=52, y=1133,
+    _draw_copy(draw, slide["main_visual_phrase"], x=52, y=1017,
                width=975, height=54, lines=1, start=35, minimum=22,
                role="headline", colour=(*accent, 255))
-    _draw_copy(draw, slide["subheadline"], x=52, y=1195,
-               width=975, height=69, lines=2, start=27, minimum=19,
+    _draw_copy(draw, slide["subheadline"], x=52, y=1081,
+               width=975, height=72, lines=2, start=27, minimum=19,
                role="serif", colour=INK)
     labels = "  •  ".join(slide["essential_labels"])
-    _draw_copy(draw, labels, x=52, y=1271, width=975, height=52,
+    _draw_copy(draw, labels, x=52, y=1168, width=975, height=57,
                lines=2, start=20, minimum=15, role="sans", colour=MUTED)
 
-    draw.line((48, 1339, 1032, 1339), fill=INK, width=2)
+    # Exactly ten identical rail circles; the XX/10 text counter appears once,
+    # separate from the progress dots (v3.1 publication-furniture contract).
+    draw.line((48, 1248, 1032, 1248), fill=INK, width=2)
     for idx, (x, y) in enumerate(RAIL_CENTRES):
-        r = 10
+        r = 9
         if idx == plan.slide_number - 1:
             draw.ellipse((x - r, y - r, x + r, y + r), fill=(*accent, 255),
                          outline=(*INK, 255), width=1)
         else:
             draw.ellipse((x - r, y - r, x + r, y + r), outline=(*INK, 255), width=2)
-        draw.text((x - 22, 1400), f"{idx+1:02d}/10",
-                  font=_font(15, "serif"), fill=INK)
-    draw.line((676, 1354, 676, 1420), fill=INK, width=1)
-    draw.text((714, 1361), "The event is factual.",
+    draw.text((521, 1271), f"{plan.slide_number:02d}/10",
+              font=_font(31, "sans"), fill=INK)
+    draw.line((671, 1266, 671, 1320), fill=INK, width=1)
+    draw.text((694, 1267), "The event is factual.",
               font=_font(22, "serif"), fill=INK)
-    draw.text((714, 1391), "The interpretation ideological.",
-              font=_font(19, "serif"), fill=INK)
+    draw.text((694, 1296), "The interpretation ideological.",
+              font=_font(18, "serif"), fill=INK)
 
     out = io.BytesIO()
     canvas.convert("RGB").save(out, format="PNG", optimize=False, compress_level=9)
     data = out.getvalue()
     with Image.open(io.BytesIO(data)) as check:
         if check.size != (WIDTH, HEIGHT) or check.format != "PNG":
-            raise R2CompositionError("Exact final 1080x1440 PNG readback failed.")
+            raise R2CompositionError("Exact final 1080x1350 PNG readback failed.")
     qc = {
         "episode_id": manifest["episode_id"],
         "slide_number": plan.slide_number,
@@ -335,6 +339,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "output_png_sha256": sha256(data).hexdigest(),
         "visual_review": "REQUIRED",
         "editorial_approval": "NOT_GRANTED",
+        "render_integrity_status": "RENDER_QC_PENDING",
         "publication_authorised": False,
         "image_generation_performed": False,
     }
