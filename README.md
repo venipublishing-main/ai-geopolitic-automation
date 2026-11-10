@@ -2,10 +2,10 @@
 
 Automated visual-production pipeline for the **AI Geopolitic** editorial project by **Veni Publishing**.
 
-## Active v3 recovery — 4 November 2026 (R0/R1 development branch)
+## Active v3.1 engineering — 10 November 2026 (R1b / R2.2 stacked drafts)
 
 The current Drive editorial authority has changed to exactly **10 independent
-1080×1440 carousel PNGs**, plus **6 independent 1080×1920 reel frames**.
+1080×1350 carousel PNGs (4:5)**, plus **6 independent 1080×1920 reel frames**.
 The manually approved Ep128 visuals, six transparent portrait PNGs, current
 accent colours, and closed 10-slide Manifest v2 govern all new production.
 The historical 20-slide / 1080×1080 automation remains an archived engineering
@@ -31,8 +31,8 @@ python -m src.v3_drive_readiness --json
 ```
 
 This is a **readiness diagnostic**. It does not render, archive, approve or
-publish; a real configured rclone run still needs to be observed before
-calling the live adapter operational.
+publish; an authenticated local R1b live check passed for Ep136 on 4 Nov 2026;
+all future daily episodes require fresh current-date verification.
 
 See [R1b authenticated Drive runtime](docs/V3_DRIVE_R1B_RUNTIME.md).
 
@@ -43,7 +43,7 @@ not run providers, change image pixels, or touch the publishing pipeline.
 
 ## R2 draft-only premium compositor — new development branch
 
-`src.v3_compositor.compose_r2_slide` is a **pure single-slide 1080×1440 PNG
+`src.v3_compositor.compose_r2_slide` is a **pure single-slide 1080×1350 PNG
 compositor**, not a replacement for the still-unbuilt bespoke background-art
 generator. The caller supplies an approved ten-slide Manifest v2, exactly one
 scene-specific human-free hero PNG, an explicit portrait aperture/visual plan,
@@ -64,6 +64,23 @@ R2 regressions plus the R1b baseline; any artifact is synthetic and
 **NOT FOR PUBLICATION**. No provider credits, Drive writes or publishing APIs
 are involved. Real Ep128 artistic fidelity and human approval remain separate
 review gates. See [R2 development contract](docs/R2_COMPOSITOR_3X4_20261104.md).
+
+### v3.1 R2.1 / R2.2 migration status (10 November 2026)
+
+Active R2.1 4:5 and independent image-level render integrity are developed on
+`feat/r2-1-v3-1-4x5-render-qc-20261110` ([draft PR #3](https://github.com/venipublishing-main/ai-geopolitic-automation/pull/3)).
+The scoped offline CI on 10 Nov passed **221 tests**, but the retrieved
+synthetic proof did **not** achieve Ep128 artistic acceptance.
+
+R2.2 adds an optional reviewed analytical foreground layer with exact
+pixel-level masking around the alpha silhouette of each original panelist
+([draft PR #4](https://github.com/venipublishing-main/ai-geopolitic-automation/pull/4)).
+It is a scene-compositing primitive, not a new person generator, full adaptive
+layout engine, or permission to publish. See the
+[R2.1 migration note](docs/R2_1_V31_4X5_RENDER_QC_20261110.md) and
+[R2.2 scene-layering note](docs/R2_2_V31_PROTECTED_SCENE_LAYERS_20261110.md).
+The actual current-day manual ledgers are **read-only authorities**, never
+engineering output targets. The Automation Diary is the Drive recovery home.
 
 ## Current status — Phase D.2R pre-generation repair
 
