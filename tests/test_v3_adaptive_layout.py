@@ -11,11 +11,11 @@ import os
 from pathlib import Path
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from src.v3_adaptive_layout import AdaptiveLayoutError, LetteringSurface
 from src.v3_compositor import PortraitPlacement, R2SlidePlan, R2CompositionError, compose_r2_slide
-from test_v3_compositor import synthetic_inputs
+from test_v3_compositor import synthetic_inputs, png_of
 
 
 def compose(inputs, plan, **overrides):
@@ -149,3 +149,35 @@ def test_legacy_plan_does_not_gain_material_status_by_accident(monkeypatch):
     surface = LetteringSurface((642, 515, 997, 772), reserved_surface_reviewed=True)
     with pytest.raises(R2CompositionError, match="explicit"):
         compose(inputs, replace(inputs[1], material_surface=surface))
+
+
+def test_adaptive_compositor_is_byte_identical_on_repeat(monkeypatch):
+    inputs = synthetic_inputs(monkeypatch, 1)
+    plan = replace(inputs[1], arrangement="portrait-left",
+                   material_surface=LetteringSurface((642, 515, 997, 772),
+                                                      reserved_surface_reviewed=True))
+    a = compose(inputs, plan)
+    b = compose(inputs, plan)
+    assert a.png_bytes == b.png_bytes
+    assert a.qc["output_png_sha256"] == b.qc["output_png_sha256"]
+
+
+def test_busy_art_surface_blocks_opaque_plate_workaround(monkeypatch):
+    inputs = synthetic_inputs(monkeypatch, 1)
+    portrait_plan = replace(
+        inputs[1], arrangement="portrait-left",
+        material_surface=LetteringSurface((642, 515, 997, 772),
+                                           reserved_surface_reviewed=True),
+    )
+    crowded = Image.new("RGB", (1400, 980), (240, 240, 240))
+    d = ImageDraw.Draw(crowded)
+    for x in range(0, 1400, 25):
+        for y in range(0, 980, 25):
+            if ((x // 25) + (y // 25)) % 2 == 0:
+                d.rectangle((x, y, x + 24, y + 24), fill=(20, 20, 20))
+    manifest, _, _, portraits, reference = inputs
+    with pytest.raises(AdaptiveLayoutError, match="too busy"):
+        compose_r2_slide(
+            manifest, portrait_plan, hero_png=png_of(crowded),
+            portrait_pngs=portraits, ep128_reference_png=reference,
+        )
