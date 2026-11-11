@@ -1,0 +1,25 @@
+name: R2.2d source-grounded scene enrichment QA
+on:
+  push:
+    branches: [feat/r2-2d-scene-enrichment-20261111]
+  pull_request:
+    branches: [feat/r2-2c-canonical-proof-20261111]
+permissions:
+  contents: read
+jobs:
+  enrichment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned offline test dependencies
+        run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - name: Run inherited baseline and enrichment regressions
+        run: >-
+          python -m pytest -q
+          tests/test_daily_readiness.py tests/test_v3_readiness.py
+          tests/test_v3_drive_proof.py tests/test_v3_compositor.py
+          tests/test_v3_render_qc.py tests/test_v3_adaptive_layout.py
+          tests/test_v3_canonical_proof.py tests/test_v3_scene_enrichment.py
