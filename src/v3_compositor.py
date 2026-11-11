@@ -44,6 +44,7 @@ class PortraitPlacement:
     slug: str
     box: tuple[int, int, int, int]
     mirror: bool = False
+    fit: str = "contain"  # cover is a permitted aspect-preserving crop
 
 
 @dataclass(frozen=True)
@@ -195,6 +196,8 @@ def _validate_plan(slide: dict, plan: R2SlidePlan) -> None:
         raise R2CompositionError("Exactly the Manifest's one or two canonical portraits are required.")
     boxes = []
     for p in plan.placements:
+        if p.fit not in ("contain", "cover"):
+            raise R2CompositionError("Portrait placement fit must be contain or cover.")
         if len(p.box) != 4 or any(type(i) is not int for i in p.box):
             raise R2CompositionError("Portrait aperture must be four integer pixels.")
         x0, y0, x1, y1 = p.box
@@ -270,14 +273,24 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     for placement in plan.placements:
         portrait = portraits[placement.slug]
         x0, y0, x1, y1 = placement.box
-        scale = min((x1 - x0) / portrait.width, (y1 - y0) / portrait.height)
-        size = (max(1, round(portrait.width * scale)),
-                max(1, round(portrait.height * scale)))
-        portrait = portrait.resize(size, Image.Resampling.LANCZOS)
+        width, height = x1 - x0, y1 - y0
+        if placement.fit == "cover":
+            # Permitted proportional crop: no distorted faces or recolouring.
+            # Important: the pixel-verification source is this exact cropped
+            # RGBA raster, not the original uncropped bounding square.
+            portrait = ImageOps.fit(portrait, (width, height),
+                                    method=Image.Resampling.LANCZOS,
+                                    centering=(0.5, 0.5))
+            left, top = x0, y0
+        else:
+            scale = min(width / portrait.width, height / portrait.height)
+            size = (max(1, round(portrait.width * scale)),
+                    max(1, round(portrait.height * scale)))
+            portrait = portrait.resize(size, Image.Resampling.LANCZOS)
+            left = x0 + (width - size[0]) // 2
+            top = y1 - size[1]
         if placement.mirror:
             portrait = ImageOps.mirror(portrait)
-        left = x0 + ((x1 - x0) - size[0]) // 2
-        top = y1 - size[1]
         canvas.alpha_composite(portrait, dest=(left, top))
         silhouette_occupancy.paste(portrait.getchannel("A"), (left, top))
         rendered_sources[placement.slug] = (portrait, left, top)
@@ -403,6 +416,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "portrait_sha256": hashes,
         "opaque_source_pixels_verified": output_identity_integrity,
         "portrait_apertures": {p.slug: list(p.box) for p in plan.placements},
+        "portrait_fit": {p.slug: p.fit for p in plan.placements},
         "ep128_reference_id": plan.ep128_reference_id,
         "ep128_reference_sha256": verified_ref,
         "hero_png_sha256": sha256(hero_png).hexdigest(),
