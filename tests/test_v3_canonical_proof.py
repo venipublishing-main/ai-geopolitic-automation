@@ -64,3 +64,25 @@ def test_real_proof_runner_has_no_publication_or_network_functions():
     assert hasattr(proof, "render_historical_proofs")
     assert not hasattr(proof, "publish")
     assert not hasattr(proof, "upload")
+
+def test_proportional_cover_crop_is_validated_on_exported_source_pixels(monkeypatch):
+    m, plan, hero, portraits, ref = synthetic_inputs(monkeypatch, 1)
+    large_face_plan = replace(
+        plan,
+        placements=(PortraitPlacement("nora", (62, 423, 505, 985), fit="cover"),),
+        arrangement="portrait-left",
+    )
+    proof = compose_r2_slide(m, large_face_plan, hero_png=hero,
+                             portrait_pngs=portraits, ep128_reference_png=ref)
+    assert proof.qc["portrait_fit"] == {"nora": "cover"}
+    assert proof.qc["opaque_source_pixels_verified"] == {"nora": True}
+    assert proof.qc["publication_authorised"] is False
+
+
+def test_unsupported_crop_mode_fails_closed(monkeypatch):
+    m, plan, hero, portraits, ref = synthetic_inputs(monkeypatch, 1)
+    broken = replace(plan, placements=(PortraitPlacement(
+        "nora", (62, 423, 505, 985), fit="stretch"),))
+    with pytest.raises(ValueError, match="contain or cover"):
+        compose_r2_slide(m, broken, hero_png=hero,
+                         portrait_pngs=portraits, ep128_reference_png=ref)
