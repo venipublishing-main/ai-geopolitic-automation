@@ -255,7 +255,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(json.dumps({"proofs": results,
                       "draft_only": True,
-                      "generation_performed": False,
+                      "rendered_local_proofs": len(results),
+                      "external_image_provider_calls": 0,
                       "publishing_performed": False}, indent=2))
     return 0
 
