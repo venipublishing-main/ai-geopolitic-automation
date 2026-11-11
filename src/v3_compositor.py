@@ -16,7 +16,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Mapping
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, UnidentifiedImageError
 
 from .v3_scene_layers import prepare_foreground_layer, protect_canonical_pixels
 from .v3_adaptive_layout import LetteringSurface, validate_arrangement, compose_material_lettering
@@ -266,6 +266,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     canvas.paste(hero, (HERO_BOX[0], HERO_BOX[1]))
     canvas = canvas.convert("RGBA")
     silhouette_occupancy = Image.new("L", (WIDTH, HEIGHT), 0)
+    rendered_sources = {}
     for placement in plan.placements:
         portrait = portraits[placement.slug]
         x0, y0, x1, y1 = placement.box
@@ -279,6 +280,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         top = y1 - size[1]
         canvas.alpha_composite(portrait, dest=(left, top))
         silhouette_occupancy.paste(portrait.getchannel("A"), (left, top))
+        rendered_sources[placement.slug] = (portrait, left, top)
 
     foreground_protected_pixels = 0
     if foreground_layer_png is not None:
@@ -367,9 +369,25 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
     out = io.BytesIO()
     canvas.convert("RGB").save(out, format="PNG", optimize=False, compress_level=9)
     data = out.getvalue()
+    output_identity_integrity = {}
     with Image.open(io.BytesIO(data)) as check:
         if check.size != (WIDTH, HEIGHT) or check.format != "PNG":
             raise R2CompositionError("Exact final 1080x1350 PNG readback failed.")
+        # A source-hash alone is NOT proof that the rendered portrait is
+        # unchanged. Compare every fully opaque source pixel to the actual
+        # exported PNG, after foreground compositing and text furniture.
+        for slug, (portrait, left, top) in rendered_sources.items():
+            actual = check.crop((left, top, left + portrait.width, top + portrait.height)).convert("RGB")
+            expected = portrait.convert("RGB")
+            opaque = portrait.getchannel("A").point(lambda value: 255 if value == 255 else 0)
+            if opaque.getbbox() is None:
+                raise R2CompositionError("Canonical portrait contains no opaque identity pixels.")
+            difference = ImageChops.difference(actual, expected)
+            violating = tuple(ImageChops.multiply(channel, opaque).getbbox() is not None
+                              for channel in difference.split())
+            if any(violating):
+                raise R2CompositionError(f"Exported source portrait pixels drifted: {slug}.")
+            output_identity_integrity[slug] = True
     qc = {
         "episode_id": manifest["episode_id"],
         "slide_number": plan.slide_number,
@@ -383,6 +401,7 @@ def compose_r2_slide(manifest: dict, plan: R2SlidePlan, *, hero_png: bytes,
         "arrangement": plan.arrangement,
         "material_lettering": material_receipt,
         "portrait_sha256": hashes,
+        "opaque_source_pixels_verified": output_identity_integrity,
         "portrait_apertures": {p.slug: list(p.box) for p in plan.placements},
         "ep128_reference_id": plan.ep128_reference_id,
         "ep128_reference_sha256": verified_ref,
