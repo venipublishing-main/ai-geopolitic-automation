@@ -97,12 +97,14 @@ def _map_hero() -> Image.Image:
         d.line(polygon + [polygon[0]], fill=line, width=4)
     for yy in range(96, 264, 19):
         d.arc((645, yy - 48, 850, yy + 120), 205, 327, fill=(105, 134, 151), width=1)
-    d.text((620, 15), "GREENLAND / TWO CONTROL LAYERS",
+    d.text((648, 15), "GREENLAND / LAYERS",
            font=_font(19, bold=True), fill=NAVY)
-    _seal(d, 577, 143, "01  LEGAL SOVEREIGNTY", NAVY, 18)
-    _seal(d, 563, 237, "02  SECURITY ACCESS", BLUE, 18)
-    d.line((560, 159, 635, 170), fill=NAVY, width=3)
-    d.line((560, 248, 666, 252), fill=BLUE, width=3)
+    # Keep every label outside the map silhouette, with leaders pointing IN,
+    # instead of overlaying generated-looking letters over topographic ink.
+    _seal(d, 539, 134, "LEGAL TITLE", NAVY, 15)
+    _seal(d, 539, 240, "ACCESS RIGHTS", BLUE, 15)
+    d.line((555, 158, 642, 165), fill=NAVY, width=2)
+    d.line((555, 257, 666, 267), fill=BLUE, width=2)
     for i in range(18):
         x = 500 + i * 27
         d.line((x, 322, x + 18, 307), fill=(190, 198, 191), width=1)
@@ -126,12 +128,17 @@ def _wheel_hero() -> Image.Image:
         x2 = cx + 167 * math.cos(a)
         y2 = cy + 167 * math.sin(a)
         d.line((x1, y1, x2, y2), fill=GOLD if idx % 2 else NAVY, width=2)
-    for i, word in enumerate(("LEGAL", "ACCESS", "SCREENING", "VALUE", "FUTURE CHOICE")):
-        x, y = 652, 23 + i * 34
-        d.text((x, y), f"{i+1:02d}  {word}", font=_font(16), fill=GOLD if i % 2 else NAVY)
+    # Ordered wedges are represented visually, while the exact labels are
+    # typeset in the separate mandatory evidence strip below the artwork.
+    for i in range(5):
+        angle = math.tau * (i / 5.0) - math.pi / 2
+        px = cx + 179 * math.cos(angle)
+        py = cy + 179 * math.sin(angle)
+        d.text((round(px)-9, round(py)-7), str(i+1), font=_font(14),
+               fill=GOLD if i % 2 else NAVY)
     d.arc((676, 80, 946, 351), 205, 315, fill=GOLD, width=9)
     d.ellipse((cx-14, cy-14, cx+14, cy+14), fill=NAVY, outline=GOLD, width=3)
-    d.text((709, 340), "ONE SOVEREIGNTY SYSTEM", font=_font(17, bold=True), fill=NAVY)
+    d.text((733, 15), "FIVE LINKED LAYERS", font=_font(16, bold=True), fill=NAVY)
     d.line((661, 361, 960, 361), fill=GOLD, width=3)
     return im
 
@@ -182,15 +189,15 @@ def render_historical_proofs(design_text: str, asset_dir: Path, output_dir: Path
     plans = {
         1: (
             "portrait-left",
-            (PortraitPlacement("nora", (63, 421, 504, 983)),),
+            (PortraitPlacement("nora", (63, 421, 504, 983), fit="cover"),),
             LetteringSurface((606, 755, 1006, 969), "engraved", 0, True),
             "1u6Fux5vvIJHRzgnnZ_Yrr-TabpZlvQeY",
             _map_hero,
         ),
         9: (
             "paired-synthesis",
-            (PortraitPlacement("nora", (52, 435, 373, 985)),
-             PortraitPlacement("amari_ndlovu", (378, 435, 691, 985))),
+            (PortraitPlacement("nora", (52, 435, 373, 985), fit="cover"),
+             PortraitPlacement("amari_ndlovu", (378, 435, 691, 985), fit="cover")),
             LetteringSurface((704, 790, 1009, 972), "stamped", 0, True),
             "1paH71uL8n5R9r8e-s4LtWtwa0Txrzo62",
             _wheel_hero,
