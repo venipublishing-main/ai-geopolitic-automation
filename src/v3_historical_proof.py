@@ -101,8 +101,8 @@ def _map_hero() -> Image.Image:
            font=_font(19, bold=True), fill=NAVY)
     # Keep every label outside the map silhouette, with leaders pointing IN,
     # instead of overlaying generated-looking letters over topographic ink.
-    _seal(d, 539, 134, "LEGAL TITLE", NAVY, 15)
-    _seal(d, 539, 240, "ACCESS RIGHTS", BLUE, 15)
+    _seal(d, 539, 134, "LEGAL", NAVY, 15)
+    _seal(d, 539, 240, "ACCESS", BLUE, 15)
     d.line((555, 158, 642, 165), fill=NAVY, width=2)
     d.line((555, 257, 666, 267), fill=BLUE, width=2)
     for i in range(18):
@@ -134,8 +134,8 @@ def _wheel_hero() -> Image.Image:
         angle = math.tau * (i / 5.0) - math.pi / 2
         px = cx + 179 * math.cos(angle)
         py = cy + 179 * math.sin(angle)
-        d.text((round(px)-9, round(py)-7), str(i+1), font=_font(14),
-               fill=GOLD if i % 2 else NAVY)
+        d.ellipse((round(px)-4, round(py)-4, round(px)+4, round(py)+4),
+                  fill=GOLD if i % 2 else NAVY)
     d.arc((676, 80, 946, 351), 205, 315, fill=GOLD, width=9)
     d.ellipse((cx-14, cy-14, cx+14, cy+14), fill=NAVY, outline=GOLD, width=3)
     d.text((733, 15), "FIVE LINKED LAYERS", font=_font(16, bold=True), fill=NAVY)
