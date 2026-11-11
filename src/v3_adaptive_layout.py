@@ -19,7 +19,7 @@ class AdaptiveLayoutError(ValueError):
 
 
 ARRANGEMENTS = frozenset({
-    "legacy", "portrait-left", "portrait-right", "central-portrait", "paired-dialogue"
+    "legacy", "portrait-left", "portrait-right", "central-portrait", "paired-dialogue", "paired-synthesis"
 })
 
 
@@ -48,6 +48,19 @@ def validate_arrangement(
         return
     left, _, right, _ = hero_box
     span = right - left
+    if arrangement == "paired-synthesis":
+        if len(placements) != 2:
+            raise AdaptiveLayoutError("Paired synthesis requires exactly two canonical panels.")
+        # Unlike dialogue (opposing sides), both voices may form a shared
+        # interpretive ensemble beside one dominant right-side apparatus.
+        centres = sorted((p.box[0] + p.box[2]) / 2 for p in placements)
+        right_edge = max(p.box[2] for p in placements)
+        if not (centres[0] <= left + span * .34
+                and centres[1] <= left + span * .70
+                and centres[1] - centres[0] >= span * .23
+                and right - right_edge >= span * .24):
+            raise AdaptiveLayoutError("Synthesis ensemble must reserve right-side apparatus space.")
+        return
     if arrangement == "paired-dialogue":
         if len(placements) != 2:
             raise AdaptiveLayoutError("Paired dialogue requires exactly two canonical panels.")
