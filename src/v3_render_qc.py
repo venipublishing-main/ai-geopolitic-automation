@@ -100,6 +100,13 @@ def audit_exported_png(
                 compositor_qc.get("footer") !=
                 "The event is factual. The interpretation ideological."):
             issues.append("SOURCE_IDENTITY_OR_FOOTER_UNVERIFIED")
+        source_hashes = compositor_qc.get("portrait_sha256") or {}
+        output_proof = compositor_qc.get("opaque_source_pixels_verified")
+        if (not isinstance(source_hashes, Mapping) or
+                not isinstance(output_proof, Mapping) or
+                set(source_hashes) != set(output_proof) or
+                not all(value is True for value in output_proof.values())):
+            issues.append("EXPORTED_CANONICAL_PIXEL_INTEGRITY_UNVERIFIED")
 
     reviewed = False
     if inspection is not None:
