@@ -82,6 +82,28 @@ layout engine, or permission to publish. See the
 The actual current-day manual ledgers are **read-only authorities**, never
 engineering output targets. The Automation Diary is the Drive recovery home.
 
+### R2.2c — Original-canon historical proof (11 November 2026)
+
+The current draft `src.v3_historical_proof` provides an isolated, offline,
+**NONPUBLISHABLE** two-image regression for historical Ep136 Slide 01 (Nora)
+and Slide 09 (Nora + Amari). It requires the accepted archived Manifest v2,
+exact SHA-256-hash-pinned original transparent PNG files and approved Ep128
+reference bytes. Images and editorial source documents are never committed.
+
+The composer supports aspect-preserving `cover` crops and a
+`paired-synthesis` arrangement; the final exported PNG is independently
+checked against **every opaque pixel of each composited canonical portrait**,
+not just the source filename/hash. The externally recorded v3.1 Render
+Integrity status remains `HUMAN_REVIEW_REQUIRED` until a real visual
+review is accepted. Initial genuine-source engineering proofs passed source
+identity and exact 1080×1350 geometry checks, but **did not match the
+information density or artistic sophistication of Ep128/accepted Ep136**.
+They must not replace, overwrite or publish accepted episode artwork.
+
+See [R2.2c read-only canonical proof checkpoint](docs/R2_2C_CANONICAL_ORIGINAL_PROOFS_20261111.md)
+for source and CI evidence, exact output hashes and the remaining artistic
+defects. The accepted manual workflow and archive remain untouched.
+
 ## Current status — Phase D.2R pre-generation repair
 
 Nora's `synthesis stack` now maps to **layered_system**, with five equal-status
