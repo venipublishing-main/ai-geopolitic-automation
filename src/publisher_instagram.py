@@ -143,7 +143,8 @@ class InstagramCarouselPublisher:
             ids.append(child)
         parent = self.transport.request(
             "POST", self._path("media"),
-            {"media_type": "CAROUSEL", "children": ",".join(ids), "caption": caption},
+            {"media_type": "CAROUSEL", "children": ",".join(ids), "caption": caption,
+             "is_ai_generated": "true"},
         )
         container = str(parent.get("id", ""))
         if not IDENTIFIER.fullmatch(container):
