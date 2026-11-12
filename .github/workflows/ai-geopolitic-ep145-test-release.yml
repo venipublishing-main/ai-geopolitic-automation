@@ -1,0 +1,62 @@
+name: AI Geopolitic Ep145 TEST carousel — one-time gated release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - publisher_signals/ep145-20261113.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-geopolitic-ep145-test-release-once
+  cancel-in-progress: false
+
+jobs:
+  one-time-test-release:
+    name: Publish one clearly marked QA carousel after Sisyphus PASS
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AI_GEO_ONE_TIME_TEST_ENABLE: EXACTLY_ONE_EP145_QA_CAROUSEL
+      AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout production signal and durable receipts
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Checkout pinned, tested publisher source
+        uses: actions/checkout@v4
+        with:
+          ref: 9d4e79d5340c4453876f78c2b53354daa89e9eed
+          path: publisher_code
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify code and one-time release safety tests offline
+        run: |
+          python -m pip install pytest==8.4.1 Pillow==11.3.0
+          python -m pytest -q publisher_code/tests/test_publisher_handoff.py publisher_code/tests/test_publisher_test_release.py
+        env:
+          PYTHONPATH: publisher_code
+      - name: Publish ONE TEST ONLY 10-image Instagram carousel
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"publisher_code")
+          from src.publisher_test_release import main
+          raise SystemExit(main())
+          PY
+      - name: Explain receipt handling
+        if: always()
+        run: |
+          echo "Only one Ep145 QA carousel is allowed. Review publisher_state/ep145-instagram-test.json."
+          echo "If CLAIMED or PUBLISHED, do not rerun this workflow. Resolve any ambiguous Meta result manually."
+          echo "Never delete the real archived episode; user handles removing Instagram TEST post."
