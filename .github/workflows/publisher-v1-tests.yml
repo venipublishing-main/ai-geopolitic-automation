@@ -78,3 +78,28 @@ jobs:
           git commit -m "Stage ten TEST ONLY images for Ep145 carousel commissioning"
           git push origin HEAD:refs/heads/publisher-test-media-20261113
           echo "PUBLIC_QA_BRANCH_CREATED: no Instagram publication."
+
+  verify-public-test-media:
+    name: Verify all ten public QA JPEG URLs with real HTTPS GET
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/publisher-v1-archive-selection-20261112'
+    needs: stage-test-media
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/publisher-v1-archive-selection-20261112
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Confirm ten distinct pinned HTTPS delivery JPEGs are publicly readable
+        run: |
+          python - <<'PY'
+          from src.publisher_test_release import image_urls, verify_public_images
+          urls=image_urls()
+          assert len(urls)==10
+          verify_public_images(urls)
+          print("PUBLIC_TEST_MEDIA_READY: ten JPEGs accessible via HTTPS")
+          PY
