@@ -18,6 +18,7 @@ GRAPH_BASE = "https://graph.facebook.com/v26.0"
 EXPECTED_USERNAME = "ai_geopolitic"
 REQUIRED_PERMISSIONS = frozenset({"instagram_basic", "instagram_content_publish"})
 ACCOUNT_ID = re.compile(r"^[0-9]{5,30}$")
+SYSTEM_USER_ID = re.compile(r"^[A-Za-z0-9_:\-]{1,128}$")
 MAX_RESPONSE_BYTES = 128 * 1024
 
 
@@ -87,7 +88,7 @@ def check_connection(token: str, getter: Callable = graph_get) -> ProbeResult:
     scopes_ok = False
     try:
         me = getter(token, "me", {"fields": "id,client_business_id"})
-        if not ACCOUNT_ID.fullmatch(str(me.get("id", ""))):
+        if not SYSTEM_USER_ID.fullmatch(str(me.get("id", ""))):
             raise ProbeBlocked("UNVERIFIED_SYSTEM_USER")
         valid_system_user = True
 
