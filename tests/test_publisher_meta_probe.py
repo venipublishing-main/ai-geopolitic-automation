@@ -84,7 +84,24 @@ def test_missing_or_unobserved_content_publish_grant_blocks(perms):
 
 
 def test_user_identity_is_not_treated_as_ig_account():
-    fake, _ = getter({"me": {"id": "invalid", "username": "Ai_Geopolitic"}})
+    # The subject may have a username but that does NOT prove which
+    # Instagram asset the portfolio granted.
+    fake, _ = getter({
+        "me": {"id": "SYSTEM_USER_ALIAS", "username": "Ai_Geopolitic"},
+        "me/assigned_instagram_accounts": {"data": []},
+    })
+    result = check_connection(DUMMY_TOKEN, fake)
+    assert result.status == "BLOCKED"
+    assert result.blocker == "EXPECTED_INSTAGRAM_ACCOUNT_NOT_ASSIGNED"
+
+
+def test_unified_login_system_id_is_not_required_to_be_numeric():
+    fake, _ = getter({"me": {"id": "SYSTEM_USER_ALIAS"}})
+    assert check_connection(DUMMY_TOKEN, fake).status == "CONNECTED"
+
+
+def test_empty_system_user_id_fails_closed():
+    fake, _ = getter({"me": {"id": ""}})
     result = check_connection(DUMMY_TOKEN, fake)
     assert result.status == "BLOCKED"
     assert result.blocker == "UNVERIFIED_SYSTEM_USER"
