@@ -40,6 +40,7 @@ jobs:
           RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
           RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
           RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
         shell: bash
         run: |
           if [ -z "${RCLONE_DRIVE_TOKEN}" ]; then
@@ -55,10 +56,25 @@ jobs:
             printf 'client_id = %s\n' "${RCLONE_DRIVE_CLIENT_ID}"
             printf 'client_secret = %s\n' "${RCLONE_DRIVE_CLIENT_SECRET}"
             printf 'token = %s\n' "${RCLONE_DRIVE_TOKEN}"
+            if [ -n "${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" ]; then
+              printf 'root_folder_id = %s\n' "${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}"
+            fi
           } > ~/.config/rclone/rclone.conf
           chmod 600 ~/.config/rclone/rclone.conf
-          if ! rclone lsjson ai_geopolitic_drive: --drive-root-folder-id 1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q --dirs-only --no-modtime > /tmp/ai-geo-archives.json 2>/dev/null; then
-            echo "::error::BLOCKED: configured Drive credentials could not read the archive parent."
+          if ! rclone lsjson ai_geopolitic_drive: --drive-root-folder-id 1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q --dirs-only --no-modtime > /tmp/ai-geo-archives.json 2>/tmp/ai-geo-drive-error.txt; then
+            python - <<'PY'
+            from pathlib import Path
+            error=Path("/tmp/ai-geo-drive-error.txt").read_text(errors="ignore").lower()
+            if "invalid_grant" in error or "token has been expired" in error: code="TOKEN_REFRESH_REJECTED"
+            elif "unknown flag" in error: code="RCLONE_FLAG_UNSUPPORTED"
+            elif "invalid_client" in error: code="OAUTH_CLIENT_MISMATCH"
+            elif "403" in error or "permission denied" in error: code="DRIVE_PERMISSION_DENIED"
+            elif "401" in error: code="DRIVE_UNAUTHORIZED"
+            elif "404" in error or "not found" in error: code="ARCHIVE_ROOT_NOT_FOUND"
+            elif "failed to create file system" in error: code="FILESYSTEM_SETUP_FAILED"
+            else: code="DRIVE_READ_FAILED"
+            print("::error::BLOCKED: "+code+" (no authentication details displayed)")
+            PY
             exit 3
           fi
           python - <<'PY'
@@ -73,7 +89,7 @@ jobs:
           PY
       - name: Remove transient OAuth config
         if: always()
-        run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json
+        run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json /tmp/ai-geo-drive-error.txt
 
   stage-test-media:
     name: Stage public TEST-only JPEGs for one future QA post
