@@ -121,11 +121,11 @@ def test_account_id_and_version_are_configured_not_guessed():
         InstagramCarouselPublisher(IG_ID, "latest", FakeGraph())
 
 
-def test_creator_publishing_uses_direct_instagram_login_host():
+def test_creator_publishing_uses_unified_login_graph_host():
     fake = FakeGraph()
     client(fake).publish(URLS, CAPTION, allowed_hostname="media.test.example",
                          explicit_external_publish_permission=True)
     assert fake.calls
-    assert all(call[1].startswith("https://graph.instagram.com/v24.0/")
+    assert all(call[1].startswith("https://graph.facebook.com/v24.0/")
                for call in fake.calls)
-    assert not any("graph.facebook.com" in call[1] for call in fake.calls)
+    assert not any("graph.instagram.com" in call[1] for call in fake.calls)
