@@ -72,6 +72,5 @@ jobs:
           print("NO_UPLOAD_NO_PUBLICATION")
           PY
       - name: Remove transient OAuth config
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/publisher-v1-archive-selection-20261112'
         if: always()
         run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json
