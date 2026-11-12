@@ -56,8 +56,14 @@ Meta Threads carousel: https://www.postman.com/meta/threads/request/34203612-b08
 Meta Threads post deletion: https://www.postman.com/meta/threads/request/34203612-0a51cfc6-6407-4aec-974f-5bcbfbbf9da3
 Archive root: https://drive.google.com/drive/folders/1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q
 
-## Account-boundary clarification (12 November 2026)
+## Account-boundary clarification: current Meta Unified Login (12 Nov 2026)
 
-AI Geopolitic is an Instagram Creator/Professional account. The user has a Veni Publishing Facebook Page, but there is no separate AI Geopolitic Facebook Page. The existing Page is not evidence of any linkage to the AI Geopolitic Instagram account. Do not create or require a new Facebook Page for this publishing integration. Use Instagram API with Instagram Login directly, hosted at graph.instagram.com, requesting instagram_business_basic and instagram_business_content_publish. Never reuse the prior Veni Faithful account's Instagram ID or token; that repo is an architecture reference only.
+The user confirmed AI Geopolitic is an Instagram Creator/Professional account, the only current Facebook Page is for Veni Publishing, and the old Veni Faithful portfolio is named `veni.faithfully`. No separate AI Geopolitic Facebook Page is required. The actual NEW app UI explicitly offers **API setup with Unified login**, not the former Instagram Login tab, and displays the warning: **Business portfolio selection is mandatory to use the Instagram API setup with Unified login**.
 
-The alternative Facebook Login API uses graph.facebook.com and requires an Instagram-linked Facebook Page. Do not mix the different token types, permissions, or API hosts. The draft Instagram client remains disconnected and disabled; this does not imply live OAuth or successful real-account testing.
+**Required operating route for this new app:** attach a correctly owned AI Geopolitic / Veni Publishing business portfolio (a separate new portfolio if possible, not the old `veni.faithfully` portfolio). Create a **Facebook Login for Business / Unified Login** configuration tied to the correct Instagram account asset and permissions `instagram_basic`, `instagram_content_publish`; future insights/comments permissions only if necessary. The generated URL uses an app/configuration ID rather than the standalone Instagram Login OAuth scope-list. Graph calls must use **graph.facebook.com** with the correct portfolio-authorized system-user token. A linked Facebook Page is **not required** for this newer Unified Login route.
+
+**Do not confuse this with the older `API setup with Facebook login` tab**: that legacy login flow requires a linked Facebook Page; or with the former direct Instagram Login, which used `graph.instagram.com` and `instagram_business_*` permissions. Previously drafted direct-login host advice was superseded after examining the user's real Meta developer screen and newer Unified Login integration documentation.
+
+Never reuse the prior Veni Faithful account's Instagram User ID or token. Keep the new publisher disabled until the genuine Meta app, selected portfolio, exact Instagram asset, permission scopes, OAuth exchange, public delivery, post receipt storage and TEST carousel have been verified. **Do not share App Secrets, tokens or OAuth codes in chats/screenshots.**
+
+Supporting current external references: https://www.tryadeli.com/blog/instagram-api-unified-login and https://www.tryadeli.com/blog/instagram-api-unified-login-integration
