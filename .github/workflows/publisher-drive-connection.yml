@@ -1,0 +1,59 @@
+name: Publisher read-only Google Drive credential check
+
+on:
+  push:
+    branches:
+      - feat/publisher-v1-archive-selection-20261112
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify-drive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install rclone
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+      - name: Validate Drive OAuth credentials without revealing them
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+        shell: bash
+        run: |
+          if [ -z "${RCLONE_DRIVE_TOKEN}" ]; then
+            echo "::error::BLOCKED: RCLONE_DRIVE_TOKEN is not configured in this repository."
+            exit 2
+          fi
+          mkdir -p ~/.config/rclone
+          chmod 700 ~/.config/rclone
+          {
+            printf '[ai_geopolitic_drive]\n'
+            printf 'type = drive\n'
+            printf 'scope = drive.readonly\n'
+            printf 'client_id = %s\n' "${RCLONE_DRIVE_CLIENT_ID}"
+            printf 'client_secret = %s\n' "${RCLONE_DRIVE_CLIENT_SECRET}"
+            printf 'token = %s\n' "${RCLONE_DRIVE_TOKEN}"
+          } > ~/.config/rclone/rclone.conf
+          chmod 600 ~/.config/rclone/rclone.conf
+          if ! rclone lsjson ai_geopolitic_drive: --drive-root-folder-id 1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q --dirs-only --no-modtime > /tmp/ai-geo-archives.json 2>/dev/null; then
+            echo "::error::BLOCKED: configured Drive credentials could not read the archive parent."
+            exit 3
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          doc=json.loads(Path("/tmp/ai-geo-archives.json").read_text())
+          match=[f for f in doc if f.get("Name")=="Ep144-12November2026" and f.get("IsDir")==True and f.get("ID")=="1ZN-dWSeCFBZ8h3Sy7mmzLDmujRjbdKaM"]
+          if len(match)!=1:
+              raise SystemExit("BLOCKED: archival readback did not match pinned Ep144 identity.")
+          print("DRIVE_READ_ONLY_CONNECTED: verified pinned archive parent and historical episode.")
+          print("NO_UPLOAD_NO_PUBLICATION")
+          PY
+      - name: Remove transient OAuth config
+        if: always()
+        run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json
