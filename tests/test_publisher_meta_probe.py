@@ -146,3 +146,13 @@ def test_missing_secret_cli_outputs_only_sanitized_result(monkeypatch, capsys):
     assert payload["status"] == "BLOCKED"
     assert payload["blocker"] == "MISSING_TOKEN"
     assert not payload["published"] and not payload["media_created"]
+
+
+def test_client_business_identity_alone_allows_separate_asset_verification():
+    fake, calls = getter({"me": {"client_business_id": "200000000002"}})
+    result = check_connection(DUMMY_TOKEN, fake)
+    assert result.status == "CONNECTED"
+    assert result.account_verified and result.publishing_scope_verified
+    assert [x[1] for x in calls] == [
+        "me", "me/assigned_instagram_accounts", "me/permissions"
+    ]
