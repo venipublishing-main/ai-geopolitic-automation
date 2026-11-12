@@ -59,7 +59,10 @@ def validate_signal(value: dict, *, current_day: date) -> tuple[Episode, str]:
     if not isinstance(folder,str) or not re.fullmatch(r"[A-Za-z0-9_-]{10,100}",folder):
         raise ReleaseBlocked("Archive folder ID is invalid.")
     ep=Episode(145,DAY,"Ep145-13November2026",folder)
-    verify_final_handoff(ep,value.get("sisyphus_handoff"),production_day=DAY)
+    try:
+        verify_final_handoff(ep,value.get("sisyphus_handoff"),production_day=DAY)
+    except PublisherBlocked as exc:
+        raise ReleaseBlocked(str(exc)) from None
     caption=value.get("archived_carousel_caption")
     sha=value.get("caption_sha256")
     if not isinstance(caption,str) or not 50<=len(caption)<=1800:
