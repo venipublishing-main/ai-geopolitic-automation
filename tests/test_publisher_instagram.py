@@ -51,6 +51,8 @@ def test_ten_image_carousel_creates_10_children_then_parent_then_one_publish():
     assert len(children) == 10 and len(parents) == 1 and len(publishes) == 1
     assert [c[2]["image_url"] for c in children] == URLS
     assert parents[0][2]["caption"] == CAPTION
+    assert parents[0][2]["is_ai_generated"] == "true"
+    assert all("is_ai_generated" not in c[2] for c in children)
     assert parents[0][2]["children"] == ",".join(str(17700000000000000 + i)
                                                   for i in range(1, 11))
     assert publishes[0][2]["creation_id"] == "17777777777777777"
