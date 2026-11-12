@@ -88,7 +88,13 @@ def check_connection(token: str, getter: Callable = graph_get) -> ProbeResult:
     scopes_ok = False
     try:
         me = getter(token, "me", {"fields": "id,client_business_id"})
-        if not SYSTEM_USER_ID.fullmatch(str(me.get("id", ""))):
+        # Unified Login SUAT responses can expose a client business ID
+        # without a conventional /me ID. Either authenticated identity
+        # claim is sufficient to proceed to the *separate* IG asset check.
+        identities = (me.get("id"), me.get("client_business_id"))
+        if not any(isinstance(item, (str, int))
+                   and 0 < len(str(item).strip()) <= 128
+                   for item in identities):
             raise ProbeBlocked("UNVERIFIED_SYSTEM_USER")
         valid_system_user = True
 
