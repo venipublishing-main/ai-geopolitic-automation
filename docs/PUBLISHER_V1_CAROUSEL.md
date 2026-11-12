@@ -67,3 +67,14 @@ The user confirmed AI Geopolitic is an Instagram Creator/Professional account, t
 Never reuse the prior Veni Faithful account's Instagram User ID or token. Keep the new publisher disabled until the genuine Meta app, selected portfolio, exact Instagram asset, permission scopes, OAuth exchange, public delivery, post receipt storage and TEST carousel have been verified. **Do not share App Secrets, tokens or OAuth codes in chats/screenshots.**
 
 Supporting current external references: https://www.tryadeli.com/blog/instagram-api-unified-login and https://www.tryadeli.com/blog/instagram-api-unified-login-integration
+
+
+## Verified Meta connection — 12 November 2026
+
+The user stored AI_GEO_IG_ACCESS_TOKEN as an Actions secret in this repository. The separate read-only identity probe in src/publisher_meta_probe.py authenticated on Meta's graph.facebook.com/v26.0 with a Bearer token, checked the authorized Unified Login business/system user, discovered exactly one assigned username matching ai_geopolitic (case-insensitive), and confirmed observed granted permissions instagram_basic and instagram_content_publish. The probe only uses GET, prints no token, account ID or provider error body, and does not publish.
+
+Evidence: GitHub Actions workflow run 43283284663, 12 November 2026. Scoped publisher CI: 62 passed, 0 failed. Live probe: CONNECTED, system_user_verified=true, instagram_account_verified=true, publishing_scope_verified=true, media_created=false, published=false, blocker=null.
+
+This verifies the account binding and permissions, not end-to-end carousel posting or public media delivery. No live TEST carousel was posted. Do not copy the credential into any source, Drive document, chat or other brand repository.
+
+Remaining gates: (1) public HTTPS media delivery for ten temporary JPEG assets, (2) a durable idempotency/receipt and ambiguous-outcome reconciliation store, (3) a manually authorized TEST ONLY ten-image carousel on the verified account, (4) user's manual post deletion, and (5) opt-in hourly handoff monitor with final PRODUCTION PASSED signal from Sisyphus. The older 'production complete, pending review' string must not by itself trigger live posting. Instagram, Threads and Reels maintain separate per-channel receipts.
