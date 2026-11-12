@@ -36,7 +36,7 @@ Never retry an ambiguous publish call blindly: reconcile the actual account medi
 
 ## Later tracks
 
-P1 — Instagram carousel: add public HTTPS delivery hosting, the correct AI Geopolitic Instagram professional account OAuth, non-secret GitHub configuration, durable idempotency and publication receipts, run a manual TEST carousel, then separately authorize the unattended daily schedule.
+P1 — Instagram carousel: use the direct Instagram Login API for the AI Geopolitic Creator account, with instagram_business_basic and instagram_business_content_publish, graph.instagram.com, and no Page linkage required; then add public HTTPS delivery hosting, durable idempotency and publication receipts, run a manual TEST carousel, and separately authorize unattended scheduling.
 
 P2 — Instagram Reel: create a final actual MP4 (H.264 video, AAC audio when used) from the six 1080x1920 archived frame PNGs; QC composition, playback, timing, video dimensions and caption. Meta's REELS container accepts a video URL, not six still images.
 
@@ -55,3 +55,9 @@ Meta Instagram: https://www.postman.com/meta/instagram/documentation/6yqw8pt/ins
 Meta Threads carousel: https://www.postman.com/meta/threads/request/34203612-b0861a47-db0e-4940-a692-2304669603b3
 Meta Threads post deletion: https://www.postman.com/meta/threads/request/34203612-0a51cfc6-6407-4aec-974f-5bcbfbbf9da3
 Archive root: https://drive.google.com/drive/folders/1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q
+
+## Account-boundary clarification (12 November 2026)
+
+AI Geopolitic is an Instagram Creator/Professional account. The user has a Veni Publishing Facebook Page, but there is no separate AI Geopolitic Facebook Page. The existing Page is not evidence of any linkage to the AI Geopolitic Instagram account. Do not create or require a new Facebook Page for this publishing integration. Use Instagram API with Instagram Login directly, hosted at graph.instagram.com, requesting instagram_business_basic and instagram_business_content_publish. Never reuse the prior Veni Faithful account's Instagram ID or token; that repo is an architecture reference only.
+
+The alternative Facebook Login API uses graph.facebook.com and requires an Instagram-linked Facebook Page. Do not mix the different token types, permissions, or API hosts. The draft Instagram client remains disconnected and disabled; this does not imply live OAuth or successful real-account testing.
