@@ -1,8 +1,9 @@
-"""Instagram API with Instagram Login: 10-image carousel, disconnected from the CLI.
+"""Instagram API with Unified Login: 10-image carousel, disconnected from CLI.
 
-Uses the direct Instagram Login access-token flow (not Veni Publishing's
-Facebook Page or the legacy Veni Faithful token). Required scopes include
-instagram_business_basic and instagram_business_content_publish.
+New Meta apps in November 2026 use portfolio-owned Unified Login (Facebook
+Login for Business configuration_id, not legacy Facebook Page login).
+Graph calls use graph.facebook.com, with instagram_basic and
+instagram_content_publish. The Veni Faithful token must never be reused.
 Callers must provide ten verified public HTTPS JPEG URLs, the correct account
 token, durable idempotency and a separately enabled publish permission. This
 module is never called by publisher_cli.py or scheduled GitHub Actions.
@@ -42,7 +43,7 @@ class UrlLibGraphTransport:
     timeout: int = 25
 
     def request(self, method: str, url: str, payload: dict) -> dict:
-        if method not in ("GET", "POST") or not url.startswith("https://graph.instagram.com/"):
+        if method not in ("GET", "POST") or not url.startswith("https://graph.facebook.com/"):
             raise InstagramPublishBlocked("Unexpected Meta Graph API endpoint.")
         if not self.token:
             raise InstagramPublishBlocked("Instagram publishing token is unavailable.")
@@ -99,12 +100,12 @@ class InstagramCarouselPublisher:
             raise InstagramPublishBlocked("Instagram account or API version is not configured correctly.")
 
     def _path(self, tail: str) -> str:
-        return f"https://graph.instagram.com/{self.graph_version}/{self.ig_user_id}/{tail}"
+        return f"https://graph.facebook.com/{self.graph_version}/{self.ig_user_id}/{tail}"
 
     def _read_container_status(self, container_id: str) -> str:
         if not IDENTIFIER.fullmatch(container_id):
             raise InstagramPublishBlocked("Meta returned an invalid container identifier.")
-        url = f"https://graph.instagram.com/{self.graph_version}/{container_id}"
+        url = f"https://graph.facebook.com/{self.graph_version}/{container_id}"
         result = self.transport.request("GET", url, {"fields": "status_code"})
         return str(result.get("status_code", "")).upper()
 
