@@ -1,0 +1,12 @@
+{
+  "schema": "ai-geopolitic.threads.live-approval-signal.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "destination": "@ai_geopolitic",
+  "media_type": "TEN_IMAGE_CAROUSEL",
+  "caption_source": "Ep145_CarouselCaption.txt",
+  "publish_confirmation": "PUBLISH_THREADS_EP145_20261113",
+  "source_run_id": "43408648808",
+  "source_status": "PREFLIGHT_PASSED_NO_PUBLICATION",
+  "only_one_publication": true
+}
