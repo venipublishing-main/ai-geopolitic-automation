@@ -13,5 +13,5 @@
   "previously_published": false,
   "direct_user_approval": "IAN_APPROVED_EP145_CAROUSEL_ONLY_20261113",
   "caption_sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce",
-  "recovery_note": "Prepublish Drive read failure in action 43388995762: no media staging, no claim, no Meta request. Diagnostic rerun authorized under same exact one-time scope."
+  "recovery_note": "Retry after verified read-only Drive OAuth recovery in GitHub Action 43396809393; prior real runs 43388995762 and 43389290143 failed before media staging, claim and all Meta POSTs. Same approved one-time Ep145 image-carousel scope; no Reel or music."
 }
