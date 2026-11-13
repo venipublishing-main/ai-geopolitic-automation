@@ -1,0 +1,105 @@
+name: Publisher v1 read-only staging QA (no posting)
+
+on:
+  push:
+    branches:
+      - feat/publisher-v1-archive-selection-20261112
+  pull_request:
+    branches:
+      - automation-v2
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install isolated dependencies
+        run: python -m pip install Pillow==11.3.0 pytest==8.4.1
+      - name: Execute no-network, no-social-publishing publisher regressions
+        run: python -m pytest -q tests/test_publisher_v1.py tests/test_publisher_instagram.py tests/test_publisher_meta_probe.py tests/test_publisher_handoff.py tests/test_publisher_test_release.py
+
+      - name: Verify the connected Ai_Geopolitic account without posting
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/publisher-v1-archive-selection-20261112'
+        env:
+          AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+        run: python -m src.publisher_meta_probe
+  stage-test-media:
+    name: Stage public TEST-only JPEGs for one future QA post
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/publisher-v1-archive-selection-20261112'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: ai-geopolitic-qa-media-20261113
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/publisher-v1-archive-selection-20261112
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Create ten distinct TEST ONLY delivery JPEGs
+        run: |
+          python -m pip install Pillow==11.3.0
+          python -m src.publisher_cli --mode test-deck --out /tmp/qa-media
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          images=sorted(Path("/tmp/qa-media/TEST_DECK").glob("TEST_Slide??of10.jpg"))
+          assert len(images)==10
+          for i,p in enumerate(images,1):
+              assert p.name==f"TEST_Slide{i:02d}of10.jpg"
+              with Image.open(p) as im:
+                  assert im.format=="JPEG" and im.size==(1080,1350)
+          print("TEN_DISTINCT_QA_JPEGS_VERIFIED")
+          PY
+      - name: Publish public QA files to dedicated media branch (not Instagram)
+        run: |
+          if git ls-remote --heads origin refs/heads/publisher-test-media-20261113 | grep -q .; then
+            echo "MEDIA_BRANCH_ALREADY_PRESENT: not overwriting."
+            exit 0
+          fi
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git switch --orphan publisher-test-media-20261113
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p media/qa-20261113
+          cp /tmp/qa-media/TEST_DECK/TEST_Slide??of10.jpg media/qa-20261113/
+          git add media/qa-20261113
+          git commit -m "Stage ten TEST ONLY images for Ep145 carousel commissioning"
+          git push origin HEAD:refs/heads/publisher-test-media-20261113
+          echo "PUBLIC_QA_BRANCH_CREATED: no Instagram publication."
+
+  verify-public-test-media:
+    name: Verify all ten public QA JPEG URLs with real HTTPS GET
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/publisher-v1-archive-selection-20261112'
+    needs: stage-test-media
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/publisher-v1-archive-selection-20261112
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Confirm ten distinct pinned HTTPS delivery JPEGs are publicly readable
+        run: |
+          python - <<'PY'
+          from src.publisher_test_release import image_urls, verify_public_images
+          urls=image_urls()
+          assert len(urls)==10
+          verify_public_images(urls)
+          print("PUBLIC_TEST_MEDIA_READY: ten JPEGs accessible via HTTPS")
+          PY

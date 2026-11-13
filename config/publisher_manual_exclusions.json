@@ -1,0 +1,13 @@
+{
+  "schema": "ai-geopolitic.publisher.manual-exclusions.v1",
+  "excluded_publications": [
+    {
+      "episode_id": "Ep144",
+      "production_date_sast": "2026-11-12",
+      "channel": "instagram",
+      "status": "USER_REPORTED_MANUALLY_PUBLISHED",
+      "evidence": "User confirmed in conversation on 2026-11-12; no API ID or permalink claimed",
+      "note": "Suppress all IG autopublishing for this episode; status is reported, not independently verified"
+    }
+  ]
+}
