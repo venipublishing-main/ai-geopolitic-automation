@@ -3,12 +3,12 @@
   "episode": "Ep145",
   "date": "2026-11-13",
   "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_AI_INFO_VERIFIED",
   "caption_sha256": "4e1045a42fe3215f9f4058cbfcaec2c323f5d7b00b0655d95e34cca9c8a1cb4d",
   "image_commit": "37dac6614a6d01ae4691a5af5561735dd3f14ef1",
   "ai_info_required": true,
   "test_only": true,
-  "instagram_media_id": null,
-  "permalink": null,
+  "instagram_media_id": "17940962454398658",
+  "permalink": "https://www.instagram.com/p/DfrE6zJjmxU/",
   "github_run_id": "43384629376"
 }
