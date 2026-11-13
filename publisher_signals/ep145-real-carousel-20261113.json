@@ -1,0 +1,16 @@
+{
+  "schema": "ai-geopolitic.publisher.ep145-real-approval.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+  "approved_account": "ai_geopolitic",
+  "post_targets": [
+    "CAROUSEL"
+  ],
+  "no_reel": true,
+  "no_music": true,
+  "test_only": false,
+  "previously_published": false,
+  "direct_user_approval": "IAN_APPROVED_EP145_CAROUSEL_ONLY_20261113",
+  "caption_sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce"
+}
