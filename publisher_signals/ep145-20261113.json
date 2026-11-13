@@ -1,0 +1,32 @@
+{
+  "schema": "ai-geopolitic.publisher.signal.v1",
+  "episode_id": "Ep145",
+  "production_date_sast": "2026-11-13",
+  "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+  "source": "SISYPHUS_DRIVE_VERIFIED",
+  "sisyphus_handoff": {
+    "schema": "ai-geopolitic.publisher.production-handoff.v1",
+    "episode_id": "Ep145",
+    "production_date_sast": "2026-11-13",
+    "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+    "status": "PRODUCTION PASSED",
+    "author": "Sisyphus",
+    "publish_target": "INSTAGRAM_CAROUSEL_TEST_ONLY",
+    "carousel_items": 10,
+    "reel_frames": 6,
+    "unresolved_blockers": [],
+    "component_results": {
+      "rnd": "PASS",
+      "slide_design": "PASS",
+      "carousel_10": "PASS",
+      "carousel_caption": "PASS",
+      "reel_frames_6": "PASS",
+      "reel_caption": "PASS",
+      "archive_drive_readback": "PASS"
+    }
+  },
+  "test_only": true,
+  "archived_carousel_caption": "A tenth suspect was arrested in South Africa on 11 November over an alleged attempt to join the Russia–Ukraine war. Authorities allege a breach of foreign military assistance law. Arrest is not conviction.\n\n#AIGeopolitic #SouthAfrica #Geopolitics #PoliticalAnalysis #NewsBriefing\n\nThe event is factual. The interpretation ideological.",
+  "caption_sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce",
+  "previously_published": false
+}
