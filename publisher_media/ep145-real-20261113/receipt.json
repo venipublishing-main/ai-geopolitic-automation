@@ -1,0 +1,82 @@
+{
+  "schema": "ai-geopolitic.publisher.ep145-carousel-media-stage.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+  "source_sha256_verified": true,
+  "count": 10,
+  "media": [
+    {
+      "name": "Slide01of10.jpg",
+      "sha256": "946c1c12419d5e2d3f68e2c7b0f8a8128010ac96b9cc814aeb2d3244c2a6f2f2",
+      "size": 866241,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide02of10.jpg",
+      "sha256": "5e763bf553472e0d5e8ac3a9ed7d6e30eb0f07bea5359a911bf0a02ba2197ad0",
+      "size": 990982,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide03of10.jpg",
+      "sha256": "6e02a1e4ac56fcca6762e8ccd052bec9f95c19765bc57e1daac74586cd5c5411",
+      "size": 963773,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide04of10.jpg",
+      "sha256": "fbd54edf00bc971136fd779b90b11f402c51d4744f231d876f541261e481754f",
+      "size": 928282,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide05of10.jpg",
+      "sha256": "825a9493e5b87e3dbed49ab8c09c9808d9461baa4251ea60f75329aa7c60cdd7",
+      "size": 985334,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide06of10.jpg",
+      "sha256": "d6487574618542b63a267c4cc7e3e38ac896ac4c323b47423a76a7a356b2a68b",
+      "size": 922550,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide07of10.jpg",
+      "sha256": "fd1f60575392ee2e7f7e4bd0d13ae54d9596e04631ff8873ef65ab26aacfae73",
+      "size": 932044,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide08of10.jpg",
+      "sha256": "70afe1d5ed4969d20059410a0a553bbf24e4b34b024aa7b6c53a2a12d6d9bb88",
+      "size": 868747,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide09of10.jpg",
+      "sha256": "2eb88cadb1d0a09398f6418dd3cdbf891ae8c6268562ff8f3cf5936b2859a3f8",
+      "size": 957832,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Slide10of10.jpg",
+      "sha256": "94835d4031d1029042c81aabaa3a82a898e96a55af57600eff3f57af747cdb97",
+      "size": 918269,
+      "width": 1080,
+      "height": 1350
+    }
+  ],
+  "no_reel": true,
+  "no_audio": true
+}
