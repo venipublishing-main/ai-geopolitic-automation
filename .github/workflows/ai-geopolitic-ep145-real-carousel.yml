@@ -104,6 +104,10 @@ jobs:
           git push origin HEAD:refs/heads/ep145-publish-media-20261113
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git switch main
+          # Only the bounded, non-secret receipt is needed locally by the publisher.
+          # The JPEGs remain on the separate public immutable staging branch.
+          mkdir -p publisher_media/ep145-real-20261113
+          git show ep145-publish-media-20261113:publisher_media/ep145-real-20261113/receipt.json > publisher_media/ep145-real-20261113/receipt.json
       - name: Publish exactly one real Ep145 CAROUSEL by Instagram API
         shell: bash
         env:
