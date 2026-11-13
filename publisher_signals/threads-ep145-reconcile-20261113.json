@@ -1,0 +1,9 @@
+{
+  "schema": "ai-geopolitic.threads.reconcile-signal.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "mode": "READ_ONLY_META_GET_NO_POST",
+  "source_run_id": "43412922861",
+  "source_status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "reason": "Threads publish returned media ID but final metadata verification failed; no retry authorized."
+}
