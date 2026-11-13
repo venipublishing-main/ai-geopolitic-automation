@@ -27,12 +27,63 @@ API_ROOT = "https://graph.threads.net/v1.0"
 GITHUB_RAW = "https://raw.githubusercontent.com/venipublishing-main/ai-geopolitic-automation"
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
 EXPECTED_USERNAME = "ai_geopolitic"
+LOCKED_HASHTAGS = (
+    "#AIGeopolitic", "#SouthAfrica", "#Geopolitics",
+    "#PoliticalAnalysis", "#NewsBriefing",
+)
 MAX_RESPONSE = 256 * 1024
 STAGE_SCHEMA = "ai-geopolitic.threads.stage-receipt.v1"
 
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def caption_match(canonical: str, published: str) -> str | None:
+    """Allow only the single hashtag marker Meta removed in the Ep145 release.
+
+    Threads can convert one approved hashtag to its native topic representation.
+    No other character, punctuation, case or hashtag alteration is permitted.
+    This predicate also protects duplicate detection on subsequent releases.
+    """
+    if not isinstance(canonical, str) or not isinstance(published, str):
+        return None
+    source, actual = canonical.strip(), published.strip()
+    if source == actual:
+        return "EXACT"
+    for hashtag in LOCKED_HASHTAGS:
+        if hashtag in source and source.replace(hashtag, hashtag[1:], 1) == actual:
+            return "META_ONE_TOPIC_HASH_REMOVED"
+    return None
+
+
+def verify_published_post(media_id: str, caption: str, post: dict) -> dict | None:
+    """Verify the actual account, ten image children and canonical-equivalent text."""
+    if not isinstance(post, dict) or str(post.get("id")) != media_id:
+        return None
+    if str(post.get("username", "")).lower().lstrip("@") != EXPECTED_USERNAME:
+        return None
+    if post.get("media_type") != "CAROUSEL_ALBUM":
+        return None
+    match_mode = caption_match(caption, post.get("text"))
+    if match_mode is None:
+        return None
+    children = post.get("children")
+    if isinstance(children, dict):
+        children = children.get("data")
+    if not isinstance(children, list) or len(children) != 10:
+        return None
+    ids = [str(child.get("id", "")) if isinstance(child, dict) else "" for child in children]
+    if any(not x.isdigit() for x in ids) or len(set(ids)) != 10:
+        return None
+    permalink = str(post.get("permalink", ""))
+    parsed = urllib.parse.urlparse(permalink)
+    if (parsed.scheme != "https"
+            or parsed.hostname not in ("threads.com", "www.threads.com", "threads.net", "www.threads.net")
+            or not parsed.path.startswith(f"/@{EXPECTED_USERNAME}/post/")):
+        return None
+    return {"threads_media_id": media_id, "threads_permalink": permalink,
+            "caption_verification": match_mode, "carousel_items_verified": len(ids)}
 
 
 def check_stage(episode: str, day: str, commit: str, root: Path = Path(".")) -> tuple[dict, str, list[str]]:
@@ -126,7 +177,7 @@ class ThreadsGraph:
         posts = recent.get("data", [])
         if not isinstance(posts, list):
             raise ThreadsBlocked("Cannot verify recent Threads posts.")
-        if any(isinstance(x, dict) and (x.get("text") or "").strip() == caption.strip() for x in posts):
+        if any(isinstance(x, dict) and caption_match(caption, x.get("text")) is not None for x in posts):
             raise ThreadsBlocked("Identical carousel caption is already published on Threads.")
         return str(me["id"]), EXPECTED_USERNAME
 
@@ -162,18 +213,14 @@ class ThreadsGraph:
         media_id = str(published.get("id", ""))
         if not media_id.isdigit():
             raise ThreadsBlocked("Threads publish returned no valid media ID; manual reconciliation.")
-        for attempt in range(5):
-            post = self.request("GET", f"/{media_id}", {"fields": "id,username,text,permalink,media_type"})
-            if (str(post.get("id")) == media_id
-                    and str(post.get("username", "")).lower().lstrip("@") == EXPECTED_USERNAME
-                    and str(post.get("text", "")).strip() == caption.strip()
-                    and post.get("media_type") == "CAROUSEL_ALBUM"
-                    and urllib.parse.urlparse(str(post.get("permalink", ""))).scheme == "https"
-                    and urllib.parse.urlparse(str(post.get("permalink", ""))).hostname
-                    in ("threads.com", "www.threads.com", "threads.net", "www.threads.net")):
-                return {"threads_media_id": media_id, "threads_permalink": post["permalink"]}
-            if attempt < 4:
-                time.sleep(3)
+        for attempt in range(8):
+            post = self.request("GET", f"/{media_id}", {
+                "fields": "id,username,text,permalink,media_type,children"})
+            verified = verify_published_post(media_id, caption, post)
+            if verified is not None:
+                return verified
+            if attempt < 7:
+                time.sleep(4)
         raise ThreadsBlocked("Threads publish response received, but post verification failed; manual reconciliation.")
 
 
