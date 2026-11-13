@@ -21,11 +21,6 @@
     "id": "1gwYASbLjlc5gFK-HzWtXJdjgC6XaSqGP",
     "sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce"
   },
-  "reel_caption": {
-    "name": "Ep145_ReelCaption.txt",
-    "id": "1dUTF4yI15v5bf1vcCMMu1NrH0B1axokI",
-    "sha256": "098871c2f8074cfb8f5b02b667e6332114b4eddadc382222c45aa22b8cea4519"
-  },
   "slide_items": [
     {
       "name": "Ep145_Slide01of10.png",
@@ -98,59 +93,9 @@
       "height": 1350
     }
   ],
-  "reel_items": [
-    {
-      "name": "ReelFrame01of06.png",
-      "id": "11wse15b9XPucLWMPLdrAcyV7t-9FMZ5m",
-      "sha256": "e189f980ae3a251d5bd8e405915c6bf0bf2f850c7b8a74a5c2edf6db8bf6069b",
-      "width": 1080,
-      "height": 1920
-    },
-    {
-      "name": "ReelFrame02of06.png",
-      "id": "1LiEVN_d085YqWgMQaHVo3F8OlLqOVa5m",
-      "sha256": "c04e3ddb58e20a784b11ebb1a934912e84a17f6b398d6c1f0e817c26847d40ce",
-      "width": 1080,
-      "height": 1920
-    },
-    {
-      "name": "ReelFrame03of06.png",
-      "id": "1aUw8dBaL7Mjfgu5VSPcJW7hxUp2m_s74",
-      "sha256": "ee86a469e79b9b076a238fd3727ba115e5d3b5f6f730924268f0d44ad95e6314",
-      "width": 1080,
-      "height": 1920
-    },
-    {
-      "name": "ReelFrame04of06.png",
-      "id": "10UUszIZDag_M9j8fru3iy-IuRyHl9v8A",
-      "sha256": "e312eb7d1059a4d9d674e44c2502e386ee8695143d6c34120b8d29ff86465587",
-      "width": 1080,
-      "height": 1920
-    },
-    {
-      "name": "ReelFrame05of06.png",
-      "id": "1cxZ_yn9n6_nJY-lcdJnW39_9kCGNIeHk",
-      "sha256": "4d22ad52418fa3d2261200da963a4c6b3a71ccc4b5e837f83b902913a386bd86",
-      "width": 1080,
-      "height": 1920
-    },
-    {
-      "name": "ReelFrame06of06.png",
-      "id": "1nooMHqNYYNvyKwOb6br4Z_qiwKa9wgau",
-      "sha256": "a17b13c2d1d65a35eccddbf0c76ba84630312c0882f4bd567c037196954afade",
-      "width": 1080,
-      "height": 1920
-    }
-  ],
-  "music": {
-    "type": "original_programmatically_composed_instrumental",
-    "third_party_samples": false,
-    "duration_seconds": 18,
-    "not_in_instagram_music_library": true
-  },
   "post_targets": [
-    "CAROUSEL",
-    "REEL"
+    "CAROUSEL"
   ],
-  "media_staging_branch": "ep145-publish-media-20261113"
+  "media_staging_branch": "ep145-publish-media-20261113",
+  "publish_scope": "EXACTLY_ONE_REAL_EP145_IMAGE_CAROUSEL_NO_REEL_NO_MUSIC"
 }
