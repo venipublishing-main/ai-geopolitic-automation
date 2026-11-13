@@ -1,0 +1,156 @@
+{
+  "schema": "ai-geopolitic.publisher.ep145-real-plan.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "folder_name": "Ep145-13November2026",
+  "archive_parent_id": "1QcCh-qMHOH97ZWdTLULwNygibJcZRb4q",
+  "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+  "username": "ai_geopolitic",
+  "production_qc": {
+    "name": "Ep145_QC_Completion.json",
+    "id": "1666vtFSzuCpa7qIEfyIkSeBfCUAx078-",
+    "sha256": "cdb416133ce30c15f424784dde07943744638c2ea75b58149480c069f1f5801e"
+  },
+  "production_handoff": {
+    "name": "Ep145_PUBLISH_HANDOFF.json",
+    "id": "1pTZ6yfv1sxwFF82qcJb7vRqAqIw7lU_h",
+    "sha256": "d2aba40504027cab8b6112ebb2c4fefd78c316777cf7ee4b23a0501e579cb87b"
+  },
+  "carousel_caption": {
+    "name": "Ep145_CarouselCaption.txt",
+    "id": "1gwYASbLjlc5gFK-HzWtXJdjgC6XaSqGP",
+    "sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce"
+  },
+  "reel_caption": {
+    "name": "Ep145_ReelCaption.txt",
+    "id": "1dUTF4yI15v5bf1vcCMMu1NrH0B1axokI",
+    "sha256": "098871c2f8074cfb8f5b02b667e6332114b4eddadc382222c45aa22b8cea4519"
+  },
+  "slide_items": [
+    {
+      "name": "Ep145_Slide01of10.png",
+      "id": "1dkj8Nx2vP-p6qMJLC4LfSEUOy7Dq1fvx",
+      "sha256": "48d2b4c2391ab26935e8436298fe5b277ac5a17f3c034777ea968a34f356c7a8",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide02of10.png",
+      "id": "1hEWrFEvRBnTho93TEX3XmbyTzLA6rLmu",
+      "sha256": "40eaedb74a75ff92b9f685223b95eadf71d28a0511cede3e9c049c973d5c2a7d",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide03of10.png",
+      "id": "1N-A2hJfGpttRCaLU6M17xoq2JoxCwEHm",
+      "sha256": "45e69dce9e7df3f2402c6e8c98d96cddb3170e871b0a6e2297f75b54b72be4f4",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide04of10.png",
+      "id": "1T9wwaCPst7r9bj-X6fXrMt2nz46hA7Ee",
+      "sha256": "262639ce1b239a904c15d8095f33f9a3463676500b77a4a8cbdc235563929f87",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide05of10.png",
+      "id": "1YJIJWjWU-509hoEBr7UZP1ec41zQfgfg",
+      "sha256": "84bea89335cfe6fbd989d50a886f119b8110be529a79541d3647307c9f0fe0c5",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide06of10.png",
+      "id": "1hEqrsjKMOjibUkADKDqOpJqNKKH1LmHw",
+      "sha256": "a3ece0e9245390f49ea05335a62f611d645f30c5bcd6d6ca4c84f6292a048a75",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide07of10.png",
+      "id": "1sCCUZdOwiLRO_Gnnu4QxC6zY1Gub6xhk",
+      "sha256": "6e6cf2f23095fe64e216e36555dc9a2c27e4d8e5ac2870525f25158694289587",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide08of10.png",
+      "id": "13wF79zuODi0Jr2QPFYu8_zVjLlGDWWXH",
+      "sha256": "2cd9e71759f4ed08cbde02256a3a30eae8a0ada966c45f5aa32f8230898df85c",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide09of10.png",
+      "id": "1SzjmkoTH6SjR7u124wyrDMdkC8P0czh0",
+      "sha256": "f0c6f29ab610b32e65760e0d7b6f251dc6c1cbe3450da42445d95353892389b6",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "name": "Ep145_Slide10of10.png",
+      "id": "1lNDxNHkgYAYhRRpXm3YlH5x7kzCQ181B",
+      "sha256": "b8f9e2729df92d4953865c4ac7b98596f957f957fd1760b3fcab7ef8683e27d5",
+      "width": 1080,
+      "height": 1350
+    }
+  ],
+  "reel_items": [
+    {
+      "name": "ReelFrame01of06.png",
+      "id": "11wse15b9XPucLWMPLdrAcyV7t-9FMZ5m",
+      "sha256": "e189f980ae3a251d5bd8e405915c6bf0bf2f850c7b8a74a5c2edf6db8bf6069b",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "name": "ReelFrame02of06.png",
+      "id": "1LiEVN_d085YqWgMQaHVo3F8OlLqOVa5m",
+      "sha256": "c04e3ddb58e20a784b11ebb1a934912e84a17f6b398d6c1f0e817c26847d40ce",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "name": "ReelFrame03of06.png",
+      "id": "1aUw8dBaL7Mjfgu5VSPcJW7hxUp2m_s74",
+      "sha256": "ee86a469e79b9b076a238fd3727ba115e5d3b5f6f730924268f0d44ad95e6314",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "name": "ReelFrame04of06.png",
+      "id": "10UUszIZDag_M9j8fru3iy-IuRyHl9v8A",
+      "sha256": "e312eb7d1059a4d9d674e44c2502e386ee8695143d6c34120b8d29ff86465587",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "name": "ReelFrame05of06.png",
+      "id": "1cxZ_yn9n6_nJY-lcdJnW39_9kCGNIeHk",
+      "sha256": "4d22ad52418fa3d2261200da963a4c6b3a71ccc4b5e837f83b902913a386bd86",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "name": "ReelFrame06of06.png",
+      "id": "1nooMHqNYYNvyKwOb6br4Z_qiwKa9wgau",
+      "sha256": "a17b13c2d1d65a35eccddbf0c76ba84630312c0882f4bd567c037196954afade",
+      "width": 1080,
+      "height": 1920
+    }
+  ],
+  "music": {
+    "type": "original_programmatically_composed_instrumental",
+    "third_party_samples": false,
+    "duration_seconds": 18,
+    "not_in_instagram_music_library": true
+  },
+  "post_targets": [
+    "CAROUSEL",
+    "REEL"
+  ],
+  "media_staging_branch": "ep145-publish-media-20261113"
+}
