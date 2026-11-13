@@ -1,0 +1,126 @@
+name: AI Geopolitic Ep145 REAL carousel — one-time approved release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - publisher_signals/ep145-real-carousel-20261113.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-geopolitic-ep145-real-carousel-once
+  cancel-in-progress: false
+
+jobs:
+  publish-real-carousel:
+    name: Archive-verified 10-image carousel to @ai_geopolitic
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AI_GEO_REAL_CAROUSEL_ENABLE: ONE_AUTHORIZED_EP145_REAL_IMAGE_CAROUSEL
+      AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout release signal and GitHub receipt state
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Checkout pinned, reviewed real Ep145 publisher implementation
+        uses: actions/checkout@v4
+        with:
+          ref: 3da51edb60ebe3f1dc60a00b0d2b35193d245e11
+          path: publisher_code
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test immutable real carousel publisher without network posts
+        working-directory: publisher_code
+        run: |
+          python -m pip install pytest==8.4.1 Pillow==11.3.0
+          python -m pytest -q tests/test_ep145_real_carousel_release.py tests/test_publisher_instagram.py tests/test_publisher_meta_probe.py
+      - name: Verify one-time real release prerequisites
+        shell: bash
+        env:
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          test -s publisher_signals/ep145-real-carousel-20261113.json
+          test ! -e publisher_state/ep145-real-carousel.json
+          test -n "$AI_GEO_IG_ACCESS_TOKEN"
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          test ! -d publisher_media/ep145-real-20261113
+          echo "Safe, one-time Ep145 carousel prerequisites checked."
+      - name: Install rclone (read-only source access)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+      - name: Configure authenticated rclone for read-only source commands
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Read exact ten approved Drive PNGs and stage verified JPEGs
+        shell: bash
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "publisher_code")
+          from src.publisher_ep145_stage import main
+          raise SystemExit(main())
+          PY
+      - name: Commit public media to one-time immutable staging branch
+        id: stage
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c ep145-publish-media-20261113
+          git add publisher_media/ep145-real-20261113/
+          git diff --cached --quiet && { echo "No new media to stage"; exit 1; }
+          git commit -m "Stage exactly ten SHA-verified real Ep145 carousel JPEGs"
+          git push origin HEAD:refs/heads/ep145-publish-media-20261113
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git switch main
+      - name: Publish exactly one real Ep145 CAROUSEL by Instagram API
+        shell: bash
+        env:
+          AI_GEO_EP145_MEDIA_COMMIT: ${{ steps.stage.outputs.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "publisher_code")
+          from src.publisher_ep145_real import main
+          raise SystemExit(main())
+          PY
+      - name: Explain immutable receipt and duplicate protection
+        if: always()
+        run: |
+          echo "Review publisher_state/ep145-real-carousel.json on main."
+          echo "CLAIMED_NO_AUTOMATIC_RETRY means Meta outcome uncertain; reconcile manually, never rerun blindly."
+          echo "PUBLISHED with Instagram permalink means a confirmed real carousel."
+          echo "The QA TEST post is a separate existing post and was not touched."
+          echo "NO REEL OR MUSIC is part of this narrowly approved image-carousel workflow."
