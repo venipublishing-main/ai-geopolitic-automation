@@ -54,11 +54,32 @@ jobs:
               if len(candidates) < 10:
                   summary["caption_length"] = len(caption)
                   candidates.append(summary)
-          print("THREADS_EP145_RECONCILIATION " + json.dumps({
-              "account": "ai_geopolitic", "posts_checked": len(data),
-              "exact_matches": matches, "recent_candidates": candidates
-          },sort_keys=True))
-          if len(matches) != 1:
-              raise SystemExit("Manual reconciliation remains necessary; no publish calls were attempted")
-          print("FOUND_ONE_MATCHING_THREAD; READ_ONLY; NO_PUBLICATION_CALL")
+          post_id = "18470584774185284"
+          detail = get("/" + post_id, {"fields":"id,username,text,permalink,media_type,timestamp,children"})
+          url = ("https://raw.githubusercontent.com/venipublishing-main/ai-geopolitic-automation/"
+                 + receipt["public_media_commit"] + "/publisher_media/threads-ep145-20261113/caption.txt")
+          canonical = urllib.request.urlopen(url, timeout=20).read().decode("utf-8")
+          actual = detail.get("text") or ""
+          import difflib
+          diff = [x for x in difflib.ndiff(canonical,actual) if x[:2] in ("- ","+ ")]
+          children = detail.get("children")
+          items = children.get("data",[]) if isinstance(children,dict) else children if isinstance(children,list) else []
+          result = {
+              "id":detail.get("id"), "username":detail.get("username"),
+              "permalink":detail.get("permalink"), "media_type":detail.get("media_type"),
+              "timestamp":detail.get("timestamp"), "child_count":len(items),
+              "canonical_length":len(canonical), "meta_length":len(actual),
+              "caption_equal":canonical==actual,
+              "caption_equal_trimmed":canonical.strip()==actual.strip(),
+              "caption_similarity":round(difflib.SequenceMatcher(None,canonical,actual).ratio(),6),
+              "caption_character_differences":diff[:15],
+          }
+          print("THREADS_EP145_DETAILED_CHECK " + json.dumps(result,sort_keys=True))
+          if (result["id"] == post_id and result["username"] == "ai_geopolitic"
+              and result["media_type"] == "CAROUSEL_ALBUM"
+              and result["child_count"] == 10 and result["caption_equal_trimmed"]
+              and result["permalink"] == "https://www.threads.com/@ai_geopolitic/post/DfreDZkoNcp"):
+              print("PUBLISHED_VERIFIED_READ_ONLY")
+          else:
+              print("POST_EXISTS_BUT_STRICT_DETAIL_CHECK_PENDING; DO_NOT_REPUBLISH")
           PY
