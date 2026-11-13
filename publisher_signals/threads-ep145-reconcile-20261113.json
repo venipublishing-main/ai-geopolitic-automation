@@ -5,5 +5,7 @@
   "mode": "READ_ONLY_META_GET_NO_POST",
   "source_run_id": "43412922861",
   "source_status": "CLAIMED_NO_AUTOMATIC_RETRY",
-  "reason": "Threads publish returned media ID but final metadata verification failed; no retry authorized."
+  "reason": "Threads publish returned media ID but final metadata verification failed; no retry authorized.",
+  "reconciliation_attempt": 2,
+  "check": "read-only published media ID, caption, permalink and children; no publish"
 }
