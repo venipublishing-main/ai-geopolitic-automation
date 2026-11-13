@@ -82,6 +82,38 @@ jobs:
             "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
             > "$HOME/.config/rclone/rclone.conf"
           chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Read-only Drive archive preflight with sanitized diagnostics
+        shell: bash
+        run: |
+          set +e
+          rclone lsjson ai_geopolitic_drive: --drive-root-folder-id 1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H --files-only --no-modtime > "$RUNNER_TEMP/ep145-drive.json" 2> "$RUNNER_TEMP/ep145-drive-error.log"
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            python - <<'PY'
+          import os
+          from pathlib import Path
+          s=(Path(os.environ["RUNNER_TEMP"])/"ep145-drive-error.log").read_text(errors="replace").lower()
+          category=("AUTHENTICATION_OR_TOKEN" if any(k in s for k in ("invalid_grant","unauthorized","oauth2","token expired","token has been")) else
+                    "DRIVE_ACCESS_OR_FOLDER" if any(k in s for k in ("404","403","insufficient","not found","permission","access denied")) else
+                    "RCLONE_FLAG_OR_VERSION" if any(k in s for k in ("unknown flag","not found: --drive","flag provided but not defined")) else
+                    "NETWORK_OR_TRANSPORT" if any(k in s for k in ("timeout","connection refused","connection reset","tls","dns","dial tcp")) else
+                    "OTHER_RCLONE_READ_FAILURE")
+          print("BLOCKED: pinned Ep145 Drive folder cannot be listed; class="+category)
+          PY
+            exit 1
+          fi
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"ep145-drive.json"
+          entries=json.loads(p.read_text())
+          expected={f"Ep145_Slide{i:02d}of10.png" for i in range(1,11)}
+          found={x.get("Name") for x in entries if isinstance(x,dict) and x.get("MimeType")=="image/png"}
+          print("Ep145 authenticated Drive listing: exact_slide_names_present=",expected<=found)
+          if not expected<=found:
+              raise SystemExit("BLOCKED: accepted archive slides not all visible; no Meta action.")
+          PY
       - name: Read exact ten approved Drive PNGs and stage verified JPEGs
         shell: bash
         run: |
