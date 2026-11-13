@@ -54,6 +54,27 @@ jobs:
           print("DRIVE_READ_ONLY_CONNECTED: verified pinned archive parent and historical episode.")
           print("NO_UPLOAD_NO_PUBLICATION")
           PY
+      - name: Verify approved Ep145 archive from authenticated Drive
+        shell: bash
+        run: |
+          set -euo pipefail
+          rclone lsjson ai_geopolitic_drive: --drive-root-folder-id 1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H --files-only --no-modtime > /tmp/ep145-drive-files.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          files=json.loads(Path("/tmp/ep145-drive-files.json").read_text())
+          names={f.get("Name") for f in files if isinstance(f,dict)}
+          slides={f"Ep145_Slide{i:02d}of10.png" for i in range(1,11)}
+          required=slides|{"Ep145_CarouselCaption.txt","Ep145_PUBLISH_HANDOFF.json","Ep145_QC_Completion.json"}
+          missing=required-names
+          if missing:
+              raise SystemExit(f"BLOCKED: Ep145 archive missing {len(missing)} required files.")
+          pngs=[f for f in files if f.get("Name") in slides and f.get("MimeType")=="image/png"]
+          if len(pngs)!=10 or any(int(f.get("Size",0))<100000 for f in pngs):
+              raise SystemExit("BLOCKED: Ep145 numbered PNG integrity preflight failed.")
+          print("EP145_DRIVE_READ_ONLY_CONNECTED: ten numbered PNGs, caption, handoff and QC visible.")
+          print("NO_UPLOAD_NO_PUBLICATION")
+          PY
       - name: Remove transient OAuth config
         if: always()
-        run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json
+        run: rm -f ~/.config/rclone/rclone.conf /tmp/ai-geo-archives.json /tmp/ep145-drive-files.json
