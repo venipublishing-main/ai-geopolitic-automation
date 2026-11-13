@@ -139,7 +139,7 @@ def inspect_previous_posts(token: str, ig_id: str, caption: str) -> None:
     except (HTTPError, URLError, OSError, ValueError, UnicodeError):
         raise RealReleaseBlocked("Could not reconcile existing Instagram posts.") from None
     entries = result.get("data")
-    if not isinstance(entries, list) or result.get("paging", {}).get("next"):
+    if not isinstance(entries, list):
         raise RealReleaseBlocked("Instagram media history incomplete or malformed; no posting.")
     signature = caption.splitlines()[0].strip()
     for item in entries:
