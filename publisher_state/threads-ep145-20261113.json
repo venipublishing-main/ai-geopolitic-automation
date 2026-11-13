@@ -7,7 +7,18 @@
   "github_run_id": "43412922861",
   "public_media_commit": "732df941e8bf0e3762deea6a5e7e232f47da2298",
   "schema": "ai-geopolitic.threads.publication-receipt.v1",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_VERIFIED",
   "threads_account": "ai_geopolitic",
-  "threads_user_id": "40667622232822942"
+  "threads_user_id": "40667622232822942",
+  "threads_media_id": "18470584774185284",
+  "threads_permalink": "https://www.threads.com/@ai_geopolitic/post/DfreDZkoNcp",
+  "published_utc": "2026-11-13T10:57:59+00:00",
+  "verified_utc": "2026-11-13T11:06:06+00:00",
+  "verification_method": "Threads Graph API read-only GET /me/threads and GET /{post_id}",
+  "verification_run_id": "43414290650",
+  "carousel_items_verified": 10,
+  "caption_verification": "META_RETURNED_ONE_MISSING_HASH_SIGN_VS_CANONICAL",
+  "caption_meta_characters": 333,
+  "caption_canonical_characters": 334,
+  "automatic_retry_allowed": false
 }
