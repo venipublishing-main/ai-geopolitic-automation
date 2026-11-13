@@ -1,0 +1,124 @@
+name: AI Geopolitic Reel — review MP4 only (no publication)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-geopolitic-reel-review.yml'
+      - 'src/reel_*.py'
+      - 'src/threads_media.py'
+      - 'tests/test_reel_media.py'
+  push:
+    branches:
+      - 'feat/reel-review-*'
+    paths:
+      - '.github/workflows/ai-geopolitic-reel-review.yml'
+      - 'src/reel_*.py'
+      - 'tests/test_reel_media.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan: read-only archive QC; build: verified 30s MP4 for private review'
+        required: true
+        default: plan
+        type: choice
+        options: [plan, build]
+      episode:
+        description: 'Exact approved episode e.g. Ep145'
+        required: true
+        type: string
+        default: Ep145
+      date_sast:
+        description: 'Exact production day YYYY-MM-DD'
+        required: true
+        type: string
+        default: '2026-11-13'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-geopolitic-reel-review-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    name: No-provider rendering and original-audio QC tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q tests/test_reel_media.py tests/test_threads_media.py tests/test_threads_release.py
+
+  archive-and-render:
+    name: Read-only source QC and optional private MP4 rendering
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EPISODE: ${{ inputs.episode }}
+      DATE_SAST: ${{ inputs.date_sast }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Verify only plan and build modes exist
+        run: |
+          set -euo pipefail
+          test "$MODE" = plan -o "$MODE" = build
+          python -m src.reel_media --help >/dev/null
+      - name: Install read-only Drive client and deterministic FFmpeg renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone ffmpeg
+      - name: Configure existing authenticated Drive remote
+        shell: bash
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Verify exact SAST archive, production QC and six Reel frames
+        run: python -m src.reel_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Build six-frame original-audio Reel for review ONLY
+        if: inputs.mode == 'build'
+        run: python -m src.reel_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Upload private MP4, provenance and source frames for Ian's review
+        if: inputs.mode == 'build'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-geopolitic-reel-${{ inputs.episode }}-${{ inputs.date_sast }}-REVIEW-NOT-PUBLISHED
+          path: publisher_media/reel-*/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Confirm no Meta publication
+        if: always()
+        run: |
+          echo 'Reel plan/render workflow has NO Instagram access token, NO Graph API write and NO publish signal.'
+          echo 'Approval of a separate live publisher remains mandatory.'
