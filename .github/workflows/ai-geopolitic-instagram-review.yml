@@ -1,0 +1,124 @@
+name: AI Geopolitic Instagram — archive verified private carousel review
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-geopolitic-instagram-review.yml'
+      - 'src/instagram_media.py'
+      - 'src/threads_media.py'
+      - 'tests/test_instagram_media.py'
+  push:
+    branches:
+      - 'feat/instagram-review-*'
+    paths:
+      - '.github/workflows/ai-geopolitic-instagram-review.yml'
+      - 'src/instagram_media.py'
+      - 'tests/test_instagram_media.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan: inspect exact archived QC; stage: build a private ten-JPEG review package'
+        required: true
+        type: choice
+        options: [plan, stage]
+        default: plan
+      episode:
+        description: 'Exact episode such as Ep145'
+        required: true
+        type: string
+        default: Ep145
+      date_sast:
+        description: 'Exact production day in South Africa, YYYY-MM-DD'
+        required: true
+        type: string
+        default: '2026-11-13'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-geopolitic-instagram-review-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    name: No-post Instagram review and canonical Drive QC tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q tests/test_instagram_media.py tests/test_threads_media.py
+
+  archive-and-stage:
+    name: Read-only exact archive preflight and private Instagram JPEG staging
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EPISODE: ${{ inputs.episode }}
+      DATE_SAST: ${{ inputs.date_sast }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Verify review-only mode
+        run: |
+          set -euo pipefail
+          test "$MODE" = plan -o "$MODE" = stage
+          python -m src.instagram_media --help >/dev/null
+      - name: Install read-only Google Drive client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+      - name: Configure existing authenticated Drive remote
+        shell: bash
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Inspect exact archive, Sisyphus PASS and ten approved slides
+        run: python -m src.instagram_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Stage ten immutable-source JPEG previews with Instagram-only receipt
+        if: env.MODE == 'stage'
+        run: python -m src.instagram_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Upload private review package (no live post)
+        if: env.MODE == 'stage'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-geopolitic-instagram-${{ env.EPISODE }}-${{ env.DATE_SAST }}-REVIEW-NOT-PUBLISHED
+          path: publisher_media/instagram-*/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Publication boundary
+        if: always()
+        run: |
+          echo 'This workflow has read-only repository permission, no Meta token, and no publish call.'
+          echo 'Posting requires a separate episode-scoped authorization and durable at-most-once claim.'
