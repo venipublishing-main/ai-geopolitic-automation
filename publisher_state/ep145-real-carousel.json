@@ -1,0 +1,17 @@
+{
+  "schema": "ai-geopolitic.publisher.real-carousel-receipt.v1",
+  "episode": "Ep145",
+  "date_sast": "2026-11-13",
+  "account_username": "ai_geopolitic",
+  "archive_folder_id": "1mvKV0f6LFwv8sln8Ps0YD9Ql5f9lLP9H",
+  "content": "CAROUSEL_ONLY",
+  "slide_count": 10,
+  "reel": false,
+  "music": false,
+  "caption_sha256": "9ccbffc2a9a93a8f96406f1109c345db0a51e8d2b5a358f67d93575695cb36ce",
+  "media_commit_sha": "bac90f00e3f919897edde7d6ef9fea895ef5bbb5",
+  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "instagram_media_id": null,
+  "permalink": null,
+  "github_run_id": "43396997055"
+}
