@@ -10,10 +10,12 @@ on:
   push:
     branches:
       - 'feat/reel-review-*'
+      - main
     paths:
       - '.github/workflows/ai-geopolitic-reel-review.yml'
       - 'src/reel_*.py'
       - 'tests/test_reel_media.py'
+      - 'publisher_signals/reel-ep145-review-build-20261113.json'
   workflow_dispatch:
     inputs:
       mode:
@@ -55,14 +57,14 @@ jobs:
 
   archive-and-render:
     name: Read-only source QC and optional private MP4 rendering
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'Trigger Ep145 private Reel preview (no publication)'))
     needs: tests
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      EPISODE: ${{ inputs.episode }}
-      DATE_SAST: ${{ inputs.date_sast }}
-      MODE: ${{ inputs.mode }}
+      EPISODE: ${{ github.event_name == 'push' && 'Ep145' || inputs.episode }}
+      DATE_SAST: ${{ github.event_name == 'push' && '2026-11-13' || inputs.date_sast }}
+      MODE: ${{ github.event_name == 'push' && 'build' || inputs.mode }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,6 +78,19 @@ jobs:
         run: |
           set -euo pipefail
           test "$MODE" = plan -o "$MODE" = build
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          signal=json.loads(Path('publisher_signals/reel-ep145-review-build-20261113.json').read_text())
+          expected={'schema':'ai-geopolitic.reel.review-build-signal.v1',
+                    'episode':'Ep145','date_sast':'2026-11-13','mode':'build',
+                    'no_meta_post':True,'publication_authorized':False}
+          if signal != expected:
+              raise SystemExit('BLOCKED: exact private-review trigger mismatch')
+          print('Exact one-time review-build signal verified; publishing disabled.')
+          PY
+          fi
           python -m src.reel_media --help >/dev/null
       - name: Install read-only Drive client and deterministic FFmpeg renderer
         run: |
@@ -107,13 +122,13 @@ jobs:
       - name: Verify exact SAST archive, production QC and six Reel frames
         run: python -m src.reel_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
       - name: Build six-frame original-audio Reel for review ONLY
-        if: inputs.mode == 'build'
+        if: env.MODE == 'build'
         run: python -m src.reel_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
       - name: Upload private MP4, provenance and source frames for Ian's review
-        if: inputs.mode == 'build'
+        if: env.MODE == 'build'
         uses: actions/upload-artifact@v4
         with:
-          name: ai-geopolitic-reel-${{ inputs.episode }}-${{ inputs.date_sast }}-REVIEW-NOT-PUBLISHED
+          name: ai-geopolitic-reel-${{ env.EPISODE }}-${{ env.DATE_SAST }}-REVIEW-NOT-PUBLISHED
           path: publisher_media/reel-*/
           retention-days: 14
           if-no-files-found: error
