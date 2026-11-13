@@ -1,6 +1,6 @@
 # AI Geopolitic Threads publisher — v1
 
-Scope: **10-image, caption-exact Threads carousel to `@ai_geopolitic` only.** It is
+Scope: **10-image, canonical-caption Threads carousel to `@ai_geopolitic` only.** It is
 independent of the successful Instagram Episode 145 publisher, contains no Reel,
 video, Threads reply or music route, and does not run on a daily schedule.
 
@@ -21,11 +21,16 @@ video, Threads reply or music route, and does not run on a daily schedule.
    branch**, not in `main`. This provides public URLs for Meta's image fetch.
 5. Before any Threads write, the publisher verifies all ten URLs are publicly
    reachable, checks the authorized Threads username is `ai_geopolitic`, checks
-   recent posts for duplicate caption, and **commits a one-time claim on `main`**
+   recent posts for duplicate canonical *or Meta-normalized* caption, and **commits a one-time claim on `main`**
    in `publisher_state/threads-epNNN-YYYYMMDD.json`.
 6. Only then create ten `IMAGE` carousel-item containers, one `CAROUSEL` parent
    with the untouched canonical caption, and call `/me/threads_publish`. Verify
-   the published Threads post and permalink; update the same receipt.
+   the published Threads post ID, username, permalink, `CAROUSEL_ALBUM` type,
+   ten distinct child IDs and caption; update the same receipt. Meta removed
+   **one `#` from an approved hashtag** in the real Episode 145 result; a
+   single marker removed from one of the five locked hashtags is an explicitly
+   recognized *readback* variant, not permission to modify the source caption.
+   All other text changes still fail verification.
 7. If anything fails after the durable claim, state remains
    `CLAIMED_NO_AUTOMATIC_RETRY`. **Stop and reconcile manually** before any
    human-directed recovery. An API timeout may mean the post was created.
@@ -54,6 +59,22 @@ video, Threads reply or music route, and does not run on a daily schedule.
 5. Inspect the receipt's `PUBLISHED_VERIFIED` state and the link in its
    `threads_permalink`. If `CLAIMED_NO_AUTOMATIC_RETRY`, do not rerun: inspect
    `@ai_geopolitic` and the Graph API outcome manually.
+
+## Episode 145 incident and resolution
+
+- Live workflow run `43412922861` published the carousel at 12:57:59 SAST on
+  13 November 2026, but returned `BLOCKED_OR_RECONCILE` because Threads'
+  readback text dropped one `#` from the untouched 334-character source.
+- A **GET-only** reconciliation run `43414290650` confirmed account
+  `ai_geopolitic`, post `18470584774185284`, `CAROUSEL_ALBUM`, **ten child
+  images**, and permalink
+  <https://www.threads.com/@ai_geopolitic/post/DfreDZkoNcp>.
+- The canonical caption was 334 characters; Meta returned 333 characters.
+  The only difference was a missing hashtag marker. No retry was made. The
+  durable receipt on `main` was reconciled to `PUBLISHED_VERIFIED`.
+- The updated parser accepts only this narrow normalization after full media,
+  identity and permalink verification. The existing at-most-once claim remains
+  mandatory and is never removed to clear a failed job.
 
 ## API references and restrictions
 
