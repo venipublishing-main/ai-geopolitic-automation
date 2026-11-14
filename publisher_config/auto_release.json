@@ -1,0 +1,6 @@
+{
+  "schema": "ai-geopolitic.publisher.automatic-release-policy.v1",
+  "enabled": true,
+  "start_date_sast": "2026-11-15",
+  "platforms_in_order": ["instagram", "threads"]
+}
