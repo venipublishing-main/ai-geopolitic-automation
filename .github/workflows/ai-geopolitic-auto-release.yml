@@ -1,0 +1,99 @@
+name: AI Geopolitic — automatic post-production release
+
+on:
+  schedule:
+    # Every 15 minutes UTC, offset from the busy top of each hour.
+    # The script uses Africa/Johannesburg to choose exactly today's archive.
+    - cron: '7,22,37,52 * * * *'
+  workflow_run:
+    workflows:
+      - 'AI Geopolitic Instagram — ten-image carousel (human gate)'
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'publisher_signals/auto-probe-*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ai-geopolitic-auto-release-controller
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    name: Exact-day Sisyphus PASS detector / one-time platform dispatcher
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROBE: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests on plugin probe (never publication)
+        if: env.PROBE == 'true'
+        run: |
+          python -m pip install pytest==8.4.1
+          python -m pytest -q tests/test_auto_release.py
+      - name: Cheap time/policy/duplicate precheck (no Drive or Meta writes)
+        id: precheck
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PROBE" = true ]; then
+            python -m src.auto_release precheck --probe
+          else
+            python -m src.auto_release precheck
+          fi
+      - name: Install authenticated read-only Drive client
+        if: steps.precheck.outputs.run_detector == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+          python -m pip install Pillow==11.3.0
+      - name: Configure authenticated canonical Drive archive
+        if: steps.precheck.outputs.run_detector == 'true'
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Detect exact SAST episode and validated handoff; dispatch at most once
+        if: steps.precheck.outputs.run_detector == 'true'
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PROBE" = true ]; then
+            python -m src.auto_release process --probe
+          else
+            python -m src.auto_release process
+          fi
