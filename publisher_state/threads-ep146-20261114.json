@@ -1,0 +1,13 @@
+{
+  "caption_sha256": "b149eb8b6135b861c9bd94429b7acffa84e6dcfcfc8301e8f16371f6038cdeb5",
+  "carousel_items": 10,
+  "claimed_utc": "2026-11-14T07:52:57.523697+00:00",
+  "date_sast": "2026-11-14",
+  "episode": "Ep146",
+  "github_run_id": "43573080299",
+  "public_media_commit": "266a68102d59237285b25cfcd5e864f0795916e8",
+  "schema": "ai-geopolitic.threads.publication-receipt.v1",
+  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "threads_account": "ai_geopolitic",
+  "threads_user_id": "40667622232822942"
+}
