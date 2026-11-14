@@ -1,8 +1,10 @@
 # AI Geopolitic daily carousel release — Instagram and Threads
 
-This runbook separates **production**, **episode-specific human approval** and
-**irreversible publication**. Each platform has its own authorization, GitHub
-Action, immutable media commit, pre-Meta claim and post-publication receipt.
+This runbook separates **production**, **publication authorization** and
+**irreversible publication**. Since 15 November 2026, Ian's standing policy
+authorizes GitHub Actions to publish verified daily production automatically.
+Each platform retains its own GitHub Action, immutable media commit, pre-Meta
+claim and post-publication receipt.
 
 ## Production gate
 
@@ -24,11 +26,48 @@ Action, immutable media commit, pre-Meta claim and post-publication receipt.
   QC. Each is converted to an ordered 1080×1350 JPEG, keeping the unmodified
   editorial composition; caption bytes and SHA stay exact. No Reel is included.
 
-## Human gate and triggering
+## Automatic release (active 15 November 2026 onward)
 
-There is deliberately **no unattended daily publication schedule**. When the
-production handoff has passed and Ian has reviewed the episode, run the two
-platform workflows manually from GitHub Actions on `main`:
+`publisher_config/auto_release.json` is the explicit, versioned standing
+authorization. When `enabled=true`, `.github/workflows/ai-geopolitic-auto-release.yml`
+checks every 15 minutes around the clock (UTC minute offsets 07/22/37/52).
+An Instagram workflow completion also triggers the controller so Threads need
+not wait for the next scheduled check. GitHub schedules are best-effort and
+may run later than their nominal times.
+
+1. Select the **one and only** Drive archive folder whose episode name embeds
+   the **current SAST date**. Never select simply the latest or a past date.
+2. Run the existing strict QC/Drive inventory/caption/Sisyphus handoff reader.
+   Unless the complete, exact-date `PRODUCTION PASSED` verification succeeds,
+   **do not publish**. Incomplete production is polled again later.
+3. Create the durable `publisher_state/auto-day-YYYYMMDD.json` launch claim
+   **before** dispatching the Instagram workflow with the exact episode/date
+   confirmation. A second controller cannot launch the same date again.
+4. Only when the Instagram receipt is `PUBLISHED_AI_INFO_VERIFIED`, update the
+   same claim and dispatch Threads with its independent confirmation.
+5. Threads must reach `PUBLISHED_VERIFIED`. Both platform workflows retain
+   their per-channel claims, verified ten-image media, account checks, original
+   caption source digest, Meta verification, and no-automatic-retry rules.
+
+The controller only dispatches the existing platform workflows; it never calls
+Meta itself. If a dispatch or publication is ambiguous, its marker stays put:
+**do not automatically retry**. Inspect the account, GitHub run and receipt
+before manually reconciling. No Reel, Story, audio or extra carousel is
+published by this controller.
+
+To pause future daily publishing, set `enabled=false` in the versioned policy
+on `main` before the next controller run. To inspect without publishing, run
+the safe GitHub Actions probe (`publisher_signals/auto-probe-*.json` added by
+the connected plugin), or manually start the auto-release workflow, which is
+always read-only when launched with `workflow_dispatch`.
+
+## Manual fallback
+
+When Ian explicitly wants to run a particular episode manually, use the two
+platform workflows from GitHub Actions on `main`. This is also the recovery
+interface after an operator has independently reconciled any ambiguous claim;
+do not blindly rerun an episode with an existing claim. For an unpublished
+example episode:
 
 1. **AI Geopolitic Instagram — ten-image carousel (human gate)**:
    - Run `mode=plan`, `episode=Ep146`, `date_sast=2026-11-14` (example).
@@ -40,9 +79,10 @@ platform workflows manually from GitHub Actions on `main`:
    - Check `PREFLIGHT_PASSED_NO_PUBLICATION`.
    - Run `mode=publish` with `PUBLISH_THREADS_EP146_20261114`.
 
-The confirmation changes for **every episode and date**. A prior successful
-Ep145 signal cannot authorize Ep146. `plan` has no Meta write operations.
-For future dates, enter the new episode and SAST date explicitly.
+The confirmation changes for **every episode and date**. `plan` has no Meta
+write operations. In the automatic path it is constructed only after the
+verified production handoff and standing policy checks; in the manual path
+the operator enters the exact approved episode/date explicitly.
 
 ### Connected GitHub plugin launch (no browser sign-in)
 
@@ -63,11 +103,11 @@ absence of an existing claim. It then uses its ephemeral GitHub Actions token
 to dispatch the **existing** platform workflow on `main`.
 
 Wait for the downstream `workflow_dispatch` run and verified `plan` result
-before creating the `publish` signal. After publication, check the immutable
-`publisher_state` receipt and final permalink for each platform. Never add a
-second `publish` signal to retry an ambiguous result. No schedule, Reel, or
-automatic publication is introduced by this bridge; human approval remains
-mandatory. The Actions UI remains a supported manual alternative.
+before creating the manual `publish` signal. After publication, check the
+immutable `publisher_state` receipt and final permalink for each platform.
+Never add a second `publish` signal to retry an ambiguous result. This plugin
+bridge is a manual override; the separately authorized auto-release workflow
+owns the daily scheduled trigger. The Actions UI remains another manual option.
 
 ## One-time publication safety
 
