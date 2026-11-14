@@ -1,7 +1,8 @@
 """Read-only canonical Drive -> review-only, six-frame Instagram Reel MP4.
 
 No Meta POST, no archive mutation, no publication signal and no Reel approval.
-The six accepted frames remain pixel-locked stills; only transitions dissolve.
+The six accepted frames remain pixel-locked stills; timed transitions use an
+original, deterministic light-flare overlay, not an Edits proprietary asset.
 """
 from __future__ import annotations
 
@@ -17,7 +18,7 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageDraw, ImageFilter, UnidentifiedImageError
 
 from src.reel_audio import write_original_bed, write_provenance
 from src.threads_media import (
@@ -28,8 +29,11 @@ from src.threads_media import (
 FRAME_COUNT = 6
 WIDTH, HEIGHT = 1080, 1920
 FPS = 30
-DURATION = 30.0
+DURATION = 18.0
+FRAME_SECONDS = 3.0
 TRANSITION = 0.30
+OPENING_FADE = 0.25
+CLOSING_FADE = 0.35
 MAX_PNG = 40 * 1024 * 1024
 MAX_REEL = 200 * 1024 * 1024
 REEL_SCHEMA = "ai-geopolitic.reel.archive-plan.v1"
@@ -141,30 +145,85 @@ def read_frame(name: str, folder: str, expected_sha: str) -> bytes:
     return raw
 
 
-def ffmpeg_command(frames: list[Path], wav: Path, output: Path,
+def make_flare_overlay(path: Path) -> dict:
+    """Author an original transparent flare, without touching accepted frames.
+
+    This is an Edits-inspired approximation for private visual review. It is
+    deliberately not presented as an exact copy of the app's Flare preset.
+    """
+    canvas = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    glow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    brush = ImageDraw.Draw(glow)
+    brush.ellipse((140, 620, 940, 1300), fill=(255, 238, 201, 170))
+    canvas = Image.alpha_composite(canvas, glow.filter(ImageFilter.GaussianBlur(125)))
+
+    streak = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    brush = ImageDraw.Draw(streak)
+    brush.rectangle((0, 947, WIDTH, 973), fill=(255, 249, 228, 190))
+    brush.line((200, 1300, 880, 620), fill=(255, 249, 235, 100), width=18)
+    canvas = Image.alpha_composite(canvas, streak.filter(ImageFilter.GaussianBlur(32)))
+
+    core = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    brush = ImageDraw.Draw(core)
+    brush.rectangle((0, 957, WIDTH, 962), fill=(255, 255, 243, 160))
+    brush.ellipse((514, 894, 566, 1026), fill=(255, 255, 244, 155))
+    canvas = Image.alpha_composite(canvas, core)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(path, format="PNG", optimize=False)
+    return {"style": "original-flare-inspired-v1", "edits_preset_exact": False,
+            "width": WIDTH, "height": HEIGHT, "sha256": sha(path.read_bytes())}
+
+
+def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
                    *, ffmpeg_bin: str = "ffmpeg") -> list[str]:
     if len(frames) != FRAME_COUNT or len(set(frames)) != FRAME_COUNT:
         raise ReelBlocked("Exactly six distinct approved frames are mandatory.")
-    clip_duration = (DURATION + (FRAME_COUNT - 1) * TRANSITION) / FRAME_COUNT
+    if FRAME_SECONDS * FRAME_COUNT != DURATION:
+        raise ReelBlocked("The locked six-by-three-second edit must total 18 seconds.")
     args = [ffmpeg_bin, "-hide_banner", "-loglevel", "error", "-nostdin", "-y"]
-    for frame in frames:
+    for index, frame in enumerate(frames):
+        # Each boundary transition straddles its exact 3-second cut point.
+        # Middle clips contribute half an overlap at both ends.
+        clip_duration = FRAME_SECONDS + (TRANSITION / 2 if index in (0, 5) else TRANSITION)
         args += ["-loop", "1", "-framerate", str(FPS),
                  "-t", f"{clip_duration:.3f}", "-i", str(frame)]
+    args += ["-loop", "1", "-framerate", str(FPS),
+             "-t", f"{TRANSITION:.3f}", "-i", str(flare)]
     args += ["-i", str(wav)]
     filters = [f"[{i}:v]fps={FPS},format=yuv420p,setsar=1[v{i}]"
                for i in range(FRAME_COUNT)]
     prior = "v0"
     for i in range(1, FRAME_COUNT):
         target = f"x{i}"
-        offset = i * (clip_duration - TRANSITION)
+        offset = i * FRAME_SECONDS - TRANSITION / 2
         filters.append(f"[{prior}][v{i}]xfade=transition=fade:"
                        f"duration={TRANSITION:.3f}:offset={offset:.3f}[{target}]")
         prior = target
+    # 'Steady Out' here means a stationary hold until the flare-assisted exit;
+    # the proprietary Edits animation needs Ian's visual comparison to match.
+    filters.append(f"[{prior}]fade=t=in:st=0:d={OPENING_FADE:.3f},"
+                   f"fade=t=out:st={DURATION-CLOSING_FADE:.3f}:"
+                   f"d={CLOSING_FADE:.3f}[base]")
+    filters.append("[6:v]fps=30,format=yuva420p,split=5" +
+                   "".join(f"[fl{i}]" for i in range(1, FRAME_COUNT)))
+    prior = "base"
+    for i in range(1, FRAME_COUNT):
+        offset = i * FRAME_SECONDS - TRANSITION / 2
+        filters.append(f"[fl{i}]trim=duration={TRANSITION:.3f},"
+                       f"setpts=PTS-STARTPTS,"
+                       f"fade=t=in:st=0:d={TRANSITION/2:.3f}:alpha=1,"
+                       f"fade=t=out:st={TRANSITION/2:.3f}:"
+                       f"d={TRANSITION/2:.3f}:alpha=1,"
+                       f"setpts=PTS+{offset:.3f}/TB[flare{i}]")
+        target = f"overlay{i}"
+        filters.append(f"[{prior}][flare{i}]overlay=x=0:y=0:"
+                       f"eof_action=pass:repeatlast=0:shortest=0[{target}]")
+        prior = target
     filters.append(f"[{prior}]format=yuv420p[outv]")
-    args += ["-filter_complex", ";".join(filters), "-map", "[outv]", "-map", "6:a:0",
+    args += ["-filter_complex", ";".join(filters), "-map", "[outv]", "-map", "7:a:0",
              "-t", f"{DURATION:.3f}", "-c:v", "libx264", "-preset", "veryfast",
              "-crf", "21", "-profile:v", "high", "-pix_fmt", "yuv420p",
-             "-r", str(FPS), "-c:a", "aac", "-b:a", "160k",
+             "-r", str(FPS), "-c:a", "aac", "-b:a", "128k",
              "-ar", "48000", "-ac", "2", "-movflags", "+faststart", str(output)]
     return args
 
@@ -219,11 +278,13 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
             target = temp / name
             target.write_bytes(raw)  # exact accepted PNG bytes; no regeneration
             frames.append(target)
-        audio = write_original_bed(temp / "soundtrack.wav")
+        flare = make_flare_overlay(temp / "flare_overlay.png")
+        audio = write_original_bed(temp / "soundtrack.wav", duration=DURATION)
         write_provenance(temp / "audio_provenance.json", audio)
         if run_ffmpeg:
             try:
                 subprocess.run(ffmpeg_command(frames, temp / "soundtrack.wav",
+                                              temp / "flare_overlay.png",
                                               temp / "Reel.mp4"), check=True,
                                capture_output=True, timeout=900)
             except (OSError, subprocess.SubprocessError):
@@ -236,7 +297,12 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
             "archive_folder_id": plan["archive_folder_id"],
             "source_frames": plan["frames"], "frame_count": FRAME_COUNT,
             "reel_caption_sha256": plan["reel_caption_sha256"],
+            "duration_seconds": DURATION, "frame_seconds": FRAME_SECONDS,
+            "effects": {"opening": "fade_in", "middle": "steady_hold_out",
+                        "closing": "fade_out", "transitions": "flare_inspired",
+                        "transition_count": FRAME_COUNT - 1, "flare": flare},
             "audio": audio, "video": video,
+            "audio_approved_for_publication": False,
             "approved_for_reel_publication": False,
             "status": "REVIEW_MP4_READY_NOT_PUBLISHED",
         }
