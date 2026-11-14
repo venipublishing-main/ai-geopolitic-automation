@@ -56,14 +56,14 @@ jobs:
 
   archive-and-render:
     name: Read-only source QC and optional private MP4 rendering
-    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch') || (github.ref == 'refs/heads/feat/reel-review-ep146-private-20261114' && github.event_name == 'push' && github.event.head_commit.message == 'Trigger Ep146 private Reel review v0.2 (no publication)')
     needs: tests
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      EPISODE: ${{ inputs.episode }}
-      DATE_SAST: ${{ inputs.date_sast }}
-      MODE: ${{ inputs.mode }}
+      EPISODE: ${{ github.event_name == 'push' && 'Ep146' || inputs.episode }}
+      DATE_SAST: ${{ github.event_name == 'push' && '2026-11-14' || inputs.date_sast }}
+      MODE: ${{ github.event_name == 'push' && 'build' || inputs.mode }}
     steps:
       - uses: actions/checkout@v4
         with:
