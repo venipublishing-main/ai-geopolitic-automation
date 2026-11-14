@@ -26,6 +26,11 @@ concurrency:
 jobs:
   detect:
     name: Exact-day Sisyphus PASS detector / one-time platform dispatcher
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.event == 'workflow_dispatch' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
