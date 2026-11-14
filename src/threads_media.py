@@ -139,6 +139,112 @@ def _read_json(name: str, folder_id: str, limit: int) -> dict:
     return data
 
 
+def verified_qc_records(qc: dict, episode: str, day: date, folder_id: str) -> dict:
+    """Normalize two real QC ledgers without relaxing any readback evidence.
+
+    Ep145 uses ``image_counts`` / ``delivered``; Ep146 uses ``counts`` /
+    ``images`` / ``captions`` / ``deliverables``. Both must independently
+    identify the exact source Drive IDs and original SHA-256 digests. The
+    actual bytes are verified again during the staged download.
+    """
+    if (
+        not isinstance(qc, dict)
+        or qc.get("episode") != episode
+        or qc.get("production_date_sast") != day.isoformat()
+        or qc.get("archive_folder_id") != folder_id
+        or not isinstance(qc.get("status"), str)
+        or not qc["status"].startswith("PRODUCTION COMPLETE")
+        or qc.get("unresolved_defects") != []
+    ):
+        raise ThreadsBlocked("Archive QC is not an exact defect-free completed episode.")
+
+    # The older, already deployed Ep145 evidence contract remains unchanged.
+    if "delivered" in qc:
+        if (not isinstance(qc.get("image_counts"), dict)
+                or qc["image_counts"].get("carousel") != 10
+                or not isinstance(qc["delivered"], dict)):
+            raise ThreadsBlocked("Legacy QC readback evidence is incomplete.")
+        return qc["delivered"]
+
+    counts, images, captions, deliverables = (
+        qc.get("counts"), qc.get("images"), qc.get("captions"), qc.get("deliverables")
+    )
+    if (not isinstance(counts, dict) or counts.get("carousel") != 10
+            or counts.get("reel") != 6
+            or not isinstance(images, list) or len(images) != 16
+            or not isinstance(captions, dict)
+            or not isinstance(deliverables, list)):
+        raise ThreadsBlocked("Production QC v2 counts or records are incomplete.")
+    index: dict[str, dict] = {}
+    for item in deliverables:
+        if (not isinstance(item, dict) or not isinstance(item.get("name"), str)
+                or item["name"] in index
+                or not DRIVE_ID_RE.fullmatch(str(item.get("id", "")))
+                or not isinstance(item.get("mime_type"), str)):
+            raise ThreadsBlocked("Production QC has duplicate or invalid deliverable IDs.")
+        index[item["name"]] = item
+
+    evidence: dict[str, dict] = {}
+    for item in images:
+        if not isinstance(item, dict):
+            raise ThreadsBlocked("Production QC image evidence is malformed.")
+        archive, visual = item.get("archive"), item.get("visual_qc")
+        if not isinstance(archive, dict) or not isinstance(visual, dict):
+            raise ThreadsBlocked("Production QC image readback or visual check missing.")
+        name, source, readback = (
+            archive.get("filename"), archive.get("local_sha256"),
+            archive.get("readback_sha256")
+        )
+        if (not isinstance(name, str) or name in evidence
+                or not SHA_RE.fullmatch(str(source or "")) or source != readback
+                or archive.get("bytes_identical") is not True
+                or archive.get("format") != "PNG"
+                or not isinstance(archive.get("byte_count"), int)
+                or archive["byte_count"] <= 0
+                or visual.get("item") != name
+                or visual.get("status") != "RENDER_QC_PASS"
+                or visual.get("actual_export_inspected") is not True
+                or visual.get("sha256") != source
+                or visual.get("dimensions") != archive.get("dimensions")
+                or index.get(name, {}).get("id") != archive.get("drive_id")
+                or index[name].get("mime_type") != "image/png"):
+            raise ThreadsBlocked("Production QC image has unverified source identity.")
+        evidence[name] = {
+            "drive_id": archive["drive_id"], "source_sha256": source,
+            "readback_sha256": readback, "readback_verified": True,
+            "dimensions": archive["dimensions"],
+        }
+
+    expected_images = {
+        *(f"{episode}_Slide{i:02d}of10.png" for i in range(1, 11)),
+        *(f"ReelFrame{i:02d}of06.png" for i in range(1, 7)),
+    }
+    if set(evidence) != expected_images:
+        raise ThreadsBlocked("Production QC image inventory is not exact.")
+    cap_name = f"{episode}_CarouselCaption.txt"
+    cap = captions.get("Carousel")
+    if not isinstance(cap, dict) or not isinstance(cap.get("archive"), dict):
+        raise ThreadsBlocked("Canonical carousel caption QC is missing.")
+    cap_archive = cap["archive"]
+    source, readback = cap_archive.get("local_sha256"), cap_archive.get("readback_sha256")
+    if (cap_archive.get("filename") != cap_name
+            or not SHA_RE.fullmatch(str(source or "")) or source != readback
+            or cap.get("sha256") != source
+            or cap_archive.get("bytes_identical") is not True
+            or cap_archive.get("exact_text_bytes_including_linebreaks") is not True
+            or index.get(cap_name, {}).get("id") != cap_archive.get("drive_id")
+            or index[cap_name].get("mime_type") != "text/plain"
+            or not isinstance(cap.get("text"), str)
+            or hashlib.sha256(cap["text"].encode("utf-8")).hexdigest() != source
+            or cap_archive.get("byte_count") != len(cap["text"].encode("utf-8"))):
+        raise ThreadsBlocked("Canonical caption lacks exact Drive readback evidence.")
+    evidence[cap_name] = {
+        "drive_id": cap_archive["drive_id"], "sha256": source,
+        "readback_verified": True, "canonical_text": cap["text"],
+    }
+    return evidence
+
+
 def read_approved_archive(episode: str, day_text: str) -> tuple[dict, str, list[dict]]:
     """Verify a real archive inventory, QC bytes, approved source IDs, and PASS."""
     episode, day, expected_folder = validate_episode(episode, day_text)
@@ -163,18 +269,7 @@ def read_approved_archive(episode: str, day_text: str) -> tuple[dict, str, list[
     qc = _read_json(qc_name, folder_id, 2_000_000)
     handoff = _read_json(handoff_name, folder_id, 100_000)
     verify_handoff(handoff, episode, day, folder_id)
-    if (
-        qc.get("episode") != episode
-        or qc.get("production_date_sast") != day.isoformat()
-        or qc.get("archive_folder_id") != folder_id
-        or not qc.get("status", "").startswith("PRODUCTION COMPLETE")
-        or qc.get("image_counts", {}).get("carousel") != 10
-        or qc.get("unresolved_defects") != []
-    ):
-        raise ThreadsBlocked("Archive QC is not an exact defect-free completed episode.")
-    delivered = qc.get("delivered")
-    if not isinstance(delivered, dict):
-        raise ThreadsBlocked("Archive QC has no per-file readback evidence.")
+    delivered = verified_qc_records(qc, episode, day, folder_id)
     cap_raw = safe_rclone(
         "cat", f"{os.environ.get('AI_GEO_RCLONE_REMOTE', 'ai_geopolitic_drive')}:{cap_name}",
         folder_id, limit=16_000
@@ -187,7 +282,8 @@ def read_approved_archive(episode: str, day_text: str) -> tuple[dict, str, list[
     cap_rec = delivered.get(cap_name, {})
     if (cap_rec.get("drive_id") != found[cap_name].get("ID")
             or cap_rec.get("sha256") != cap_sha
-            or cap_rec.get("readback_verified") is not True):
+            or cap_rec.get("readback_verified") is not True
+            or ("canonical_text" in cap_rec and cap_rec["canonical_text"] != caption)):
         raise ThreadsBlocked("Archived caption does not match QC ID and SHA-256.")
     slides: list[dict] = []
     for i in range(1, 11):
