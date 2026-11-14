@@ -1,4 +1,4 @@
-"""One-time, human-authorized Threads CAROUSEL publisher.
+"""One-time, episode-authorized Threads CAROUSEL publisher.
 
 The action runs only on main after a staged SHA-pinned public media commit.
 Claim a durable main-branch receipt BEFORE the first Meta write. A claimed but

@@ -82,8 +82,9 @@ def verify_handoff(handoff: dict, episode: str, day: date, folder_id: str) -> No
     ):
         raise ThreadsBlocked("Independent production handoff is not a complete Sisyphus PASS.")
     # Existing handoffs can name an older Instagram TEST target. They are NOT
-    # treated as permission to publish on Threads; the workflow requires a
-    # separate, literal, episode-scoped human authorization before any POST.
+    # treated as social publishing consent: platform releases require either
+    # an explicit manual signal or the separate standing-authority controller,
+    # which constructs episode-scoped confirmations only after this PASS gate.
 
 
 def safe_rclone(command: str, remote_path: str, folder_id: str, *, limit: int) -> bytes:

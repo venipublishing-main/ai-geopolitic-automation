@@ -1,4 +1,4 @@
-"""Reusable one-time, human-gated Instagram 10-image carousel publisher.
+"""Reusable one-time, episode-authorized Instagram 10-image carousel publisher.
 
 Release is deliberately GitHub Actions-only. It pins the original Drive-QC
 media to a public immutable Git commit, writes a durable main-branch claim
@@ -123,7 +123,7 @@ def release(episode: str, day: str, commit: str, approval: str,
             *, token: str, run_id: str) -> dict:
     validate_episode(episode, day)
     if approval != f"PUBLISH_INSTAGRAM_{episode.upper()}_{day.replace('-', '')}":
-        raise InstagramPublishBlocked("No exact human Instagram approval for this episode.")
+        raise InstagramPublishBlocked("No exact episode-scoped Instagram authorization.")
     if os.environ.get("GITHUB_ACTIONS") != "true" or not run_id.isdigit():
         raise InstagramPublishBlocked("Live publishing is only allowed in GitHub Actions.")
     if _git("branch", "--show-current") != "main":
