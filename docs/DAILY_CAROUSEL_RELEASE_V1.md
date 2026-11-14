@@ -44,6 +44,31 @@ The confirmation changes for **every episode and date**. A prior successful
 Ep145 signal cannot authorize Ep146. `plan` has no Meta write operations.
 For future dates, enter the new episode and SAST date explicitly.
 
+### Connected GitHub plugin launch (no browser sign-in)
+
+The connected GitHub plugin can launch the same gated Actions using the
+`AI Geopolitic — authenticated episode release signal` bridge. After Ian's
+specific approval, create **one new** text file on `main`:
+
+`publisher_signals/launch-epNNN-YYYYMMDD-{instagram|threads}-{plan|publish}-01.json`
+
+Its six exact string fields are `schema`, `episode`, `date_sast`, `platform`,
+`mode`, and `confirmation`. `schema` is
+`ai-geopolitic.publisher.launch-signal.v1`; `confirmation` is empty for `plan`
+and for `publish` is the exact `PUBLISH_INSTAGRAM_EPNNN_YYYYMMDD` or
+`PUBLISH_THREADS_EPNNN_YYYYMMDD` string. `src/release_signal.py` checks the
+single newly added file, repository/actor/main-branch identity, matching
+filename and contents, a non-future date, the explicit confirmation and the
+absence of an existing claim. It then uses its ephemeral GitHub Actions token
+to dispatch the **existing** platform workflow on `main`.
+
+Wait for the downstream `workflow_dispatch` run and verified `plan` result
+before creating the `publish` signal. After publication, check the immutable
+`publisher_state` receipt and final permalink for each platform. Never add a
+second `publish` signal to retry an ambiguous result. No schedule, Reel, or
+automatic publication is introduced by this bridge; human approval remains
+mandatory. The Actions UI remains a supported manual alternative.
+
 ## One-time publication safety
 
 - Each channel first verifies 10 public media URLs pinned to a specific Git
