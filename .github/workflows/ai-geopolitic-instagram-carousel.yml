@@ -1,0 +1,185 @@
+name: AI Geopolitic Instagram — ten-image carousel (human gate)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-geopolitic-instagram-carousel.yml'
+      - 'src/instagram_*.py'
+      - 'src/threads_media.py'
+      - 'tests/test_instagram_*.py'
+      - 'tests/test_threads_media.py'
+  push:
+    branches:
+      - 'feat/daily-publisher-generic-*'
+    paths:
+      - '.github/workflows/ai-geopolitic-instagram-carousel.yml'
+      - 'src/instagram_*.py'
+      - 'src/threads_media.py'
+      - 'tests/test_instagram_*.py'
+      - 'tests/test_threads_media.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Plan is read-only QC. Publish creates a real Instagram carousel.'
+        type: choice
+        options: [plan, publish]
+        required: true
+        default: plan
+      episode:
+        description: 'Exact episode ID, e.g. Ep146'
+        type: string
+        required: true
+        default: Ep146
+      date_sast:
+        description: 'Exact archive production date, YYYY-MM-DD'
+        type: string
+        required: true
+        default: '2026-11-14'
+      publish_confirmation:
+        description: 'Publish only: PUBLISH_INSTAGRAM_EPNNN_YYYYMMDD (exact episode/date)'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-geopolitic-instagram-serial-release
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    name: Fail-closed Instagram and archive tests (zero publication)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q tests/test_threads_media.py tests/test_instagram_media.py tests/test_instagram_release.py
+
+  release:
+    name: Exact archive preflight / optional one-time Instagram carousel
+    needs: tests
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EPISODE: ${{ inputs.episode }}
+      DATE_SAST: ${{ inputs.date_sast }}
+      MODE: ${{ inputs.mode }}
+      APPROVAL: ${{ inputs.publish_confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Require exact human approval before any live publishing
+        env:
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+          AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          if [ "$MODE" = publish ]; then
+            test -n "$AI_GEO_IG_ACCESS_TOKEN"
+            EPISODE="$EPISODE" DATE_SAST="$DATE_SAST" APPROVAL="$APPROVAL" python - <<'PY'
+          import os
+          from src.threads_media import validate_episode
+          episode, date, _ = validate_episode(os.environ['EPISODE'], os.environ['DATE_SAST'])
+          expected = 'PUBLISH_INSTAGRAM_' + episode.upper() + '_' + date.strftime('%Y%m%d')
+          if os.environ['APPROVAL'] != expected:
+              raise SystemExit('BLOCKED: exact per-episode human approval is missing.')
+          print('Instagram approval accepted; no Meta POST yet.')
+          PY
+          elif [ "$MODE" != plan ]; then
+            exit 1
+          fi
+      - name: Install read-only rclone Drive client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+      - name: Configure authenticated Drive archive source
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Read-only exact archive QC, Sisyphus PASS and caption preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m src.instagram_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Stage exactly ten SHA-verified carousel JPEGs (never Reel)
+        if: inputs.mode == 'publish'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m src.instagram_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Commit immutable public JPEGs in isolated staging branch
+        id: staging
+        if: inputs.mode == 'publish'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          folder="publisher_media/instagram-${EPISODE,,}-${DATE_SAST//-/}"
+          branch="instagram-media-${EPISODE,,}-${DATE_SAST//-/}-${GITHUB_RUN_ID}"
+          test ! -e "publisher_state/instagram-${EPISODE,,}-${DATE_SAST//-/}.json"
+          git switch -c "$branch"
+          git add -- "$folder"
+          git diff --cached --quiet && { echo 'BLOCKED: no new media'; exit 1; }
+          git commit -m "Stage exact ten validated $EPISODE Instagram JPEGs"
+          git push origin "HEAD:refs/heads/$branch"
+          sha="$(git rev-parse HEAD)"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          git switch main
+          mkdir -p "$folder"
+          git show "$sha:$folder/stage.json" > "$folder/stage.json"
+          git show "$sha:$folder/caption.txt" > "$folder/caption.txt"
+          for i in $(seq -w 1 10); do
+            git show "$sha:$folder/Slide${i}of10.jpg" > "$folder/Slide${i}of10.jpg"
+          done
+      - name: Claim one-time release, publish Instagram carousel and verify AI label
+        if: inputs.mode == 'publish'
+        env:
+          AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+          MEDIA_COMMIT: ${{ steps.staging.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m src.instagram_release \
+            --episode "$EPISODE" --date-sast "$DATE_SAST" \
+            --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"
+      - name: Reconciliation warning
+        if: always() && inputs.mode == 'publish'
+        run: |
+          echo 'Any CLAIMED_NO_AUTOMATIC_RETRY Instagram receipt blocks duplicate posting.'
+          echo 'Unverified receipts require manual account reconciliation; never retry blindly.'
+          echo 'This workflow never publishes a Threads post or a Reel.'

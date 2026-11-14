@@ -1,5 +1,6 @@
 import hashlib
 import io
+from copy import deepcopy
 from datetime import date
 
 import pytest
@@ -83,6 +84,85 @@ def patch_archive(monkeypatch):
     monkeypatch.setattr(tm, "_read_json", fake_json)
     monkeypatch.setattr(tm, "safe_rclone", fake_rclone)
     return files, raw, qc, handoff
+
+
+def ep146_qc_fixture():
+    """The original Ep146 production's distinct counts/images/captions ledger."""
+    folder = "1XElUk4yXBOzHIKyc0XbfM502ioDri_cz"
+    images, deliverables = [], []
+    for i in range(1, 17):
+        slide = i <= 10
+        name = f"Ep146_Slide{i:02d}of10.png" if slide else f"ReelFrame{i-10:02d}of06.png"
+        digest = hashlib.sha256(f"original-{name}".encode()).hexdigest()
+        file_id = f"ep146_file_identity_{i:02d}"
+        dimensions = [1080, 1350] if slide else [1080, 1920]
+        deliverables.append({"name": name, "id": file_id, "mime_type": "image/png"})
+        images.append({
+            "archive": {
+                "filename": name, "drive_id": file_id, "local_sha256": digest,
+                "readback_sha256": digest, "bytes_identical": True,
+                "byte_count": 400_000, "format": "PNG", "dimensions": dimensions,
+            },
+            "visual_qc": {
+                "item": name, "status": "RENDER_QC_PASS", "sha256": digest,
+                "actual_export_inspected": True, "dimensions": dimensions,
+            },
+        })
+    caption_digest = tm.verify_caption(CAPTION)
+    cap_name = "Ep146_CarouselCaption.txt"
+    deliverables.append({"name": cap_name, "id": "ep146_caption_drive_id", "mime_type": "text/plain"})
+    return {
+        "episode": "Ep146", "production_date_sast": "2026-11-14",
+        "archive_folder_id": folder, "status": "PRODUCTION COMPLETE — PENDING IAN REVIEW",
+        "counts": {"carousel": 10, "reel": 6}, "unresolved_defects": [],
+        "images": images, "deliverables": deliverables,
+        "captions": {"Carousel": {
+            "sha256": caption_digest, "text": CAPTION,
+            "archive": {
+                "filename": cap_name, "drive_id": "ep146_caption_drive_id",
+                "local_sha256": caption_digest, "readback_sha256": caption_digest,
+                "byte_count": len(CAPTION.encode("utf-8")), "bytes_identical": True,
+                "exact_text_bytes_including_linebreaks": True,
+            },
+        }},
+    }
+
+
+def test_ep146_qc_schema_has_exact_source_and_caption_evidence():
+    qc = ep146_qc_fixture()
+    records = tm.verified_qc_records(
+        qc, "Ep146", date(2026, 11, 14), "1XElUk4yXBOzHIKyc0XbfM502ioDri_cz"
+    )
+    assert len(records) == 17
+    assert records["Ep146_Slide10of10.png"]["readback_verified"] is True
+    assert records["Ep146_CarouselCaption.txt"]["canonical_text"] == CAPTION
+
+
+@pytest.mark.parametrize("corruption", [
+    "no-readback", "no-visual-review", "source-hash-mismatch",
+    "caption-changed", "missing-slide", "duplicate-deliverable", "unresolved-defect",
+])
+def test_ep146_qc_schema_fails_closed_on_tampering(corruption):
+    qc = deepcopy(ep146_qc_fixture())
+    first = qc["images"][0]
+    if corruption == "no-readback":
+        first["archive"]["bytes_identical"] = False
+    elif corruption == "no-visual-review":
+        first["visual_qc"]["actual_export_inspected"] = False
+    elif corruption == "source-hash-mismatch":
+        first["archive"]["readback_sha256"] = "0" * 64
+    elif corruption == "caption-changed":
+        qc["captions"]["Carousel"]["text"] += "?"
+    elif corruption == "missing-slide":
+        qc["images"].pop(0)
+    elif corruption == "duplicate-deliverable":
+        qc["deliverables"].append(qc["deliverables"][0])
+    elif corruption == "unresolved-defect":
+        qc["unresolved_defects"] = ["Unreviewed typo"]
+    with pytest.raises(tm.ThreadsBlocked):
+        tm.verified_qc_records(
+            qc, "Ep146", date(2026, 11, 14), "1XElUk4yXBOzHIKyc0XbfM502ioDri_cz"
+        )
 
 
 def test_exact_date_and_folder():

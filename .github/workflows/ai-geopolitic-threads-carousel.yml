@@ -22,17 +22,17 @@ on:
         options: [plan, publish]
         default: plan
       episode:
-        description: 'Exact production episode, e.g. Ep145'
+        description: 'Exact production episode, e.g. Ep146'
         type: string
         required: true
-        default: Ep145
+        default: Ep146
       date_sast:
         description: 'Exact archive date in South Africa, YYYY-MM-DD'
         type: string
         required: true
-        default: '2026-11-13'
+        default: '2026-11-14'
       publish_confirmation:
-        description: 'Publish ONLY: literal PUBLISH_THREADS_EP145_20261113 for Ep145; leave blank for plan'
+        description: 'Publish ONLY: PUBLISH_THREADS_EPNNN_YYYYMMDD for exact episode/date'
         type: string
         required: false
 
