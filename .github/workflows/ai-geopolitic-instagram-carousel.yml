@@ -59,7 +59,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
-      - run: python -m pytest -q tests/test_threads_media.py tests/test_instagram_media.py tests/test_instagram_release.py
+      - run: python -m pytest -q tests/test_threads_media.py tests/test_instagram_media.py tests/test_instagram_release.py tests/test_auto_release.py
 
   release:
     name: Exact archive preflight / optional one-time Instagram carousel
