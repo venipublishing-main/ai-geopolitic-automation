@@ -1,7 +1,8 @@
 """Standing-authority daily carousel dispatcher; no Meta writes in this module.
 
-Only a scheduled or verified Instagram-completed GitHub Actions event may
-dispatch, after independent Drive QC and Sisyphus PRODUCTION PASSED checks.
+Only a scheduled, verified Instagram-completed, or directly verified Instagram
+publisher GitHub Actions event may dispatch, after independent Drive QC and
+Sisyphus PRODUCTION PASSED checks.
 An irreversible day-level GitHub marker is committed *before* each dispatch.
 No automatic retry is permitted after an ambiguous dispatch or Meta claim.
 """
@@ -37,6 +38,7 @@ PHASES = {
 }
 EP_RE = re.compile(r"Ep[1-9][0-9]{0,5}\Z")
 SAST = ZoneInfo("Africa/Johannesburg")
+INSTAGRAM_WORKFLOW = "AI Geopolitic Instagram — ten-image carousel (human gate)"
 
 
 class AutoBlocked(ValueError):
@@ -260,6 +262,30 @@ def verify_event(probe: bool) -> None:
     raise AutoBlocked("No trusted automatic-release triggering event")
 
 
+def verify_instagram_handoff(episode: str, day: date) -> None:
+    """Only a successful, same-day Instagram publishing job can hand off.
+
+    Verification of the durable Instagram receipt and archive happens again in
+    process(); this checks the invoking Actions context, not a caller's claim.
+    """
+    if (not EP_RE.fullmatch(episode)
+            or os.environ.get("GITHUB_ACTIONS") != "true"
+            or os.environ.get("GITHUB_REPOSITORY") != REPO
+            or os.environ.get("GITHUB_REF") != "refs/heads/main"
+            or os.environ.get("GITHUB_EVENT_NAME") != "workflow_dispatch"
+            or os.environ.get("GITHUB_WORKFLOW") != INSTAGRAM_WORKFLOW
+            or os.environ.get("MODE") != "publish"
+            or os.environ.get("EPISODE") != episode
+            or os.environ.get("DATE_SAST") != day.isoformat()
+            or os.environ.get("APPROVAL") !=
+            f"PUBLISH_INSTAGRAM_{episode.upper()}_{day.strftime('%Y%m%d')}"):
+        raise AutoBlocked("Threads handoff requires the exact verified Instagram publishing job")
+    policy = load_policy()
+    if (not policy["enabled"] or day != current_sast_date()
+            or day < date.fromisoformat(policy["start_date_sast"])):
+        raise AutoBlocked("Threads handoff is not authorized for this SAST date")
+
+
 def read_receipt(platform: str, episode: str, day: date, token: str) -> dict | None:
     got = get_repo_json(receipt_path(platform, episode, day), token)
     if got is None:
@@ -279,11 +305,14 @@ def new_state(episode: str, day: date, phase: str) -> dict:
     }
 
 
-def process(day: date, token: str, *, probe: bool) -> None:
+def process(day: date, token: str, *, probe: bool,
+            expected_episode: str | None = None) -> None:
     plan = detect_ready(day)
     if plan is None:
         return
     episode = plan["episode"]
+    if expected_episode is not None and episode != expected_episode:
+        raise AutoBlocked("Threads handoff episode differs from today's QC archive")
     state = get_state(token, day)
     if state and validate_day_state(state[0], day) != episode:
         raise AutoBlocked("Automatic day claim points to a different episode")
@@ -336,12 +365,24 @@ def process(day: date, token: str, *, probe: bool) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=("precheck", "process"))
+    parser.add_argument("stage", choices=("precheck", "process", "handoff"))
     parser.add_argument("--probe", action="store_true", help="Read-only; never POST or claim")
+    parser.add_argument("--episode", help="Exact episode from the publishing job (handoff only)")
+    parser.add_argument("--date-sast", help="Same-day SAST date from the publishing job (handoff only)")
     args = parser.parse_args(argv)
     try:
-        verify_event(args.probe)
         token = os.environ.get("GH_ACTION_TOKEN", "")
+        if args.stage == "handoff":
+            if args.probe or not args.episode or not args.date_sast:
+                raise AutoBlocked("Threads handoff requires an exact live episode and date")
+            day = date.fromisoformat(args.date_sast)
+            verify_instagram_handoff(args.episode, day)
+            if should_process_day(token, day, probe=False):
+                process(day, token, probe=False, expected_episode=args.episode)
+            return 0
+        if args.episode or args.date_sast:
+            raise AutoBlocked("Explicit episode/date are reserved for Instagram handoff")
+        verify_event(args.probe)
         today = current_sast_date()
         if args.stage == "precheck":
             proceed = should_process_day(token, today, probe=args.probe)

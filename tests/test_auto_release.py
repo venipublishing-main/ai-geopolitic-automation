@@ -105,6 +105,60 @@ def test_untrusted_workflow_run_rejected(monkeypatch, tmp_path):
         a.verify_event(probe=False)
 
 
+def test_direct_instagram_handoff_checks_exact_job_and_same_day(monkeypatch):
+    day = date(2026, 11, 15)
+    env = {
+        "GITHUB_ACTIONS": "true", "GITHUB_REPOSITORY": a.REPO,
+        "GITHUB_REF": "refs/heads/main", "GITHUB_EVENT_NAME": "workflow_dispatch",
+        "GITHUB_WORKFLOW": a.INSTAGRAM_WORKFLOW, "MODE": "publish",
+        "EPISODE": "Ep147", "DATE_SAST": "2026-11-15",
+        "APPROVAL": "PUBLISH_INSTAGRAM_EP147_20261115",
+    }
+    for key, val in env.items():
+        monkeypatch.setenv(key, val)
+    monkeypatch.setattr(a, "current_sast_date", lambda: day)
+    assert a.verify_instagram_handoff("Ep147", day) is None
+    for key, val in {
+        "MODE": "plan", "GITHUB_WORKFLOW": "Untrusted workflow",
+        "GITHUB_REF": "refs/heads/feature", "APPROVAL": "NOT_APPROVED",
+        "GITHUB_EVENT_NAME": "push", "EPISODE": "Ep146",
+    }.items():
+        monkeypatch.setenv(key, val)
+        with pytest.raises(a.AutoBlocked):
+            a.verify_instagram_handoff("Ep147", day)
+        monkeypatch.setenv(key, env[key])
+    with pytest.raises(a.AutoBlocked):
+        a.verify_instagram_handoff("Ep147", date(2026, 11, 14))
+    monkeypatch.setattr(a, "current_sast_date", lambda: date(2026, 11, 16))
+    with pytest.raises(a.AutoBlocked):
+        a.verify_instagram_handoff("Ep147", day)
+
+
+def test_direct_handoff_cli_runs_only_after_verified_precheck(monkeypatch):
+    day = date(2026, 11, 15)
+    monkeypatch.setenv("GH_ACTION_TOKEN", "test-only-long-enough-token")
+    monkeypatch.setattr(a, "verify_instagram_handoff", lambda ep, d: None)
+    launches = []
+    monkeypatch.setattr(a, "should_process_day", lambda token, d, probe: False)
+    monkeypatch.setattr(a, "process", lambda *args, **kw: launches.append((args, kw)))
+    assert a.main(["handoff", "--episode", "Ep147", "--date-sast", day.isoformat()]) == 0
+    assert launches == []
+    monkeypatch.setattr(a, "should_process_day", lambda token, d, probe: True)
+    assert a.main(["handoff", "--episode", "Ep147", "--date-sast", day.isoformat()]) == 0
+    assert launches == [((day, "test-only-long-enough-token"),
+                         {"probe": False, "expected_episode": "Ep147"})]
+
+
+def test_direct_handoff_rejects_wrong_archive_without_writing(monkeypatch):
+    day = date(2026, 11, 15)
+    monkeypatch.setattr(a, "detect_ready", lambda d: {"episode": "Ep148"})
+    monkeypatch.setattr(a, "get_state", lambda *args: pytest.fail("MUST NOT READ STATE"))
+    monkeypatch.setattr(a, "put_repo_json", lambda *args, **kw: pytest.fail("MUST NOT CLAIM"))
+    monkeypatch.setattr(a, "dispatch", lambda *args, **kw: pytest.fail("MUST NOT DISPATCH"))
+    with pytest.raises(a.AutoBlocked, match="differs"):
+        a.process(day, "test-token", probe=False, expected_episode="Ep147")
+
+
 def test_no_dispatch_without_ready_handoff(monkeypatch):
     monkeypatch.setattr(a, "detect_ready", lambda d: None)
     monkeypatch.setattr(a, "dispatch", lambda *args, **kw: pytest.fail("MUST NOT DISPATCH"))

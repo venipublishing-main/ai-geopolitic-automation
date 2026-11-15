@@ -31,9 +31,11 @@ claim and post-publication receipt.
 `publisher_config/auto_release.json` is the explicit, versioned standing
 authorization. When `enabled=true`, `.github/workflows/ai-geopolitic-auto-release.yml`
 checks every 15 minutes around the clock (UTC minute offsets 07/22/37/52).
-An Instagram workflow completion also triggers the controller so Threads need
-not wait for the next scheduled check. GitHub schedules are best-effort and
-may run later than their nominal times.
+Immediately after a *verified same-day Instagram publication*, the Instagram
+workflow now invokes `src.auto_release handoff` itself to dispatch Threads.
+The controller's scheduled and `workflow_run` triggers remain independent
+fallbacks; do not rely on either for the primary handoff. GitHub schedules are
+best-effort and may run later than their nominal times.
 
 1. Select the **one and only** Drive archive folder whose episode name embeds
    the **current SAST date**. Never select simply the latest or a past date.
@@ -44,7 +46,11 @@ may run later than their nominal times.
    **before** dispatching the Instagram workflow with the exact episode/date
    confirmation. A second controller cannot launch the same date again.
 4. Only when the Instagram receipt is `PUBLISHED_AI_INFO_VERIFIED`, update the
-   same claim and dispatch Threads with its independent confirmation.
+   same claim and dispatch Threads with its independent confirmation. The
+   same-day Instagram workflow initiates this immediately, using an ephemeral
+   Actions token with `actions:write`; its invoking workflow, main branch,
+   event, episode, date and confirmation are independently checked. No PAT or
+   GitHub App secret is needed.
 5. Threads must reach `PUBLISHED_VERIFIED`. Both platform workflows retain
    their per-channel claims, verified ten-image media, account checks, original
    caption source digest, Meta verification, and no-automatic-retry rules.
@@ -54,6 +60,17 @@ Meta itself. If a dispatch or publication is ambiguous, its marker stays put:
 **do not automatically retry**. Inspect the account, GitHub run and receipt
 before manually reconciling. No Reel, Story, audio or extra carousel is
 published by this controller.
+
+### 15 November 2026 missed Threads handoff
+
+The original scheduler dispatched Instagram Ep147 successfully at 05:10 SAST,
+and its verified Instagram receipt was saved at 05:13. No downstream Threads
+run or receipt followed, despite a scheduled/`workflow_run` continuation being
+configured. The direct post-Instagram handoff above removes that dependence
+for future same-day episodes. Recover the already-missed Threads post through
+the existing **connected GitHub plugin launch** bridge below, first `plan`,
+then a single `publish` signal after independent inspection. An existing claim
+or duplicate on Threads must stop recovery, not trigger a retry.
 
 To pause future daily publishing, set `enabled=false` in the versioned policy
 on `main` before the next controller run. To inspect without publishing, run
