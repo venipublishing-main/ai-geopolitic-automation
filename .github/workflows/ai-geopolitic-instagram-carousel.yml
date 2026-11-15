@@ -42,6 +42,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: ai-geopolitic-instagram-serial-release
@@ -177,6 +178,15 @@ jobs:
           python -m src.instagram_release \
             --episode "$EPISODE" --date-sast "$DATE_SAST" \
             --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"
+      - name: Hand off verified same-day Instagram release directly to Threads
+        if: inputs.mode == 'publish'
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m src.auto_release handoff \
+            --episode "$EPISODE" --date-sast "$DATE_SAST"
       - name: Reconciliation warning
         if: always() && inputs.mode == 'publish'
         run: |
