@@ -21,16 +21,14 @@ from pathlib import Path
 
 from PIL import Image
 
-from src.threads_media import ThreadsBlocked, output_folder, validate_episode, verify_caption
+from src.threads_media import (
+    HASHTAG_RE, ThreadsBlocked, output_folder, validate_episode, verify_caption,
+)
 
 API_ROOT = "https://graph.threads.net/v1.0"
 GITHUB_RAW = "https://raw.githubusercontent.com/venipublishing-main/ai-geopolitic-automation"
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
 EXPECTED_USERNAME = "ai_geopolitic"
-LOCKED_HASHTAGS = (
-    "#AIGeopolitic", "#SouthAfrica", "#Geopolitics",
-    "#PoliticalAnalysis", "#NewsBriefing",
-)
 MAX_RESPONSE = 256 * 1024
 STAGE_SCHEMA = "ai-geopolitic.threads.stage-receipt.v1"
 
@@ -51,8 +49,9 @@ def caption_match(canonical: str, published: str) -> str | None:
     source, actual = canonical.strip(), published.strip()
     if source == actual:
         return "EXACT"
-    for hashtag in LOCKED_HASHTAGS:
-        if hashtag in source and source.replace(hashtag, hashtag[1:], 1) == actual:
+    for hashtag in HASHTAG_RE.finditer(source):
+        pos = hashtag.start()
+        if source[:pos] + source[pos + 1:] == actual:
             return "META_ONE_TOPIC_HASH_REMOVED"
     return None
 

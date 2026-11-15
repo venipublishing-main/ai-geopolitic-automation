@@ -180,8 +180,23 @@ def test_canonical_caption_is_under_500_utf8_bytes():
     assert tm.verify_caption(CAPTION)
     with pytest.raises(tm.ThreadsBlocked):
         tm.verify_caption(CAPTION + ("!" * 200))
+    revised = CAPTION.split("\n\n")
+    revised[1] = "#Ukraine #BlackSea #TradeRoutes #Odesa #GrainExports"
+    flex = "\n\n".join(revised)
+    assert tm.verify_caption(flex) == hashlib.sha256(flex.encode("utf-8")).hexdigest()
+
+
+@pytest.mark.parametrize("hashtags", [
+    "#Ukraine #BlackSea #TradeRoutes #Odesa",
+    "#Ukraine #BlackSea #TradeRoutes #Odesa #GrainExports #Extra",
+    "#Ukraine #BlackSea #TradeRoutes #Odesa #ukraine",
+    "#Ukraine #BlackSea #TradeRoutes #Odesa ##GrainExports",
+])
+def test_carousel_requires_exactly_five_distinct_hashtags(hashtags):
+    parts = CAPTION.split("\n\n")
+    parts[1] = hashtags
     with pytest.raises(tm.ThreadsBlocked):
-        tm.verify_caption(CAPTION.replace("#AIGeopolitic", "#Random"))
+        tm.verify_caption("\n\n".join(parts))
 
 
 def test_real_qc_schema_and_handoff(monkeypatch):

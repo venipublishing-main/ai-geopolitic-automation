@@ -29,6 +29,7 @@ MAX_JPEG = 8 * 1024 * 1024
 NAME_RE = re.compile(r"Ep[1-9][0-9]{0,5}\Z")
 DRIVE_ID_RE = re.compile(r"[a-zA-Z0-9_-]{10,100}\Z")
 SHA_RE = re.compile(r"[a-f0-9]{64}\Z")
+HASHTAG_RE = re.compile(r"(?<![\w#])#\w+")
 PAPER = (247, 244, 235)
 
 
@@ -49,6 +50,12 @@ def validate_episode(episode: str, day_text: str) -> tuple[str, date, str]:
     return episode, day, folder_name
 
 
+def has_five_distinct_hashtags(caption: str) -> bool:
+    """Require five hashtag tokens, with no fixed spelling or case duplicates."""
+    tags = HASHTAG_RE.findall(caption)
+    return len(tags) == 5 and len({tag.casefold() for tag in tags}) == 5
+
+
 def verify_caption(caption: str) -> str:
     """Use the canonical caption, unmodified. Conservative UTF-8 byte bound."""
     if (
@@ -57,7 +64,7 @@ def verify_caption(caption: str) -> str:
         or not caption.rstrip().endswith(
             "The event is factual. The interpretation ideological."
         )
-        or "#AIGeopolitic" not in caption
+        or not has_five_distinct_hashtags(caption)
         or caption.startswith("TEST ONLY")
     ):
         raise ThreadsBlocked("Canonical Threads caption is missing, invalid or exceeds 500 bytes.")

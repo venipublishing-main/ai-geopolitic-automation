@@ -82,6 +82,17 @@ def test_canonical_caption_matching_is_narrow():
     assert tr.caption_match(CAPTION, CAPTION.replace("#", "", 2)) is None
 
 
+def test_threads_allows_one_new_dynamic_topic_marker_removed():
+    parts = CAPTION.split("\n\n")
+    parts[1] = "#Ukraine #BlackSea #TradeRoutes #Odesa #GrainExports"
+    caption = "\n\n".join(parts)
+    assert tr.caption_match(caption, caption.replace("#BlackSea", "BlackSea")) == (
+        "META_ONE_TOPIC_HASH_REMOVED"
+    )
+    assert tr.caption_match(caption, caption.replace("#BlackSea", "blacksea")) is None
+    assert tr.caption_match(caption, caption.replace("#", "", 2)) is None
+
+
 def verified_post(caption=CAPTION, children_count=10):
     return {"id": "10012", "username": "ai_geopolitic", "text": caption,
             "media_type": "CAROUSEL_ALBUM",

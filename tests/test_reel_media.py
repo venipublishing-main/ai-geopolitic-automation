@@ -155,6 +155,17 @@ def test_stage_never_overwrites_and_has_no_publish_authority(monkeypatch, tmp_pa
         reel.stage_reel(plan, CAPTION, output, run_ffmpeg=False)
 
 
+def test_reel_accepts_five_flexible_hashtags():
+    parts = CAPTION.split("\n\n")
+    parts[1] = "#Uganda #Kampala #EastAfrica #RegionalTrade #TradePolicy"
+    caption = "\n\n".join(parts)
+    assert reel.verify_reel_caption(caption) == hashlib.sha256(caption.encode("utf-8")).hexdigest()
+    with pytest.raises(reel.ReelBlocked):
+        reel.verify_reel_caption(caption + " #Extra")
+    with pytest.raises(reel.ReelBlocked):
+        reel.verify_reel_caption(caption.replace("#Uganda", "#kampala"))
+
+
 def test_invalid_caption_or_drive_frame_is_blocked():
     with pytest.raises(reel.ReelBlocked):
         reel.verify_reel_caption("TEST ONLY: #AIGeopolitic")

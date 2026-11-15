@@ -22,7 +22,8 @@ from PIL import Image, ImageDraw, ImageFilter, UnidentifiedImageError
 
 from src.reel_audio import write_original_bed, write_provenance
 from src.threads_media import (
-    DRIVE_ID_RE, SHA_RE, ThreadsBlocked, _read_json, read_approved_archive,
+    DRIVE_ID_RE, SHA_RE, ThreadsBlocked, _read_json, has_five_distinct_hashtags,
+    read_approved_archive,
     safe_rclone, validate_episode,
 )
 
@@ -56,9 +57,7 @@ def output_folder(episode: str, day: str) -> Path:
 def verify_reel_caption(caption: str) -> str:
     if (not isinstance(caption, str)
             or not 30 <= len(caption.encode("utf-8")) <= 2200
-            or not all(tag in caption for tag in (
-                "#AIGeopolitic", "#SouthAfrica", "#Geopolitics",
-                "#PoliticalAnalysis", "#NewsBriefing"))
+            or not has_five_distinct_hashtags(caption)
             or caption.startswith("TEST ONLY")):
         raise ReelBlocked("Canonical Reel caption is missing, unsafe or too long.")
     return sha(caption.encode("utf-8"))
