@@ -6,5 +6,7 @@
   "read_only_reconciliation_run_id": "43826454452",
   "confirmation": "RECOVER_THREADS_EP148_20261116_AFTER_NEGATIVE_RECONCILIATION",
   "user_confirmation": "User verified Ep148 absent on @ai_geopolitic Threads on 2026-11-16; authenticated GET-only API returned no matching caption among 50 recent posts.",
-  "attempt_limit": 1
+  "attempt_limit": 1,
+  "initial_recovery_workflow_run": "43827463888",
+  "initial_run_result": "REGRESSION_TESTS_PASSED_LIVE_JOB_SKIPPED_NO_META_POST"
 }
