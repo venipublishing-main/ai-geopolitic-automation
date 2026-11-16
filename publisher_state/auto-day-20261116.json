@@ -2,6 +2,7 @@
   "created_utc": "2026-11-16T05:27:43.943635+00:00",
   "date_sast": "2026-11-16",
   "episode": "Ep148",
-  "phase": "THREADS_CLAIMED_BEFORE_DISPATCH",
-  "schema": "ai-geopolitic.publisher.automatic-dispatch-day.v1"
+  "phase": "BOTH_DISPATCHED",
+  "schema": "ai-geopolitic.publisher.automatic-dispatch-day.v1",
+  "threads_dispatched_utc": "2026-11-16T07:27:46.887727+02:00"
 }
