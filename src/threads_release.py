@@ -159,7 +159,30 @@ class ThreadsGraph:
                     raise ThreadsBlocked("Threads response exceeds safe size.")
                 result = json.loads(raw)
         except urllib.error.HTTPError as exc:
-            raise ThreadsBlocked(f"Threads API HTTP {exc.code}; reconcile manually if claim exists.") from None
+            # Meta's structured error code/message are needed for incident diagnosis.
+            # Never echo response bodies, credentials, request parameters, or URLs.
+            detail = {}
+            try:
+                payload = json.loads(exc.read(8192))
+                if isinstance(payload, dict) and isinstance(payload.get("error"), dict):
+                    detail = payload["error"]
+            except (OSError, ValueError, UnicodeError):
+                pass
+            code = detail.get("code")
+            subcode = detail.get("error_subcode")
+            meta_type = detail.get("type")
+            message = str(detail.get("message") or "").replace(self.token, "[redacted]")[:240]
+            diagnostic = {
+                "http_status": exc.code,
+                "meta_code": code if isinstance(code, int) else None,
+                "meta_subcode": subcode if isinstance(subcode, int) else None,
+                "meta_type": str(meta_type)[:48] if isinstance(meta_type, str) else None,
+                "safe_message": message,
+            }
+            raise ThreadsBlocked(
+                "Threads API request failed; " + json.dumps(diagnostic, sort_keys=True)
+                + "; reconcile manually if claim exists."
+            ) from None
         except (urllib.error.URLError, TimeoutError, OSError, ValueError):
             raise ThreadsBlocked("Threads API connection or response failed; reconcile if claimed.") from None
         if not isinstance(result, dict) or "error" in result:
