@@ -1,0 +1,10 @@
+{
+  "schema": "ai-geopolitic.threads.manual-recovery.v1",
+  "episode": "Ep148",
+  "date_sast": "2026-11-16",
+  "original_failed_run_id": "43810385187",
+  "read_only_reconciliation_run_id": "43826454452",
+  "confirmation": "RECOVER_THREADS_EP148_20261116_AFTER_NEGATIVE_RECONCILIATION",
+  "user_confirmation": "User verified Ep148 absent on @ai_geopolitic Threads on 2026-11-16; authenticated GET-only API returned no matching caption among 50 recent posts.",
+  "attempt_limit": 1
+}
