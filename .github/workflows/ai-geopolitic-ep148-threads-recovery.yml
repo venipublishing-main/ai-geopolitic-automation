@@ -29,7 +29,7 @@ jobs:
   recover:
     name: Ep148 only — read-only duplicate check, durable recovery claim, one Meta publication
     needs: tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.added, 'publisher_signals/threads-ep148-recovery-20261116.json')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
