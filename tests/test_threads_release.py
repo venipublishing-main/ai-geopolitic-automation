@@ -186,3 +186,28 @@ def test_durable_claim_precedes_first_meta_post(tmp_path, monkeypatch):
         tr.release("Ep145", "2026-11-13", "f" * 40,
                    "PUBLISH_THREADS_EP145_20261113", token="t" * 20, run_id="23")
 
+
+def test_http_400_reports_safe_meta_diagnostics_without_bearer_token(monkeypatch):
+    import io
+    import urllib.error
+
+    token = "SECRET_TOKEN_" * 2
+    body = json.dumps({"error": {
+        "type": "OAuthException", "code": 100, "error_subcode": 36001,
+        "message": "Invalid image for token " + token,
+    }}).encode("utf-8")
+    def failure(*args, **kwargs):
+        raise urllib.error.HTTPError(
+            "https://graph.threads.net/v1.0/me/threads", 400, "Bad Request",
+            {}, io.BytesIO(body))
+    monkeypatch.setattr(tr.urllib.request, "urlopen", failure)
+    graph = tr.ThreadsGraph(token)
+    with pytest.raises(ThreadsBlocked) as exc_info:
+        graph.request("POST", "/me/threads", {"media_type": "IMAGE"})
+    message = str(exc_info.value)
+    assert '"http_status": 400' in message
+    assert '"meta_code": 100' in message
+    assert '"meta_subcode": 36001' in message
+    assert '"meta_type": "OAuthException"' in message
+    assert token not in message
+    assert "[redacted]" in message
