@@ -1,0 +1,8 @@
+{
+  "schema": "ai-geopolitic.threads.readonly-reconcile.v1",
+  "episode": "Ep148",
+  "date_sast": "2026-11-16",
+  "mode": "GET_ONLY_NO_PUBLICATION",
+  "incident_run_id": "43810385187",
+  "reason": "User confirmed no Ep148 visible on @ai_geopolitic; investigate without bypassing claim."
+}
