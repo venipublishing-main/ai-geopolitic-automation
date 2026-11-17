@@ -35,49 +35,60 @@ def test_original_audio_is_deterministic_and_stereo(tmp_path):
 
 
 def test_original_flare_is_deterministic_and_transparent(tmp_path):
-    a, b = tmp_path / "flare-a.png", tmp_path / "flare-b.png"
+    a, b = tmp_path / "a" / "flare.png", tmp_path / "b" / "flare.png"
     first, second = reel.make_flare_overlay(a), reel.make_flare_overlay(b)
     assert first == second
     assert first["edits_preset_exact"] is False
+    assert first["frame_count"] == 15
+    assert first["style"] == "original-centre-expanding-circular-bloom-v3"
     with Image.open(a) as picture:
         assert picture.size == (1080, 1920)
         assert picture.mode == "RGBA"
         assert picture.getpixel((0, 0))[3] == 0
         assert picture.getpixel((540, 959))[3] > 0
+    frames = sorted((a.parent / "flare_frames").glob("flare_*.png"))
+    assert len(frames) == 15
+    with Image.open(frames[0]) as start, Image.open(frames[7]) as middle:
+        assert start.getchannel("A").getbbox() is None
+        assert middle.getchannel("A").getbbox() is not None
+    with Image.open(frames[4]) as early, Image.open(frames[10]) as late:
+        early_bounds, late_bounds = early.getchannel("A").getbbox(), late.getchannel("A").getbbox()
+        assert early_bounds and late_bounds
+        assert (late_bounds[2] - late_bounds[0]) > (early_bounds[2] - early_bounds[0])
 
 
 def test_reel_render_command_preserves_frames_and_platform_specs(tmp_path):
     frames = [tmp_path / f"ReelFrame{i:02d}of06.png" for i in range(1, 7)]
     cmd = reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
-                              tmp_path / "flare.png", tmp_path / "Reel.mp4",
+                              tmp_path / "flare_frames" / "flare_%02d.png", tmp_path / "Reel.mp4",
                               variant="B_Noticeable")
     command = " ".join(cmd)
-    assert cmd[0] == "ffmpeg" and command.count("-loop 1") == 7
+    assert cmd[0] == "ffmpeg" and command.count("-loop 1") == 6
+    assert "-start_number 0" in command
     assert command.count("xfade=transition=fade") == 5
     assert "offset=2.850" in command and "offset=14.850" in command
-    assert command.count("overlay=x='-w+(W+w)*(t-") == 5
-    assert "fade=t=in:st=0:d=0.700" in command
-    assert "fade=t=out:st=17.300:d=0.700" in command
+    assert command.count("overlay=x=0:y=0") == 5
+    assert "fade=t=in:st=0:d=0.900" in command
+    assert "fade=t=out:st=17.100:d=0.900" in command
     assert "format=yuva420p,split=5" in command
     assert "trim=duration=0.500" in command
     assert "-b:a 128k" in command
     assert command.count("zoompan") == 6
     assert command.count("1+0.080000*pow(") == 4
-    gentle = " ".join(reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
-                                           tmp_path / "flare.png", tmp_path / "gentle.mp4",
-                                           variant="A_Gentle"))
-    assert gentle.count("1+0.050000*pow(") == 4
-    assert "-t 0.500" in command
+    stronger = " ".join(reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
+                                             tmp_path / "flare_frames" / "flare_%02d.png",
+                                             tmp_path / "stronger.mp4", variant="C_Stronger"))
+    assert stronger.count("1+0.120000*pow(") == 4
     assert "-c:v libx264" in command and "-c:a aac" in command
     assert "-pix_fmt yuv420p" in command
     assert "-t 18.000" in command and "-r 30" in command
     assert all(str(frame) in cmd for frame in frames)
     with pytest.raises(reel.ReelBlocked):
         reel.ffmpeg_command(frames[:5], tmp_path / "soundtrack.wav",
-                            tmp_path / "flare.png", tmp_path / "Reel.mp4")
+                            tmp_path / "flare_frames" / "flare_%02d.png", tmp_path / "Reel.mp4")
     with pytest.raises(reel.ReelBlocked, match="Unknown Reel"):
         reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
-                            tmp_path / "flare.png", tmp_path / "Reel.mp4",
+                            tmp_path / "flare_frames" / "flare_%02d.png", tmp_path / "Reel.mp4",
                             variant="Unapproved")
 
 
@@ -95,12 +106,13 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
         picture.save(path)
         frames.append(path)
     flare = tmp_path / "flare.png"
-    # Same RGBA input contract as the full-resolution authored overlay.
-    Image.new("RGBA", (216, 384), (255, 235, 180, 120)).save(flare)
+    metadata = reel.make_flare_overlay(flare)
+    assert metadata["frame_count"] == 15
     wav = tmp_path / "audio.wav"
     reel_audio.write_original_bed(wav, duration=18.0, sample_rate=8_000)
     output = tmp_path / "review.mp4"
-    run = subprocess.run(reel.ffmpeg_command(frames, wav, flare, output,
+    run = subprocess.run(reel.ffmpeg_command(frames, wav,
+                                             tmp_path / metadata["animation_pattern"], output,
                                              variant="B_Noticeable",
                                              render_size=(216, 384)),
                          capture_output=True, text=True, timeout=180)
@@ -120,7 +132,7 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     # Two instants within the same second clip differ because the digital
     # camera zoom really changed, rather than holding the source PNG still.
     assert ImageChops.difference(frame_at(3.55), frame_at(5.45)).getbbox()
-    # The moving flare is conspicuously brighter at the 3-second cut.
+    # The centred expanding circular bloom is brighter at the 3-second cut.
     assert sum(frame_at(3.0).getpixel((108, 192))) > sum(frame_at(2.6).getpixel((108, 192)))
     # First visible frame fades up; the final frame fades to black.
     assert sum(frame_at(0.0).getpixel((108, 192))) < sum(frame_at(0.9).getpixel((108, 192)))
@@ -217,7 +229,7 @@ def test_stage_never_overwrites_and_has_no_publish_authority(monkeypatch, tmp_pa
     assert receipt["audio_approved_for_publication"] is False
     assert receipt["duration_seconds"] == 18
     assert receipt["effects"]["transition_count"] == 5
-    assert set(receipt["videos"]) == {"A_Gentle", "B_Noticeable"}
+    assert set(receipt["videos"]) == {"B_Noticeable", "C_Stronger"}
     assert receipt["effects"]["middle"] == "steady_out_centered_zoom"
     assert receipt["effects"]["variants"] == reel.ZOOM_VARIANTS
     assert (output / "flare_overlay.png").is_file()
