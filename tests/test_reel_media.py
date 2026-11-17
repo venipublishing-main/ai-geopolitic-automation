@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageChops, ImageDraw
 
 from src import reel_audio, reel_media as reel
 
@@ -49,17 +49,25 @@ def test_original_flare_is_deterministic_and_transparent(tmp_path):
 def test_reel_render_command_preserves_frames_and_platform_specs(tmp_path):
     frames = [tmp_path / f"ReelFrame{i:02d}of06.png" for i in range(1, 7)]
     cmd = reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
-                              tmp_path / "flare.png", tmp_path / "Reel.mp4")
+                              tmp_path / "flare.png", tmp_path / "Reel.mp4",
+                              variant="B_Noticeable")
     command = " ".join(cmd)
     assert cmd[0] == "ffmpeg" and command.count("-loop 1") == 7
     assert command.count("xfade=transition=fade") == 5
     assert "offset=2.850" in command and "offset=14.850" in command
-    assert command.count("overlay=x=0:y=0") == 5
-    assert "fade=t=in:st=0:d=0.250" in command
-    assert "fade=t=out:st=17.650:d=0.350" in command
+    assert command.count("overlay=x='-w+(W+w)*(t-") == 5
+    assert "fade=t=in:st=0:d=0.700" in command
+    assert "fade=t=out:st=17.300:d=0.700" in command
     assert "format=yuva420p,split=5" in command
+    assert "trim=duration=0.500" in command
     assert "-b:a 128k" in command
-    assert "zoompan" not in command and "scale=" not in command
+    assert command.count("zoompan") == 6
+    assert command.count("1+0.080000*pow(") == 4
+    gentle = " ".join(reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
+                                           tmp_path / "flare.png", tmp_path / "gentle.mp4",
+                                           variant="A_Gentle"))
+    assert gentle.count("1+0.050000*pow(") == 4
+    assert "-t 0.500" in command
     assert "-c:v libx264" in command and "-c:a aac" in command
     assert "-pix_fmt yuv420p" in command
     assert "-t 18.000" in command and "-r 30" in command
@@ -67,6 +75,10 @@ def test_reel_render_command_preserves_frames_and_platform_specs(tmp_path):
     with pytest.raises(reel.ReelBlocked):
         reel.ffmpeg_command(frames[:5], tmp_path / "soundtrack.wav",
                             tmp_path / "flare.png", tmp_path / "Reel.mp4")
+    with pytest.raises(reel.ReelBlocked, match="Unknown Reel"):
+        reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
+                            tmp_path / "flare.png", tmp_path / "Reel.mp4",
+                            variant="Unapproved")
 
 
 def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path):
@@ -76,7 +88,11 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     frames = []
     for i in range(1, 7):
         path = tmp_path / f"frame{i}.png"
-        Image.new("RGB", (216, 384), (i * 25, 35, 75)).save(path)
+        picture = Image.new("RGB", (216, 384), (i * 25, 35, 75))
+        brush = ImageDraw.Draw(picture)
+        brush.rectangle((55, 110, 160, 280), outline=(240, 250, 250), width=6)
+        brush.line((18, 60, 192, 320), fill=(255, 220, 40), width=4)
+        picture.save(path)
         frames.append(path)
     flare = tmp_path / "flare.png"
     # Same RGBA input contract as the full-resolution authored overlay.
@@ -84,13 +100,31 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     wav = tmp_path / "audio.wav"
     reel_audio.write_original_bed(wav, duration=18.0, sample_rate=8_000)
     output = tmp_path / "review.mp4"
-    run = subprocess.run(reel.ffmpeg_command(frames, wav, flare, output),
-                         capture_output=True, text=True, timeout=120)
+    run = subprocess.run(reel.ffmpeg_command(frames, wav, flare, output,
+                                             variant="B_Noticeable",
+                                             render_size=(216, 384)),
+                         capture_output=True, text=True, timeout=180)
     assert run.returncode == 0, run.stderr[-2_000:]
     probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
                             "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
                             str(output)], check=True, capture_output=True, text=True)
     assert abs(float(probe.stdout.strip()) - 18.0) < 0.35
+
+    def frame_at(seconds):
+        sample = subprocess.run([
+            "ffmpeg", "-v", "error", "-ss", str(seconds), "-i", str(output),
+            "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+        ], check=True, capture_output=True, timeout=30)
+        return Image.frombytes("RGB", (216, 384), sample.stdout)
+
+    # Two instants within the same second clip differ because the digital
+    # camera zoom really changed, rather than holding the source PNG still.
+    assert ImageChops.difference(frame_at(3.55), frame_at(5.45)).getbbox()
+    # The moving flare is conspicuously brighter at the 3-second cut.
+    assert sum(frame_at(3.0).getpixel((108, 192))) > sum(frame_at(2.6).getpixel((108, 192)))
+    # First visible frame fades up; the final frame fades to black.
+    assert sum(frame_at(0.0).getpixel((108, 192))) < sum(frame_at(0.9).getpixel((108, 192)))
+    assert sum(frame_at(17.9).getpixel((108, 192))) < sum(frame_at(17.1).getpixel((108, 192)))
 
 
 def fake_plan():
@@ -122,12 +156,47 @@ def test_exact_six_frame_archive_and_caption_qc(monkeypatch):
     monkeypatch.setattr(reel, "read_approved_archive", lambda *args: (
         {"archive_folder_id": plan["archive_folder_id"]}, "carousel", listing))
     monkeypatch.setattr(reel, "_read_json", lambda *args: qc)
+    monkeypatch.setattr(reel, "verified_qc_records", lambda *args: delivered)
     monkeypatch.setattr(reel, "safe_rclone", lambda *args, **kwargs: CAPTION.encode())
     observed, caption = reel.read_reel_archive("Ep145", "2026-11-13")
     assert observed["frame_count"] == 6 and caption == CAPTION
     assert observed["approved_for_reel_publication"] is False
     qc["image_counts"]["reel"] = 5
     with pytest.raises(reel.ReelBlocked):
+        reel.read_reel_archive("Ep145", "2026-11-13")
+
+
+def test_newer_qc_contract_verifies_reel_caption_and_frames(monkeypatch):
+    plan = fake_plan()
+    qc_sha = reel.sha(CAPTION.encode())
+    caption_name = "Ep145_ReelCaption.txt"
+    qc = {"counts": {"reel": 6},
+          "captions": {"Reel": {"sha256": qc_sha, "text": CAPTION,
+                                  "archive": {"filename": caption_name,
+                                              "drive_id": "captionfile1234",
+                                              "local_sha256": qc_sha,
+                                              "readback_sha256": qc_sha,
+                                              "bytes_identical": True,
+                                              "exact_text_bytes_including_linebreaks": True}}},
+          "deliverables": [{"name": caption_name, "id": "captionfile1234",
+                            "mime_type": "text/plain"}]}
+    files = [{"Name": caption_name, "MimeType": "text/plain", "ID": "captionfile1234"}]
+    evidence = {}
+    for frame in plan["frames"]:
+        files.append({"Name": frame["name"], "MimeType": "image/png", "ID": frame["drive_id"]})
+        evidence[frame["name"]] = {
+            "drive_id": frame["drive_id"], "source_sha256": frame["sha256"],
+            "readback_sha256": frame["sha256"], "readback_verified": True,
+            "dimensions": [1080, 1920]}
+    monkeypatch.setattr(reel, "read_approved_archive", lambda *args: (
+        {"archive_folder_id": plan["archive_folder_id"]}, "carousel", files))
+    monkeypatch.setattr(reel, "verified_qc_records", lambda *args: evidence)
+    monkeypatch.setattr(reel, "_read_json", lambda *args: qc)
+    monkeypatch.setattr(reel, "safe_rclone", lambda *args, **kwargs: CAPTION.encode())
+    accepted, _ = reel.read_reel_archive("Ep145", "2026-11-13")
+    assert accepted["frame_count"] == 6
+    qc["captions"]["Reel"]["archive"]["bytes_identical"] = False
+    with pytest.raises(reel.ReelBlocked, match="caption"):
         reel.read_reel_archive("Ep145", "2026-11-13")
 
 
@@ -148,6 +217,9 @@ def test_stage_never_overwrites_and_has_no_publish_authority(monkeypatch, tmp_pa
     assert receipt["audio_approved_for_publication"] is False
     assert receipt["duration_seconds"] == 18
     assert receipt["effects"]["transition_count"] == 5
+    assert set(receipt["videos"]) == {"A_Gentle", "B_Noticeable"}
+    assert receipt["effects"]["middle"] == "steady_out_centered_zoom"
+    assert receipt["effects"]["variants"] == reel.ZOOM_VARIANTS
     assert (output / "flare_overlay.png").is_file()
     assert len(list(output.glob("ReelFrame*"))) == 6
     assert json.loads((output / "stage.json").read_text())["frame_count"] == 6

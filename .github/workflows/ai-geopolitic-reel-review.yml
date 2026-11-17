@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'plan: read-only archive QC; build: verified 18s Edits-inspired MP4 for private review'
+        description: 'plan: read-only archive QC; build: two verified 18s Edits-inspired MP4 previews, no publication'
         required: true
         default: plan
         type: choice
@@ -107,10 +107,10 @@ jobs:
           chmod 600 "$HOME/.config/rclone/rclone.conf"
       - name: Verify exact SAST archive, production QC and six Reel frames
         run: python -m src.reel_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
-      - name: Build 18-second Edits-inspired Reel with filler audio for review ONLY
+      - name: Build two 18-second zoom-and-flare Reel variants with filler audio for review ONLY
         if: env.MODE == 'build'
         run: python -m src.reel_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
-      - name: Upload private MP4, flare overlay, provenance and source frames for Ian's review
+      - name: Upload both private MP4 variants, flare overlay, provenance and exact source frames
         if: env.MODE == 'build'
         uses: actions/upload-artifact@v4
         with:
