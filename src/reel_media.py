@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import io
 import json
+import math
 import os
 import re
 import shutil
@@ -34,11 +35,12 @@ DURATION = 18.0
 FRAME_SECONDS = 3.0
 TRANSITION = 0.30
 FLARE_SECONDS = 0.50
-OPENING_FADE = 0.70
-CLOSING_FADE = 0.70
-# Zoom is intentionally visible, but never exceeds the 7-10% source safe margin.
+OPENING_FADE = 0.90
+CLOSING_FADE = 0.90
+# At 112%, an even centered crop removes about 5.4% per side; the source
+# 7-10% safe margin still requires actual mobile visual QC.
 # Names are embedded in artifact filenames and the immutable review receipt.
-ZOOM_VARIANTS = {"A_Gentle": 1.05, "B_Noticeable": 1.08}
+ZOOM_VARIANTS = {"B_Noticeable": 1.08, "C_Stronger": 1.12}
 MAX_PNG = 40 * 1024 * 1024
 MAX_REEL = 200 * 1024 * 1024
 REEL_SCHEMA = "ai-geopolitic.reel.archive-plan.v1"
@@ -174,36 +176,71 @@ def read_frame(name: str, folder: str, expected_sha: str) -> bytes:
 
 
 def make_flare_overlay(path: Path) -> dict:
-    """Author an original transparent flare, without touching accepted frames.
+    """Author an expanding circular light bloom, never a travelling line.
 
-    This is an Edits-inspired approximation for private visual review. It is
-    deliberately not presented as an exact copy of the app's Flare preset.
+    Exactly 15 transparent RGBA frames are generated at half-resolution and
+    played at 30fps across each 0.5s transition. The immutable, accepted Reel
+    frames are not edited. The effect is original, not an Edits preset copy.
     """
-    canvas = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    glow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    brush = ImageDraw.Draw(glow)
-    brush.ellipse((240, 200, 840, 1720), fill=(255, 238, 201, 165))
-    canvas = Image.alpha_composite(canvas, glow.filter(ImageFilter.GaussianBlur(105)))
-
-    streak = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    brush = ImageDraw.Draw(streak)
-    brush.line((385, -120, 685, 2040), fill=(255, 249, 228, 205), width=125)
-    brush.line((450, -120, 750, 2040), fill=(255, 249, 235, 130), width=65)
-    canvas = Image.alpha_composite(canvas, streak.filter(ImageFilter.GaussianBlur(55)))
-
-    core = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    brush = ImageDraw.Draw(core)
-    brush.line((445, -120, 745, 2040), fill=(255, 255, 243, 195), width=10)
-    brush.ellipse((500, 880, 580, 1040), fill=(255, 255, 244, 145))
-    canvas = Image.alpha_composite(canvas, core)
     path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(path, format="PNG", optimize=False)
-    return {"style": "original-animated-sweep-flare-v2", "edits_preset_exact": False,
-            "width": WIDTH, "height": HEIGHT, "sha256": sha(path.read_bytes())}
+    sequence = path.parent / "flare_frames"
+    sequence.mkdir(parents=True, exist_ok=False)
+    w, h = WIDTH // 2, HEIGHT // 2
+    cx, cy = w // 2, h // 2
+    count = round(FLARE_SECONDS * FPS)
+    digests = []
+    for i in range(count):
+        progress = i / (count - 1)
+        envelope = max(0.0, math.sin(math.pi * progress)) ** 0.65
+        # Radius is defined in full-resolution pixels so the ring becomes
+        # visibly larger than the frame's width before it disappears.
+        radius = (15 + 1180 * progress ** 1.6) / 2
+        box = (round(cx-radius), round(cy-radius),
+               round(cx+radius), round(cy+radius))
+        canvas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+
+        halo = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(halo)
+        outer = radius * 1.20
+        d.ellipse((round(cx-outer), round(cy-outer),
+                   round(cx+outer), round(cy+outer)),
+                  fill=(255, 232, 179, round(62 * envelope)))
+        canvas = Image.alpha_composite(canvas, halo.filter(ImageFilter.GaussianBlur(28)))
+
+        ring = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(ring)
+        d.ellipse(box, outline=(255, 206, 135, round(190 * envelope)),
+                  width=max(3, round(radius * 0.09)))
+        canvas = Image.alpha_composite(canvas, ring.filter(ImageFilter.GaussianBlur(11)))
+        d = ImageDraw.Draw(canvas)
+        d.ellipse(box, outline=(255, 247, 227, round(145 * envelope)),
+                  width=max(2, round(radius * 0.018)))
+
+        centre = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(centre)
+        core_radius = max(12, radius * 0.23)
+        d.ellipse((round(cx-core_radius), round(cy-core_radius),
+                   round(cx+core_radius), round(cy+core_radius)),
+                  fill=(255, 251, 238, round(95 * envelope)))
+        canvas = Image.alpha_composite(canvas, centre.filter(ImageFilter.GaussianBlur(16)))
+
+        filename = sequence / f"flare_{i:02d}.png"
+        canvas.save(filename, format="PNG", optimize=False)
+        digests.append(sha(filename.read_bytes()))
+        if i == count // 2:
+            canvas.resize((WIDTH, HEIGHT), Image.Resampling.BICUBIC).save(
+                path, format="PNG", optimize=False)
+
+    return {"style": "original-centre-expanding-circular-bloom-v3",
+            "edits_preset_exact": False, "width": WIDTH, "height": HEIGHT,
+            "frame_count": count, "frame_rate": FPS,
+            "animation_pattern": "flare_frames/flare_%02d.png",
+            "animation_sha256": sha("".join(digests).encode("ascii")),
+            "sha256": sha(path.read_bytes())}
 
 
 def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
-                   *, variant: str = "A_Gentle", ffmpeg_bin: str = "ffmpeg",
+                   *, variant: str = "B_Noticeable", ffmpeg_bin: str = "ffmpeg",
                    render_size: tuple[int, int] = (WIDTH, HEIGHT)) -> list[str]:
     if len(frames) != FRAME_COUNT or len(set(frames)) != FRAME_COUNT:
         raise ReelBlocked("Exactly six distinct approved frames are mandatory.")
@@ -221,13 +258,12 @@ def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
         clip_duration = FRAME_SECONDS + (TRANSITION / 2 if index in (0, 5) else TRANSITION)
         args += ["-loop", "1", "-framerate", str(FPS),
                  "-t", f"{clip_duration:.3f}", "-i", str(frame)]
-    args += ["-loop", "1", "-framerate", str(FPS),
-             "-t", f"{FLARE_SECONDS:.3f}", "-i", str(flare)]
+    args += ["-framerate", str(FPS), "-start_number", "0", "-i", str(flare)]
     args += ["-i", str(wav)]
     filters = []
     for i in range(FRAME_COUNT):
         # FFmpeg zoompan renders a new crop on each frame. The middle images
-        # smoothly reduce from 105% or 108% to 100%; first/last remain still.
+        # smoothly reduce from 108% or 112% to 100%; first/last remain still.
         start = ZOOM_VARIANTS[variant] if 1 <= i <= 4 else 1.0
         duration = FRAME_SECONDS + (TRANSITION / 2 if i in (0, 5) else TRANSITION)
         last_frame = max(1, round(duration * FPS) - 1)
@@ -256,15 +292,10 @@ def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
         offset = i * FRAME_SECONDS - FLARE_SECONDS / 2
         filters.append(f"[fl{i}]trim=duration={FLARE_SECONDS:.3f},"
                        f"setpts=PTS-STARTPTS,"
-                       f"fade=t=in:st=0:d={FLARE_SECONDS/2:.3f}:alpha=1,"
-                       f"fade=t=out:st={FLARE_SECONDS/2:.3f}:"
-                       f"d={FLARE_SECONDS/2:.3f}:alpha=1,"
                        f"setpts=PTS+{offset:.3f}/TB[flare{i}]")
         target = f"overlay{i}"
-        # A moving, original light streak traverses left to right, rather
-        # than briefly flashing a stationary PNG at the cut.
-        x_expr = f"-w+(W+w)*(t-{offset:.3f})/{FLARE_SECONDS:.3f}"
-        filters.append(f"[{prior}][flare{i}]overlay=x='{x_expr}':y=0:"
+        # The animation itself expands radially; the overlay remains centered.
+        filters.append(f"[{prior}][flare{i}]overlay=x=0:y=0:"
                        f"eval=frame:eof_action=pass:repeatlast=0:shortest=0[{target}]")
         prior = target
     filters.append(f"[{prior}]format=yuv420p[outv]")
@@ -335,7 +366,7 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
             if run_ffmpeg:
                 try:
                     subprocess.run(ffmpeg_command(frames, temp / "soundtrack.wav",
-                                                  temp / "flare_overlay.png",
+                                                  temp / flare["animation_pattern"],
                                                   video_file, variant=variant),
                                    check=True, capture_output=True, timeout=1200)
                 except (OSError, subprocess.SubprocessError):
@@ -353,7 +384,7 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
                         "middle": "steady_out_centered_zoom",
                         "variants": ZOOM_VARIANTS,
                         "closing": {"name": "fade_out", "seconds": CLOSING_FADE},
-                        "transitions": "animated_flare_sweep",
+                        "transitions": "centre_expanding_circular_bloom",
                         "transition_seconds": TRANSITION,
                         "flare_seconds": FLARE_SECONDS,
                         "transition_count": FRAME_COUNT - 1, "flare": flare,
