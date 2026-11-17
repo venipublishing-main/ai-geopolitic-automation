@@ -56,20 +56,14 @@ jobs:
 
   archive-and-render:
     name: Read-only source QC and optional private MP4 rendering
-    # A single explicit merge-commit marker enables the Ep149 pilot from our
-    # authenticated GitHub connector. Other pushes still run tests only; no
-    # feature branch or PR receives the read-only Drive credentials.
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      (github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[reel-preview-ep149]')))
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     needs: tests
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      EPISODE: ${{ github.event_name == 'push' && 'Ep149' || inputs.episode }}
-      DATE_SAST: ${{ github.event_name == 'push' && '2026-11-17' || inputs.date_sast }}
-      MODE: ${{ github.event_name == 'push' && 'build' || inputs.mode }}
+      EPISODE: ${{ inputs.episode }}
+      DATE_SAST: ${{ inputs.date_sast }}
+      MODE: ${{ inputs.mode }}
     steps:
       - uses: actions/checkout@v4
         with:
