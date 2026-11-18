@@ -1,0 +1,13 @@
+{
+  "caption_sha256": "5ba9ef311a1019979d81917441371ee6ab31729a940d7986c1d7a453fca22b22",
+  "claimed_utc": "2026-11-18T05:57:04.036964+00:00",
+  "date_sast": "2026-11-18",
+  "episode": "Ep150",
+  "original_claim": "publisher_state/threads-ep150-20261118.json",
+  "original_failed_run_id": "44240177102",
+  "read_only_reconciliation_run_id": "same-run-authenticated-preflight",
+  "recovery_run_id": "44247746949",
+  "schema": "ai-geopolitic.threads.manual-recovery-receipt.v1",
+  "source_media_commit": "2b137658f79e34a3cb16dab471b330144c06565e",
+  "status": "RECOVERY_CLAIMED_NO_REPEAT"
+}
