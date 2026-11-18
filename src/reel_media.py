@@ -239,6 +239,23 @@ def make_flare_overlay(path: Path) -> dict:
             "sha256": sha(path.read_bytes())}
 
 
+def subpixel_zoom_filter(start: float, last_frame: int) -> str:
+    """A cubic, frame-evaluated centre zoom without zoompan's integer crop jumps."""
+    if not math.isfinite(start) or not 1.0 <= start <= 1.2 or last_frame < 1:
+        raise ReelBlocked("Invalid subpixel camera movement.")
+    if start == 1.0:
+        return ""
+    shift = f"({start - 1:.6f}*pow(max(0,1-on/{last_frame}),2))"
+    return (
+        f"format=yuv444p,perspective="
+        f"x0='-W*{shift}/2':y0='-H*{shift}/2':"
+        f"x1='W+W*{shift}/2':y1='-H*{shift}/2':"
+        f"x2='-W*{shift}/2':y2='H+H*{shift}/2':"
+        f"x3='W+W*{shift}/2':y3='H+H*{shift}/2':"
+        "sense=destination:interpolation=cubic:eval=frame,"
+    )
+
+
 def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
                    *, variant: str = "B_Noticeable", ffmpeg_bin: str = "ffmpeg",
                    render_size: tuple[int, int] = (WIDTH, HEIGHT)) -> list[str]:
@@ -262,18 +279,18 @@ def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
     args += ["-i", str(wav)]
     filters = []
     for i in range(FRAME_COUNT):
-        # FFmpeg zoompan renders a new crop on each frame. The middle images
-        # smoothly reduce from 108% or 112% to 100%; first/last remain still.
+        # zoompan snaps its crop origin to whole/chroma-grid pixels: slow moves
+        # make fine ink lines and lettering visibly shudder. A frame-evaluated
+        # perspective transform uses cubic subpixel sampling instead. All four
+        # corners move symmetrically, so there is no tilt or camera pan.
+        # The middle images still ease from 108% or 112% to 100%.
         start = ZOOM_VARIANTS[variant] if 1 <= i <= 4 else 1.0
         duration = FRAME_SECONDS + (TRANSITION / 2 if i in (0, 5) else TRANSITION)
         last_frame = max(1, round(duration * FPS) - 1)
-        zoom = (f"1+{start - 1:.6f}*pow(max(0,1-on/{last_frame}),2)"
-                if start > 1 else "1")
-        filters.append(f"[{i}:v]fps={FPS},format=yuv420p,"
-                       f"zoompan=z='{zoom}':x='(iw-iw/zoom)/2':"
-                       f"y='(ih-ih/zoom)/2':d=1:"
-                       f"s={render_size[0]}x{render_size[1]}:fps={FPS},"
-                       f"setsar=1,format=yuv420p[v{i}]")
+        camera = subpixel_zoom_filter(start, last_frame)
+        filters.append(f"[{i}:v]fps={FPS},"
+                       f"scale={render_size[0]}:{render_size[1]}:flags=lanczos,"
+                       f"{camera}setsar=1,format=yuv420p[v{i}]")
     prior = "v0"
     for i in range(1, FRAME_COUNT):
         target = f"x{i}"
@@ -382,6 +399,7 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
             "duration_seconds": DURATION, "frame_seconds": FRAME_SECONDS,
             "effects": {"opening": {"name": "fade_in", "seconds": OPENING_FADE},
                         "middle": "steady_out_centered_zoom",
+                        "camera_implementation": "centered_subpixel_cubic_perspective_v3",
                         "variants": ZOOM_VARIANTS,
                         "closing": {"name": "fade_out", "seconds": CLOSING_FADE},
                         "transitions": "centre_expanding_circular_bloom",
