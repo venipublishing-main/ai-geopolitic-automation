@@ -73,12 +73,14 @@ def test_reel_render_command_preserves_frames_and_platform_specs(tmp_path):
     assert "format=yuva420p,split=5" in command
     assert "trim=duration=0.500" in command
     assert "-b:a 128k" in command
-    assert command.count("zoompan") == 6
-    assert command.count("1+0.080000*pow(") == 4
+    assert "zoompan" not in command
+    assert command.count("perspective=") == 4
+    assert command.count("sense=destination:interpolation=cubic:eval=frame") == 4
+    assert command.count("0.080000*pow(") == 32
     stronger = " ".join(reel.ffmpeg_command(frames, tmp_path / "soundtrack.wav",
                                              tmp_path / "flare_frames" / "flare_%02d.png",
                                              tmp_path / "stronger.mp4", variant="C_Stronger"))
-    assert stronger.count("1+0.120000*pow(") == 4
+    assert stronger.count("0.120000*pow(") == 32
     assert "-c:v libx264" in command and "-c:a aac" in command
     assert "-pix_fmt yuv420p" in command
     assert "-t 18.000" in command and "-r 30" in command
@@ -137,6 +139,36 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     # First visible frame fades up; the final frame fades to black.
     assert sum(frame_at(0.0).getpixel((108, 192))) < sum(frame_at(0.9).getpixel((108, 192)))
     assert sum(frame_at(17.9).getpixel((108, 192))) < sum(frame_at(17.1).getpixel((108, 192)))
+
+
+def test_subpixel_zoom_keeps_fine_ink_lines_stable(tmp_path):
+    """Regress the visible one-pixel shudder from zoompan's integer crop origin."""
+    if not shutil.which("ffmpeg"):
+        pytest.skip("ffmpeg is required for subpixel motion QC")
+    width, height, count = 216, 384, 99
+    frame = tmp_path / "fine-line.png"
+    scene = Image.new("RGB", (width, height), "black")
+    ImageDraw.Draw(scene).line((58, 0, 58, height), fill="white", width=1)
+    scene.save(frame)
+    camera = reel.subpixel_zoom_filter(1.12, count - 1)
+    result = subprocess.run([
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin",
+        "-loop", "1", "-framerate", "30", "-t", "3.3", "-i", str(frame),
+        "-vf", f"fps=30,scale={width}:{height},{camera}format=yuv420p",
+        "-frames:v", str(count), "-pix_fmt", "gray", "-f", "rawvideo", "-",
+    ], capture_output=True, timeout=60)
+    assert result.returncode == 0, result.stderr[-2000:]
+    frame_bytes = width * height
+    assert len(result.stdout) == count * frame_bytes
+    centres = []
+    for i in range(count):
+        # Luma black is ~16. Ignore it when measuring the one-pixel ink edge.
+        row_start = i * frame_bytes + height // 2 * width
+        row = result.stdout[row_start + 40:row_start + 75]
+        weights = [max(0, v - 16) for v in row]
+        centres.append(40 + sum((j * v for j, v in enumerate(weights))) / sum(weights))
+    assert centres[-1] - centres[0] > 5.0
+    assert max(abs(b - a) for a, b in zip(centres, centres[1:])) < 0.4
 
 
 def fake_plan():
@@ -231,6 +263,7 @@ def test_stage_never_overwrites_and_has_no_publish_authority(monkeypatch, tmp_pa
     assert receipt["effects"]["transition_count"] == 5
     assert set(receipt["videos"]) == {"B_Noticeable", "C_Stronger"}
     assert receipt["effects"]["middle"] == "steady_out_centered_zoom"
+    assert receipt["effects"]["camera_implementation"] == "centered_subpixel_cubic_perspective_v3"
     assert receipt["effects"]["variants"] == reel.ZOOM_VARIANTS
     assert (output / "flare_overlay.png").is_file()
     assert len(list(output.glob("ReelFrame*"))) == 6
