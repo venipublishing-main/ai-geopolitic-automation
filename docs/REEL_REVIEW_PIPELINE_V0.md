@@ -1,4 +1,4 @@
-# AI Geopolitic — six-frame Reel review builder (effects v2 pilot)
+# AI Geopolitic — six-frame Reel review builder (effects v3 stabilisation pilot)
 
 **Status: build-only pilot. NOT an Instagram publisher.** This workflow cannot
 post anything: it has `contents: read` and no Instagram or Threads secret.
@@ -28,6 +28,12 @@ post anything: it has `contents: read` and no Instagram or Threads secret.
   - `Reel_B_Noticeable.mp4`: middle frames zoom smoothly from **108% to 100%**.
   - `Reel_C_Stronger.mp4`: middle frames zoom smoothly from **112% to 100%**.
   Zoom uses a continuous eased trajectory, not a discrete start/end jump.
+  **Ian preferred the 12% version**, but reported vibration in the v2 previews.
+  Effects v3 therefore replaces FFmpeg's integer-quantised `zoompan` crop with
+  a **frame-evaluated, cubic-interpolated subpixel camera transform**. Its four
+  corners change symmetrically around the centre: no shaking pan or rotation.
+  The 12% strength, six-frame sequencing, fades and circular flare are unchanged.
+  A full-speed, single-pixel ink-line motion regression is required for QC.
 - Fade In / Fade Out / Flare / Steady Out are **Edits-inspired approximations**,
   not copies or proven pixel-identical versions of proprietary Edits presets.
   Source PNG text is baked into the images; it therefore also scales. Verify
@@ -51,10 +57,13 @@ post anything: it has `contents: read` and no Instagram or Threads secret.
 3. If the exact archive and six-frame preflight pass, run `mode=build`. Download
    the review artifact from the completed GitHub Actions job. It includes
    `Reel_B_Noticeable.mp4` and `Reel_C_Stronger.mp4`.
-4. For the effects v2 pilot use **Ep149 / 2026-11-17**. Inspect each version's
+4. For the effects v3 stabilisation pilot use **Ep149 / 2026-11-17**. Inspect
+   the **12% version** first, especially ink lines and lettering while it zooms;
+   they must remain stable without the prior vibration. Also inspect
    visual composition, readability on a phone, portrait fidelity,
    the approximation of Edits **Fade In / Steady Out / Flare / Fade Out**,
-   placeholder musical tone, and caption text. Select a preferred zoom strength.
+   placeholder musical tone, and caption text. Confirm the motion fix before
+   finalising the already-preferred 12% setting.
    Captions are retained exactly; verify content before any future real release.
 5. A future, separate Instagram Reel release path must require episode-scoped
    human approval, immutable HTTPS video URLs, original-audio sign-off, verified
