@@ -1,0 +1,187 @@
+name: AI Geopolitic Instagram — Reel video (human gate)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-geopolitic-instagram-reel.yml'
+      - 'src/video_*.py'
+      - 'src/reel_media.py'
+      - 'tests/test_video_*.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Plan only checks the canonical archive. Publish is a real Instagram Reel (with Reel caption).'
+        type: choice
+        required: true
+        options: [plan, publish]
+        default: plan
+      episode:
+        description: 'Exact production ID, e.g. Ep151'
+        type: string
+        required: true
+        default: Ep151
+      date_sast:
+        description: 'Exact production date YYYY-MM-DD'
+        type: string
+        required: true
+        default: '2026-11-19'
+      publish_confirmation:
+        description: 'Publish only: PUBLISH_INSTAGRAM_REEL_EPNNN_YYYYMMDD'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-geopolitic-instagram-reel-serial-${{ inputs.episode }}-${{ inputs.date_sast }}
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    name: Offline stage, account and at-most-once regression suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q tests/test_video_media.py tests/test_video_release.py tests/test_reel_media.py
+
+  release:
+    name: Read-only archive plan / optional one-time Instagram Reel (with Reel caption)
+    needs: tests
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SURFACE: instagram-reel
+      EPISODE: ${{ inputs.episode }}
+      DATE_SAST: ${{ inputs.date_sast }}
+      MODE: ${{ inputs.mode }}
+      APPROVAL: ${{ inputs.publish_confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - name: Require exact, separate surface and episode approval BEFORE staging
+        shell: bash
+        env:
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+          SURFACE_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          if [ "$MODE" = publish ]; then
+            test -n "$SURFACE_ACCESS_TOKEN"
+            python - <<'PY'
+          import os
+          from src.video_release import approval_for
+          required = approval_for(os.environ["SURFACE"], os.environ["EPISODE"],
+                                  os.environ["DATE_SAST"])
+          if os.environ["APPROVAL"] != required:
+              raise SystemExit("BLOCKED: exact per-surface, per-episode approval required")
+          print("Approval matched. No Meta POST made.")
+          PY
+          elif [ "$MODE" != plan ]; then
+            exit 1
+          fi
+      - name: Install authenticated Drive reader and deterministic video verifier
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone ffmpeg
+      - name: Configure existing canonical Google Drive archive remote
+        shell: bash
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Verify exact production PASS, six source frames, Reel caption and VS001 B
+        run: |
+          set -euo pipefail
+          python -m src.video_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
+      - name: Stage once per episode, or reverify the same immutable public video
+        if: inputs.mode == 'publish'
+        id: staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "publisher_state/${SURFACE}-${EPISODE,,}-${DATE_SAST//-/}.json"
+          folder="publisher_media/video-${EPISODE,,}-${DATE_SAST//-/}"
+          branch="video-media-${EPISODE,,}-${DATE_SAST//-/}"
+          # All three platforms share ONE exact video Git commit per episode.
+          set +e
+          existing="$(git ls-remote --exit-code origin "refs/heads/$branch")"
+          lookup="$?"
+          set -e
+          if [ "$lookup" -eq 0 ]; then
+            sha="${existing%%$'\t'*}"
+            [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1
+            git fetch --no-tags origin "refs/heads/$branch"
+            mkdir -p "$folder"
+            git show "$sha:$folder/stage.json" > "$folder/stage.json"
+            git show "$sha:$folder/caption.txt" > "$folder/caption.txt"
+            git show "$sha:$folder/reel.mp4" > "$folder/reel.mp4"
+            python -m src.video_media verify --episode "$EPISODE" --date-sast "$DATE_SAST"
+          elif [ "$lookup" -eq 2 ]; then
+            python -m src.video_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git switch -c "$branch"
+            git add -- "$folder"
+            git diff --cached --quiet && { echo 'BLOCKED: video stage absent'; exit 1; }
+            git commit -m "Stage one exact, approved $EPISODE MP4 for all three surfaces"
+            git push origin "HEAD:refs/heads/$branch"
+            sha="$(git rev-parse HEAD)"
+            git switch main
+            mkdir -p "$folder"
+            git show "$sha:$folder/stage.json" > "$folder/stage.json"
+            git show "$sha:$folder/caption.txt" > "$folder/caption.txt"
+            git show "$sha:$folder/reel.mp4" > "$folder/reel.mp4"
+          else
+            echo 'BLOCKED: cannot determine existing video staging branch'
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Claim BEFORE Meta POST, publish exact surface, verify and record receipt
+        if: inputs.mode == 'publish'
+        shell: bash
+        env:
+          AI_GEO_IG_ACCESS_TOKEN: ${{ secrets.AI_GEO_IG_ACCESS_TOKEN }}
+          MEDIA_COMMIT: ${{ steps.staging.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python -m src.video_release --surface "$SURFACE" \
+            --episode "$EPISODE" --date-sast "$DATE_SAST" \
+            --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"
+      - name: Strict no-repeat warning
+        if: always() && inputs.mode == 'publish'
+        run: |
+          echo 'CLAIMED_NO_AUTOMATIC_RETRY blocks a second release, even after a network failure.'
+          echo 'Unverified Meta outcomes require manual reconciliation, never automatic retry.'
+          echo 'This publisher touches only its named surface. It does not invoke Sisyphus.'
