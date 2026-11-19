@@ -137,10 +137,9 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     flare = tmp_path / "flare.png"
     metadata = reel.make_flare_overlay(flare)
     assert metadata["frame_count"] == 15
-    wav = tmp_path / "audio.wav"
-    reel_audio.write_original_bed(wav, duration=18.0, sample_rate=8_000)
     output = tmp_path / "review.mp4"
-    run = subprocess.run(reel.ffmpeg_command(frames, wav,
+    # A real FFmpeg pass must also accept and transcode the exact pinned MP3.
+    run = subprocess.run(reel.ffmpeg_command(frames, reel.SONORA_MASTER_PATH,
                                              tmp_path / metadata["animation_pattern"], output,
                                              variant="B_Noticeable",
                                              render_size=(216, 384)),
@@ -150,6 +149,12 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
                             "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
                             str(output)], check=True, capture_output=True, text=True)
     assert abs(float(probe.stdout.strip()) - 18.0) < 0.35
+    streams = subprocess.run([
+        "ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
+        "stream=codec_name,sample_rate,channels", "-of", "json", str(output),
+    ], check=True, capture_output=True, text=True)
+    assert json.loads(streams.stdout)["streams"][0] == {
+        "codec_name": "aac", "sample_rate": "48000", "channels": 2}
 
     def frame_at(seconds):
         sample = subprocess.run([
