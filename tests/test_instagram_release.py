@@ -78,6 +78,31 @@ def test_untrusted_public_urls_are_blocked():
             ig.validate_public_urls([first, *good[1:]])
 
 
+def test_instagram_carousel_sets_ai_label_only_on_parent(monkeypatch):
+    class RecordingTransport:
+        def __init__(self):
+            self.posts = []
+
+        def request(self, method, url, payload):
+            if method == "GET":
+                return {"status_code": "FINISHED"}
+            self.posts.append((url, payload))
+            return {"id": str(17890000000000000 + len(self.posts))}
+
+    transport = RecordingTransport()
+    graph = ig.InstagramGraph(transport)
+    urls = [f"https://raw.githubusercontent.com/org/repo/{COMMIT}/Slide{i:02d}of10.jpg"
+            for i in range(1, 11)]
+    graph.publish("17841400001234567", urls, CAPTION)
+    children = [entry[1] for entry in transport.posts[:10]]
+    parent = transport.posts[10][1]
+    assert all(child["is_carousel_item"] == "true" for child in children)
+    assert all("is_ai_generated" not in child for child in children)
+    assert parent["media_type"] == "CAROUSEL"
+    assert parent["is_ai_generated"] == "true"
+    assert transport.posts[11][1] == {"creation_id": str(17890000000000011)}
+
+
 def test_release_requires_literal_approval_before_touching_stage(monkeypatch):
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setattr(release, "check_stage", lambda *args: pytest.fail("stage access is forbidden"))

@@ -61,8 +61,11 @@ only `@ai_geopolitic`, and never passes the Reel caption to Story creation.
    Meta write may happen. An existing claim blocks a second attempt.
 3. Instagram Reel verifies the returned media as `REELS` and checks its
    permalink and AI-information flag. Instagram Story verifies `STORY` with
-   its media ID and AI flag; Story permalink is optional. Threads verifies
-   `VIDEO`, the account, caption equivalence, and its permalink.
+   its media ID and AI flag; Story permalink is optional. Threads creates the
+   video container with `is_made_with_ai=true` (the official Threads AI info
+   label switch), and verifies `VIDEO`, the account, caption equivalence, and
+   its permalink. Its receipt records that AI disclosure was submitted to Meta,
+   not a separately read-back display flag.
 4. After an ambiguous outcome, **do not rerun `publish`**. Inspect the Meta
    account and the immutable claim. Reconcile manually using evidence, never
    reset/delete the claim to force another upload.
