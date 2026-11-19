@@ -6,6 +6,7 @@ on:
       - '.github/workflows/ai-geopolitic-reel-review.yml'
       - 'src/reel_*.py'
       - 'src/threads_media.py'
+      - 'assets/sonora/**'
       - 'tests/test_reel_media.py'
   push:
     branches:
@@ -14,11 +15,12 @@ on:
     paths:
       - '.github/workflows/ai-geopolitic-reel-review.yml'
       - 'src/reel_*.py'
+      - 'assets/sonora/**'
       - 'tests/test_reel_media.py'
   workflow_dispatch:
     inputs:
       mode:
-        description: 'plan: read-only archive QC; build: two verified 18s Edits-inspired MP4 previews, no publication'
+        description: 'plan: read-only archive and approved VS001 audio QC; build: two verified 18s MP4 previews, no publication'
         required: true
         default: plan
         type: choice
@@ -43,7 +45,7 @@ concurrency:
 
 jobs:
   tests:
-    name: No-provider rendering and original-audio QC tests
+    name: No-provider rendering and locked VS001 soundtrack QC tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -107,7 +109,7 @@ jobs:
           chmod 600 "$HOME/.config/rclone/rclone.conf"
       - name: Verify exact SAST archive, production QC and six Reel frames
         run: python -m src.reel_media plan --episode "$EPISODE" --date-sast "$DATE_SAST"
-      - name: Build two 18-second zoom-and-flare Reel variants with filler audio for review ONLY
+      - name: Build two 18-second Reel variants with immutable approved VS001 audio for review ONLY
         if: env.MODE == 'build'
         run: python -m src.reel_media stage --episode "$EPISODE" --date-sast "$DATE_SAST"
       - name: Upload both private MP4 variants, flare overlay, provenance and exact source frames

@@ -2,7 +2,8 @@
 
 No Meta POST, no archive mutation, no publication signal and no Reel approval.
 Two Edits-inspired variants animate *rendered video* without changing the six
-verified source PNGs. These are not proprietary Edits effects or audio assets.
+verified source PNGs. All variants use the same Ian-approved VS001 recording.
+These are not proprietary Edits effects or audio assets.
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, UnidentifiedImageError
 
-from src.reel_audio import write_original_bed, write_provenance
+from src.reel_audio import write_provenance
 from src.threads_media import (
     DRIVE_ID_RE, SHA_RE, ThreadsBlocked, _read_json, has_five_distinct_hashtags,
     read_approved_archive, verified_qc_records,
@@ -45,6 +46,11 @@ MAX_PNG = 40 * 1024 * 1024
 MAX_REEL = 200 * 1024 * 1024
 REEL_SCHEMA = "ai-geopolitic.reel.archive-plan.v1"
 STAGE_SCHEMA = "ai-geopolitic.reel.review-stage.v1"
+SONORA_MASTER_ID = "VS001_AIGeopolitic_C_v04b_HookFocus_18s_MASTER"
+SONORA_MASTER_PATH = (Path(__file__).resolve().parent.parent / "assets" / "sonora" /
+                      f"{SONORA_MASTER_ID}.mp3")
+SONORA_MASTER_SHA256 = "3c0824d3af1cba53a60edd1757e95d7ea8b400af5d2e8f13d7dd0da4d7e8c3b3"
+SONORA_MASTER_BYTES = 577_580
 
 
 class ReelBlocked(ThreadsBlocked):
@@ -53,6 +59,38 @@ class ReelBlocked(ThreadsBlocked):
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def verified_sonora_master(destination: Path | None = None) -> dict:
+    """Pin exact approved Version B bytes; fail closed if missing or replaced.
+
+    Do not generate, download, time-stretch, remix, or silently replace the
+    music. Every Reel must share one recording, including future episodes.
+    """
+    try:
+        raw = SONORA_MASTER_PATH.read_bytes()
+    except OSError:
+        raise ReelBlocked("Approved VS001 soundtrack is missing; Reel build blocked.") from None
+    digest = sha(raw)
+    if len(raw) != SONORA_MASTER_BYTES or digest != SONORA_MASTER_SHA256:
+        raise ReelBlocked("Approved VS001 soundtrack failed exact-byte SHA-256 validation.")
+    if destination is not None:
+        destination.write_bytes(raw)
+    return {
+        "schema": "ai-geopolitic.sonora-approved-master.v1",
+        "master_id": SONORA_MASTER_ID,
+        "approval": "IAN_APPROVED_2026-11-19_VERSION_B",
+        "production_status": "LOCKED_APPROVED_MASTER",
+        "source": "Veni Sonora VS001, original Candidate C v04b Hook Focus (Version B)",
+        "drive_file_id": "1QXyWCItlnBHw6-UfVCYNaS1cwIuLbIzd",
+        "sample_rate_hz": 48_000,
+        "channels": 2,
+        "duration_seconds": DURATION,
+        "format": "mp3",
+        "sha256": digest,
+        "bytes": len(raw),
+        "substitution_allowed": False,
+    }
 
 
 def output_folder(episode: str, day: str) -> Path:
@@ -143,7 +181,8 @@ def read_reel_archive(episode: str, day_text: str) -> tuple[dict, str]:
         "frames": frames, "frame_count": FRAME_COUNT,
         "carousel_handoff_passed": True,
         "approved_for_reel_publication": False,
-        "audio_status": "ORIGINAL_MOTIF_PILOT_PENDING_IAN_APPROVAL",
+        "audio_status": "VS001_VERSION_B_APPROVED_MASTER_SHA_VERIFIED",
+        "approved_audio_sha256": verified_sonora_master()["sha256"],
     }
     return plan, caption
 
@@ -256,7 +295,7 @@ def subpixel_zoom_filter(start: float, last_frame: int) -> str:
     )
 
 
-def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
+def ffmpeg_command(frames: list[Path], soundtrack: Path, flare: Path, output: Path,
                    *, variant: str = "B_Noticeable", ffmpeg_bin: str = "ffmpeg",
                    render_size: tuple[int, int] = (WIDTH, HEIGHT)) -> list[str]:
     if len(frames) != FRAME_COUNT or len(set(frames)) != FRAME_COUNT:
@@ -276,7 +315,7 @@ def ffmpeg_command(frames: list[Path], wav: Path, flare: Path, output: Path,
         args += ["-loop", "1", "-framerate", str(FPS),
                  "-t", f"{clip_duration:.3f}", "-i", str(frame)]
     args += ["-framerate", str(FPS), "-start_number", "0", "-i", str(flare)]
-    args += ["-i", str(wav)]
+    args += ["-i", str(soundtrack)]
     filters = []
     for i in range(FRAME_COUNT):
         # zoompan snaps its crop origin to whole/chroma-grid pixels: slow moves
@@ -362,6 +401,8 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
         raise ReelBlocked("Reel caption changed between QC and staging.")
     if not isinstance(plan.get("frames"), list) or len(plan["frames"]) != FRAME_COUNT:
         raise ReelBlocked("Reel plan must contain exactly six frames.")
+    # Verify before network archive reads or any rendering. No fallback audio.
+    verified_sonora_master()
     output.parent.mkdir(parents=True, exist_ok=True)
     temp = Path(tempfile.mkdtemp(prefix="reel-review-", dir=output.parent))
     try:
@@ -375,14 +416,15 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
             target.write_bytes(raw)  # exact accepted PNG bytes; no regeneration
             frames.append(target)
         flare = make_flare_overlay(temp / "flare_overlay.png")
-        audio = write_original_bed(temp / "soundtrack.wav", duration=DURATION)
+        soundtrack = temp / f"{SONORA_MASTER_ID}.mp3"
+        audio = verified_sonora_master(soundtrack)
         write_provenance(temp / "audio_provenance.json", audio)
         videos = {}
         for variant in ZOOM_VARIANTS:
             video_file = temp / f"Reel_{variant}.mp4"
             if run_ffmpeg:
                 try:
-                    subprocess.run(ffmpeg_command(frames, temp / "soundtrack.wav",
+                    subprocess.run(ffmpeg_command(frames, soundtrack,
                                                   temp / flare["animation_pattern"],
                                                   video_file, variant=variant),
                                    check=True, capture_output=True, timeout=1200)
@@ -401,6 +443,7 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
                         "middle": "steady_out_centered_zoom",
                         "camera_implementation": "centered_subpixel_cubic_perspective_v3",
                         "variants": ZOOM_VARIANTS,
+                        "preferred_variant": "C_Stronger",
                         "closing": {"name": "fade_out", "seconds": CLOSING_FADE},
                         "transitions": "centre_expanding_circular_bloom",
                         "transition_seconds": TRANSITION,
@@ -408,7 +451,7 @@ def stage_reel(plan: dict, caption: str, output: Path, *, run_ffmpeg=True) -> di
                         "transition_count": FRAME_COUNT - 1, "flare": flare,
                         "edits_preset_exact": False},
             "audio": audio, "videos": videos,
-            "audio_approved_for_publication": False,
+            "audio_approved_for_publication": True,
             "approved_for_reel_publication": False,
             "status": "REVIEW_MP4_READY_NOT_PUBLISHED",
         }

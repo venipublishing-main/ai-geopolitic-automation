@@ -22,6 +22,8 @@ CAPTION = (
 
 
 def test_original_audio_is_deterministic_and_stereo(tmp_path):
+    # Deprecated five-note generator remains a regression fixture; production
+    # stage_reel must never call it or fall back to it.
     a, b = tmp_path / "a.wav", tmp_path / "b.wav"
     first = reel_audio.write_original_bed(a, duration=0.4, sample_rate=8_000)
     second = reel_audio.write_original_bed(b, duration=0.4, sample_rate=8_000)
@@ -32,6 +34,31 @@ def test_original_audio_is_deterministic_and_stereo(tmp_path):
         assert wav.getnchannels() == 2
         assert wav.getframerate() == 8_000
         assert wav.getnframes() == 3_200
+
+
+def test_accepted_version_b_is_pinned_exactly_and_copied_without_remixing(tmp_path):
+    copy = tmp_path / "VS001.mp3"
+    approval = reel.verified_sonora_master(copy)
+    assert approval["approval"] == "IAN_APPROVED_2026-11-19_VERSION_B"
+    assert approval["production_status"] == "LOCKED_APPROVED_MASTER"
+    assert approval["sha256"] == reel.SONORA_MASTER_SHA256
+    assert approval["bytes"] == reel.SONORA_MASTER_BYTES == copy.stat().st_size
+    assert copy.read_bytes() == reel.SONORA_MASTER_PATH.read_bytes()
+    assert approval["substitution_allowed"] is False
+
+
+def test_approved_audio_missing_or_mutated_blocks_reels(monkeypatch, tmp_path):
+    monkeypatch.setattr(reel, "SONORA_MASTER_PATH", tmp_path / "missing.mp3")
+    with pytest.raises(reel.ReelBlocked, match="missing"):
+        reel.verified_sonora_master()
+    fake = tmp_path / "tampered.mp3"
+    fake.write_bytes(b"not the accepted Version B master")
+    monkeypatch.setattr(reel, "SONORA_MASTER_PATH", fake)
+    with pytest.raises(reel.ReelBlocked, match="SHA-256"):
+        reel.verified_sonora_master()
+    with pytest.raises(reel.ReelBlocked, match="SHA-256"):
+        reel.stage_reel(fake_plan(), CAPTION, tmp_path / "reel", run_ffmpeg=False)
+    assert not (tmp_path / "reel").exists()
 
 
 def test_original_flare_is_deterministic_and_transparent(tmp_path):
@@ -110,10 +137,9 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
     flare = tmp_path / "flare.png"
     metadata = reel.make_flare_overlay(flare)
     assert metadata["frame_count"] == 15
-    wav = tmp_path / "audio.wav"
-    reel_audio.write_original_bed(wav, duration=18.0, sample_rate=8_000)
     output = tmp_path / "review.mp4"
-    run = subprocess.run(reel.ffmpeg_command(frames, wav,
+    # A real FFmpeg pass must also accept and transcode the exact pinned MP3.
+    run = subprocess.run(reel.ffmpeg_command(frames, reel.SONORA_MASTER_PATH,
                                              tmp_path / metadata["animation_pattern"], output,
                                              variant="B_Noticeable",
                                              render_size=(216, 384)),
@@ -123,6 +149,12 @@ def test_ffmpeg_executes_18_second_flare_edit_on_small_synthetic_inputs(tmp_path
                             "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
                             str(output)], check=True, capture_output=True, text=True)
     assert abs(float(probe.stdout.strip()) - 18.0) < 0.35
+    streams = subprocess.run([
+        "ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
+        "stream=codec_name,sample_rate,channels", "-of", "json", str(output),
+    ], check=True, capture_output=True, text=True)
+    assert json.loads(streams.stdout)["streams"][0] == {
+        "codec_name": "aac", "sample_rate": "48000", "channels": 2}
 
     def frame_at(seconds):
         sample = subprocess.run([
@@ -248,24 +280,24 @@ def test_stage_never_overwrites_and_has_no_publish_authority(monkeypatch, tmp_pa
     plan = fake_plan()
     output = tmp_path / reel.output_folder("Ep145", "2026-11-13")
     monkeypatch.setattr(reel, "read_frame", lambda *args: b"accepted-png-bytes")
-    def audio(target, *, duration):
-        target.write_bytes(b"mock-original-audio")
-        return {"wav_sha256": reel.sha(b"mock-original-audio"), "external_samples": False,
-                "duration_seconds": duration}
-    monkeypatch.setattr(reel, "write_original_bed", audio)
     monkeypatch.setattr(reel, "verify_mp4", lambda *args: {
         "sha256": "b" * 64, "bytes": 100_000, "duration_seconds": 18})
     receipt = reel.stage_reel(plan, CAPTION, output, run_ffmpeg=False)
     assert receipt["status"] == "REVIEW_MP4_READY_NOT_PUBLISHED"
     assert receipt["approved_for_reel_publication"] is False
-    assert receipt["audio_approved_for_publication"] is False
+    assert receipt["audio_approved_for_publication"] is True
+    assert receipt["audio"]["sha256"] == reel.SONORA_MASTER_SHA256
+    assert receipt["audio"]["approval"] == "IAN_APPROVED_2026-11-19_VERSION_B"
     assert receipt["duration_seconds"] == 18
     assert receipt["effects"]["transition_count"] == 5
     assert set(receipt["videos"]) == {"B_Noticeable", "C_Stronger"}
     assert receipt["effects"]["middle"] == "steady_out_centered_zoom"
     assert receipt["effects"]["camera_implementation"] == "centered_subpixel_cubic_perspective_v3"
     assert receipt["effects"]["variants"] == reel.ZOOM_VARIANTS
+    assert receipt["effects"]["preferred_variant"] == "C_Stronger"
     assert (output / "flare_overlay.png").is_file()
+    assert reel.sha((output / f"{reel.SONORA_MASTER_ID}.mp3").read_bytes()) == reel.SONORA_MASTER_SHA256
+    assert json.loads((output / "audio_provenance.json").read_text()) == receipt["audio"]
     assert len(list(output.glob("ReelFrame*"))) == 6
     assert json.loads((output / "stage.json").read_text())["frame_count"] == 6
     with pytest.raises(reel.ReelBlocked, match="already exists"):
