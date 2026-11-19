@@ -187,7 +187,9 @@ def test_threads_video_is_single_video_with_text_not_carousel(monkeypatch):
     posts = [entry[2] for entry in calls if len(entry) == 3 and entry[0] == "POST"]
     assert len(posts) == 2
     assert posts[0]["media_type"] == "VIDEO" and posts[0]["text"] == CAPTION
+    assert posts[0]["is_made_with_ai"] == "true"
     assert posts[1] == {"creation_id": "123456789"}
+    assert out["ai_disclosure_submitted_to_meta"] is True
 
 
 def prepare_release(monkeypatch, tmp_path, surface):

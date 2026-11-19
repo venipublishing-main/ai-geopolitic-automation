@@ -271,6 +271,7 @@ def verify_threads_video(media_id: str, caption: str, post: dict) -> dict | None
 def publish_threads_video(graph: ThreadsGraph, caption: str, url: str) -> dict:
     created = graph.request("POST", "/me/threads", {
         "media_type": "VIDEO", "video_url": url, "text": caption,
+        "is_made_with_ai": "true",
         "alt_text": "AI Geopolitic, six-frame editorial Reel",
     })
     container = str(created.get("id", ""))
@@ -285,6 +286,9 @@ def publish_threads_video(graph: ThreadsGraph, caption: str, url: str) -> dict:
         })
         confirmed = verify_threads_video(media_id, caption, post)
         if confirmed is not None:
+            # Threads AI disclosure was sent on creation; the separate Threads
+            # post verification checks content but not a readable AI flag.
+            confirmed["ai_disclosure_submitted_to_meta"] = True
             return confirmed
         if attempt < 7:
             time.sleep(4)

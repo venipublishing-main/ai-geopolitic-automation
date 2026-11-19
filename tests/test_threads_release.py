@@ -127,12 +127,15 @@ def test_threads_graph_posts_image_children_and_carousel_only(monkeypatch):
     output = graph.publish_carousel(CAPTION, [f"https://sample.test/{i}.jpg" for i in range(10)])
     assert len(posts) == 12
     assert all(x[1]["media_type"] == "IMAGE" and x[1]["is_carousel_item"] == "true" for x in posts[:10])
+    assert all("is_made_with_ai" not in x[1] for x in posts[:10])
     assert posts[10][1]["media_type"] == "CAROUSEL"
+    assert posts[10][1]["is_made_with_ai"] == "true"
     assert len(posts[10][1]["children"].split(",")) == 10
     assert posts[10][1]["text"] == CAPTION
     assert posts[11][0] == "/me/threads_publish"
     assert output["threads_permalink"].startswith("https://www.threads.com/")
     assert output["carousel_items_verified"] == 10
+    assert output["ai_disclosure_submitted_to_meta"] is True
 
 
 def test_threads_publish_accepts_only_the_known_meta_topic_normalization(monkeypatch):

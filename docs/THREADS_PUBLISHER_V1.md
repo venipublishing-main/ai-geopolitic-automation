@@ -24,7 +24,9 @@ video, Threads reply or music route, and does not run on a daily schedule.
    recent posts for duplicate canonical *or Meta-normalized* caption, and **commits a one-time claim on `main`**
    in `publisher_state/threads-epNNN-YYYYMMDD.json`.
 6. Only then create ten `IMAGE` carousel-item containers, one `CAROUSEL` parent
-   with the untouched canonical caption, and call `/me/threads_publish`. Verify
+   with the untouched canonical caption **and `is_made_with_ai=true`**, and call
+   `/me/threads_publish`. Do **not** put this flag on carousel children; Meta
+   rejects that combination. Verify
    the published Threads post ID, username, permalink, `CAROUSEL_ALBUM` type,
    ten distinct child IDs and caption; update the same receipt. Meta removed
    **one `#` from an approved hashtag** in the real Episode 145 result; a
@@ -81,10 +83,17 @@ video, Threads reply or music route, and does not run on a daily schedule.
 - Meta Threads API `POST /me/threads` with `media_type=IMAGE`,
   `image_url`, `is_carousel_item=true`; ten separate items.
 - Meta Threads API `POST /me/threads` with `media_type=CAROUSEL`,
-  `children=<ten ordered container IDs>`, and the approved `text`.
+  `children=<ten ordered container IDs>`, the approved `text`, and
+  `is_made_with_ai=true` to display the Threads AI info label.
 - Meta Threads API `POST /me/threads_publish` with `creation_id`.
 - Status polling and verification use the read-only Threads Graph API.
 - Meta official API collection: <https://www.postman.com/meta/threads/documentation/dht3nzz/threads-api>.
+- Meta official Threads AI label instructions:
+  <https://developers.facebook.com/documentation/threads/posts#label-ai-generated-content>.
+
+The publication receipt records `ai_disclosure_submitted_to_meta=true`, which
+means the supported flag was sent on the accepted creation request; unlike the
+Instagram receipt, this is **not** an independent post-publication label readback.
 
 No audio sourcing, no Instagram edits, no Story/Reel publication, no manual
 browser interaction, and no cross-posting to a different account is authorized

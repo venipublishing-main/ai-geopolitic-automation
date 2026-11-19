@@ -228,6 +228,8 @@ class ThreadsGraph:
             children.append(child)
         parent = self.request("POST", "/me/threads", {
             "media_type": "CAROUSEL", "children": ",".join(children), "text": caption,
+            # Threads AI disclosure belongs on the parent, NEVER on carousel items.
+            "is_made_with_ai": "true",
         })
         container = str(parent.get("id", ""))
         self.wait_ready(container)
@@ -240,6 +242,9 @@ class ThreadsGraph:
                 "fields": "id,username,text,permalink,media_type,children"})
             verified = verify_published_post(media_id, caption, post)
             if verified is not None:
+                # Threads has no equivalent readback check in this publisher;
+                # record submission, not an independently verified visible label.
+                verified["ai_disclosure_submitted_to_meta"] = True
                 return verified
             if attempt < 7:
                 time.sleep(4)
