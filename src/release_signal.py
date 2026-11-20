@@ -1,4 +1,4 @@
-"""GitHub Actions-only, explicit, one-shot bridge for carousel release requests.
+"""GitHub Actions-only, explicit, one-shot bridge for carousel and video release requests.
 
 The connected GitHub app can create a reviewed launch file but does not expose
 workflow_dispatch. A main-branch push of exactly one new request invokes this
@@ -22,10 +22,13 @@ SCHEMA = "ai-geopolitic.publisher.launch-signal.v1"
 WORKFLOWS = {
     "instagram": "ai-geopolitic-instagram-carousel.yml",
     "threads": "ai-geopolitic-threads-carousel.yml",
+    "instagram-reel": "ai-geopolitic-instagram-reel.yml",
+    "threads-video": "ai-geopolitic-threads-video.yml",
+    "instagram-story": "ai-geopolitic-instagram-story.yml",
 }
 SIGNAL_PATTERN = re.compile(
     r"publisher_signals/launch-(ep[1-9][0-9]{0,5})-([0-9]{8})-"
-    r"(instagram|threads)-(plan|publish)-([0-9]{2})\.json\Z"
+    r"(instagram-reel|threads-video|instagram-story|instagram|threads)-(plan|publish)-([0-9]{2})\.json\Z"
 )
 EPISODE_PATTERN = re.compile(r"Ep[1-9][0-9]{0,5}\Z")
 EXPECTED_KEYS = {"schema", "episode", "date_sast", "platform", "mode", "confirmation"}
@@ -66,7 +69,7 @@ def validate_signal(path: str, contents: str, *, today_sast: date | None = None)
         raise ValueError("Future production date cannot be dispatched")
 
     approval = (
-        f"PUBLISH_{platform.upper()}_{signal['episode'].upper()}_{day_token}"
+        f"PUBLISH_{platform.upper().replace('-', '_')}_{signal['episode'].upper()}_{day_token}"
         if mode == "publish"
         else ""
     )
