@@ -240,3 +240,18 @@ def test_handoff_old_instagram_test_target_never_counts_as_threads_consent(monke
     plan, _, _ = tm.read_approved_archive("Ep145", "2026-11-13")
     assert not plan["approved_for_threads_publishing"]
 
+
+
+def test_drive_directory_transport_errors_are_not_masked_as_json(monkeypatch):
+    def blocked(*_args, **_kwargs):
+        raise tm.ThreadsBlocked("Authenticated read-only Google Drive access failed.")
+
+    monkeypatch.setattr(tm, "safe_rclone", blocked)
+    with pytest.raises(tm.ThreadsBlocked, match="Authenticated read-only"):
+        tm._entries(tm.ARCHIVE_PARENT_ID)
+
+
+def test_drive_directory_malformed_json_still_fails_closed(monkeypatch):
+    monkeypatch.setattr(tm, "safe_rclone", lambda *_a, **_k: b"{not valid JSON")
+    with pytest.raises(tm.ThreadsBlocked, match="folder listing is malformed"):
+        tm._entries(tm.ARCHIVE_PARENT_ID)
