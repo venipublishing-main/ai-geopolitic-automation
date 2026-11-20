@@ -2,9 +2,22 @@ name: AI Geopolitic — automatic post-production release
 
 on:
   schedule:
-    # Every 15 minutes UTC, offset from the busy top of each hour.
+    # Approximately every 55 minutes UTC (26 daily checks; one 65-minute
+    # overnight UTC interval). Off the hour to avoid peak GitHub load.
+    # GitHub schedule delivery is best-effort, not a publication guarantee.
     # The script uses Africa/Johannesburg to choose exactly today's archive.
-    - cron: '7,22,37,52 * * * *'
+    - cron: '17 0,11,22 * * *'
+    - cron: '12 1,12,23 * * *'
+    - cron: '7 2,13 * * *'
+    - cron: '2 3,14 * * *'
+    - cron: '57 3,14 * * *'
+    - cron: '52 4,15 * * *'
+    - cron: '47 5,16 * * *'
+    - cron: '42 6,17 * * *'
+    - cron: '37 7,18 * * *'
+    - cron: '32 8,19 * * *'
+    - cron: '27 9,20 * * *'
+    - cron: '22 10,21 * * *'
   workflow_run:
     workflows:
       - 'AI Geopolitic Instagram — ten-image carousel (human gate)'
