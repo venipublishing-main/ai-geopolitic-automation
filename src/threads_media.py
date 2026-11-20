@@ -117,11 +117,15 @@ def safe_rclone(command: str, remote_path: str, folder_id: str, *, limit: int) -
 
 
 def _entries(folder_id: str) -> list[dict]:
+    # Preserve authenticated-rclone transport failures. ThreadsBlocked derives
+    # from ValueError, so keeping safe_rclone inside the JSON try/except would
+    # misleadingly report a transport error as malformed archive contents.
+    raw = safe_rclone(
+        "lsjson", f"{os.environ.get('AI_GEO_RCLONE_REMOTE', 'ai_geopolitic_drive')}:",
+        folder_id, limit=1024 * 1024
+    )
     try:
-        result = json.loads(safe_rclone(
-            "lsjson", f"{os.environ.get('AI_GEO_RCLONE_REMOTE', 'ai_geopolitic_drive')}:",
-            folder_id, limit=1024 * 1024
-        ).decode("utf-8-sig"))
+        result = json.loads(raw.decode("utf-8-sig"))
     except (UnicodeError, ValueError):
         raise ThreadsBlocked("Drive folder listing is malformed.") from None
     if not isinstance(result, list) or len(result) > 1000:
