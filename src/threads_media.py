@@ -108,9 +108,37 @@ def safe_rclone(command: str, remote_path: str, folder_id: str, *, limit: int) -
     try:
         result = subprocess.run(args, check=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, timeout=120)
+    except subprocess.CalledProcessError as exc:
+        # Safe categorical diagnosis ONLY; raw rclone stderr may contain secrets.
+        details = (exc.stderr or b"").lower()
+        if any(marker in details for marker in (
+                b"invalid_grant", b"token has been expired or revoked",
+                b"invalid_rapt", b"refresh token", b"invalid token")):
+            category = "OAuth grant rejected or expired"
+        elif any(marker in details for marker in (
+                b"error 401", b"401 unauthorized", b"unauthenticated")):
+            category = "authentication unauthorized"
+        elif any(marker in details for marker in (
+                b"error 403", b"403 forbidden", b"insufficient permissions")):
+            category = "access denied or API quota"
+        elif any(marker in details for marker in (
+                b"error 429", b"rate limit exceeded", b"rate_limit_exceeded")):
+            category = "provider rate limited"
+        elif any(marker in details for marker in (
+                b"unknown flag", b"unknown command")):
+            category = "rclone command version mismatch"
+        elif any(marker in details for marker in (
+                b"directory not found", b"error 404", b"not found")):
+            category = "archive folder unavailable"
+        elif b"failed to create file system" in details:
+            category = "remote initialization failed"
+        else:
+            category = "unclassified provider or command failure"
+        raise ThreadsBlocked(
+            f"Authenticated read-only Google Drive access failed ({category})."
+        ) from None
     except (OSError, subprocess.SubprocessError):
-        # stderr may contain credentials. Never echo it.
-        raise ThreadsBlocked("Authenticated read-only Google Drive access failed.") from None
+        raise ThreadsBlocked("Authenticated read-only Google Drive access failed (runtime error).") from None
     if not result.stdout or len(result.stdout) > limit:
         raise ThreadsBlocked("Drive response missing or beyond safe size limit.")
     return result.stdout
