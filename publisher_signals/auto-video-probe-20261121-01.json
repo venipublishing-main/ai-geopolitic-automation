@@ -1,0 +1,6 @@
+{
+  "purpose": "READ_ONLY_AUTO_VIDEO_RELEASE_PROBE",
+  "date_sast": "2026-11-21",
+  "publish": false,
+  "context": "Post-merge check of approved video archive and controller; no Meta dispatch"
+}
