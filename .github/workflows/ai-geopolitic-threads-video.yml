@@ -32,6 +32,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: ai-geopolitic-threads-video-serial-${{ inputs.episode }}-${{ inputs.date_sast }}
@@ -179,6 +180,15 @@ jobs:
           python -m src.video_release --surface "$SURFACE" \
             --episode "$EPISODE" --date-sast "$DATE_SAST" \
             --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"
+      - name: Hand off verified video-chain completion to next surface
+        if: inputs.mode == 'publish'
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m src.auto_video_release handoff \
+            --episode "$EPISODE" --date-sast "$DATE_SAST"
       - name: Strict no-repeat warning
         if: always() && inputs.mode == 'publish'
         run: |
