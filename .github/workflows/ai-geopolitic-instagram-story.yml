@@ -180,7 +180,8 @@ jobs:
           python -m src.video_release --surface "$SURFACE" \
             --episode "$EPISODE" --date-sast "$DATE_SAST" \
             --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"
-      - name: Hand off verified video-chain completion to next surface
+      - name: Hand off verified publication to next video surface
+        continue-on-error: true
         if: inputs.mode == 'publish'
         env:
           GH_ACTION_TOKEN: ${{ github.token }}
