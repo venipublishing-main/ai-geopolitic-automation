@@ -177,6 +177,9 @@ jobs:
           MEDIA_COMMIT: ${{ steps.staging.outputs.sha }}
         run: |
           set -euo pipefail
+          # Always configure the claim/receipt author, including shared-video reuse.
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
           python -m src.video_release --surface "$SURFACE" \
             --episode "$EPISODE" --date-sast "$DATE_SAST" \
             --media-commit "$MEDIA_COMMIT" --approval "$APPROVAL"

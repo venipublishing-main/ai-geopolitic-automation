@@ -305,6 +305,11 @@ def _git(*args: str) -> str:
 
 
 def save_state(surface: str, path: Path, record: dict) -> None:
+    # Existing shared-video staging branches do not configure a Git author.
+    # Set identity on every publication claim/receipt, before any Meta POST.
+    # Do not assume the MP4 producer was also this surface's publisher.
+    _git("config", "user.name", "github-actions[bot]")
+    _git("config", "user.email", "github-actions[bot]@users.noreply.github.com")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     _git("add", "--", str(path))
