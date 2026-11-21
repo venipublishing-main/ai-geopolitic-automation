@@ -286,3 +286,28 @@ def test_wrong_workflow_cannot_invoke_another_video_surface(monkeypatch, tmp_pat
                    vr.approval_for("instagram-reel", EP, DAY),
                    token="s" * 25, run_id="123")
     assert events == []
+
+def test_shared_stage_video_receipt_configures_git_identity_before_claim(monkeypatch, tmp_path):
+    """All video surfaces must set commit identity, even when reusing another's MP4."""
+    commands = []
+    monkeypatch.setattr(vr, "_git", lambda *args: commands.append(args) or "")
+    path = tmp_path / "publisher_state" / "threads-video-ep151-20261119.json"
+    vr.save_state("threads-video", path, {"episode": EP, "status": "CLAIMED_NO_AUTOMATIC_RETRY"})
+    assert commands == [
+        ("config", "user.name", "github-actions[bot]"),
+        ("config", "user.email", "github-actions[bot]@users.noreply.github.com"),
+        ("add", "--", str(path)),
+        ("commit", "-m", "threads-video Ep151: CLAIMED_NO_AUTOMATIC_RETRY"),
+        ("push", "origin", "HEAD:refs/heads/main"),
+    ]
+    assert path.exists()
+
+
+def test_video_claim_git_identity_failure_stops_before_writing_claim(monkeypatch, tmp_path):
+    path = tmp_path / "publisher_state" / "threads-video-ep151-20261119.json"
+    def reject_config(*args):
+        raise vr.VideoPublishBlocked("Git identity unavailable")
+    monkeypatch.setattr(vr, "_git", reject_config)
+    with pytest.raises(vr.VideoPublishBlocked, match="identity"):
+        vr.save_state("threads-video", path, {"episode": EP, "status": "CLAIMED_NO_AUTOMATIC_RETRY"})
+    assert not path.exists()
