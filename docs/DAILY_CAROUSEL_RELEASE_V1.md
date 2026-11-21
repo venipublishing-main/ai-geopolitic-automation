@@ -61,8 +61,9 @@ best-effort and may run later than their nominal times.
 The controller only dispatches the existing platform workflows; it never calls
 Meta itself. If a dispatch or publication is ambiguous, its marker stays put:
 **do not automatically retry**. Inspect the account, GitHub run and receipt
-before manually reconciling. No Reel, Story, audio or extra carousel is
-published by this controller.
+before manually reconciling. This original carousel controller publishes no
+Reel, Story, audio or extra carousel; the separate gated video controller
+handles the three video surfaces.
 
 ### 15 November 2026 missed Threads handoff
 
@@ -80,6 +81,43 @@ on `main` before the next controller run. To inspect without publishing, run
 the safe GitHub Actions probe (`publisher_signals/auto-probe-*.json` added by
 the connected plugin), or manually start the auto-release workflow, which is
 always read-only when launched with `workflow_dispatch`.
+
+## Automatic post-carousel video releases (from 22 November 2026)
+
+The separately versioned `publisher_config/auto_video_release.json` authorizes
+the `ai-geopolitic-auto-video-release.yml` controller only for the **current
+SAST production date**. There is no retroactive release of earlier videos.
+This is independent of the original two-carousel controller and does not alter
+its roughly 55-minute polling cadence. A direct handoff from a **verified
+Threads carousel release** starts the video chain. Subsequent verified video
+receipts hand off directly to the next publisher; workflow-completion events
+and a matching 55-minute schedule provide best-effort fallbacks.
+
+The exact sequence is **Instagram carousel → Threads carousel → Instagram
+Reel → Threads video → Instagram video Story**. Both carousel publication
+receipts must already be successfully verified for the same day and episode
+before the first video can dispatch. Instagram Reel and Threads video use the
+accepted Reel caption; the Story sends **no caption**. All three use the
+independently verified six-frame 18-second video with the immutable approved
+VS001 Version B soundtrack.
+
+The video controller checks the exact Drive QC/Sisyphus PASS, locked audio and
+current-date episode, then creates a durable pre-dispatch claim at
+`publisher_state/auto-video-day-YYYYMMDD.json` **before** requesting the next
+existing, surface-specific `workflow_dispatch` action. Every video publisher
+retains its own independent pre-Meta claim and verified publication receipt.
+It dispatches **one surface at a time**, advancing only after the preceding
+surface has a matching successful receipt. An existing ambiguous claim, failed
+post, unsupported Story account type or Meta authorization error stops the
+chain. **Never auto-retry an uncertain release, delete a claim, or use browser
+automation to work around a Meta restriction.**
+
+For troubleshooting, the new workflow's `workflow_dispatch` is **read-only**
+and `publisher_signals/auto-video-probe-*.json` also initiates a safe probe.
+The policy has a separate `enabled` switch for video releases. The three
+original human-gated workflow inputs remain available for carefully
+reconciled manual operations. No new OAuth client, GitHub PAT, paid service
+or Meta secret is required.
 
 ## Manual fallback
 
@@ -145,8 +183,10 @@ owns the daily scheduled trigger. The Actions UI remains another manual option.
 - Claims are updated with platform-specific published receipts. If publication
   is ambiguous or verification fails after a claim, **do not click Run workflow
   again**. Inspect the account and reconcile the receipt manually.
-- Audio, Reels, Stories, automatic cross-posting, date fallback and retouching
-  of the accepted images are outside this release path.
+- Retouching, unverified audio, platform cross-posting, duplicate retries
+  and date fallback remain prohibited. The separately authorized post-carousel
+  video controller handles only the locked VS001 video releases after both
+  verified carousel receipts.
 
 ## Required GitHub repository secrets
 
