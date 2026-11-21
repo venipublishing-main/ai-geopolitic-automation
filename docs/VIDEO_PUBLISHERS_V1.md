@@ -1,8 +1,9 @@
 # AI Geopolitic — three independent video publishing Actions
 
-**Created:** 19 November 2026. **Mode:** manual, individually gated, GitHub Actions only.
-This adds three publishers; it does **not** modify the existing automatic
-carousel controller or the existing Reel *review-only* workflow.
+**Created:** 19 November 2026. **Automatic video handoff added:** 21 November 2026,
+effective 22 November 2026. All three video publishers remain separately gated
+GitHub Actions; the existing carousel and Reel *review-only* workflows retain
+their original responsibilities.
 
 ## Responsibility boundary
 
@@ -26,6 +27,31 @@ To preview without publishing: open **Actions**, choose the precise publisher,
 select `main`, provide the exact episode and archive date, and select `plan`.
 The plan is read-only. To publish, explicitly choose `publish` and enter that
 surface's exact confirmation. Neither `plan` nor a failed preflight publishes.
+
+## Automatic release sequence from 22 November 2026
+
+The separate `publisher_config/auto_video_release.json` policy enables a
+fail-closed controller, `ai-geopolitic-auto-video-release.yml`.
+The controller waits for both verified same-day carousel publishing receipts
+and the exact Sisyphus production PASS, then dispatches these video actions in
+the table's order. The successful Threads carousel calls the controller
+directly; each verified video result hands off to the next surface. A matching
+approximately 55-minute schedule and successful workflow-run events provide
+fallbacks. Manual `plan` and `publish` remain available for supervised use.
+
+For each video surface, the controller writes an immutable episode/day-specific
+dispatch claim to `publisher_state/auto-video-day-YYYYMMDD.json` before
+launching that existing workflow. It only advances after the surface-specific
+receipt has the exact verified success status. The first missing, failed,
+unverified or ambiguous result stops the sequence **without retries**. All
+three original publishers still insist on a correctly constructed
+episode/date/surface confirmation and a separate pre-Meta claim.
+
+The policy's start date is 22 November 2026; earlier days are never
+backfilled. Running the automatic video's workflow manually through GitHub
+Actions always triggers a **read-only probe**, not publication.
+No new soundtracks, advertising services, platform sessions or authentication
+secrets are introduced.
 
 ## Locked inputs and media staging
 
@@ -75,6 +101,7 @@ were implemented. There are no new paid integrations or new Meta secrets; they
 reuse `AI_GEO_IG_ACCESS_TOKEN`, `AI_GEO_THREADS_ACCESS_TOKEN`, and the existing
 read-only rclone Drive configuration.
 
-The daily automatic dispatcher currently dispatches only the two carousel
-workflows. **Wiring these new actions into scheduling remains a separate task**
-to fix the automatic-release issues, as Ian requested.
+The original daily automatic dispatcher still dispatches only two carousel
+workflows. The **independent automatic video controller** now manages the
+three video workflows after both carousel receipts are verified. Its separate
+policy can disable video publication without disabling the carousels.

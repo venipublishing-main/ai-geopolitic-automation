@@ -1,0 +1,11 @@
+{
+  "schema": "ai-geopolitic.publisher.automatic-video-policy.v1",
+  "enabled": true,
+  "start_date_sast": "2026-11-22",
+  "require_both_carousels": true,
+  "surfaces_in_order": [
+    "instagram-reel",
+    "threads-video",
+    "instagram-story"
+  ]
+}
