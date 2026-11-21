@@ -47,6 +47,8 @@ CAROUSEL_RECEIPTS = {
     "threads": ("ai-geopolitic.threads.publication-receipt.v1",
                 carousel.THREADS_SUCCESS, "threads_account"),
 }
+WAITING = "WAITING_OR_BLOCKED_NO_RETRY"
+
 PHASES = tuple(
     f"{surface.upper().replace('-', '_')}_{suffix}"
     for surface in SURFACES
@@ -157,11 +159,11 @@ def next_unverified(token: str, day: date, episode: str,
         if receipt is not None:
             if receipt["status"] != SUCCESS[surface]:
                 print(f"BLOCKED_EXISTING_VIDEO_CLAIM {surface}: manual reconciliation required")
-                return None
+                return WAITING
             continue
         if i <= last_claimed:
             print(f"WAITING_OR_UNCERTAIN_VIDEO_DISPATCH {surface}: never retry automatically")
-            return None
+            return WAITING
         if i < last_claimed:
             raise carousel.AutoBlocked("Video state advanced without verified earlier release")
         return surface
@@ -184,7 +186,7 @@ def should_process_day(token: str, day: date, *, probe: bool) -> bool:
     if state and state[0]["phase"] == "ALL_VIDEOS_VERIFIED":
         print("AUTO_VIDEO_ALREADY_COMPLETE")
         return False
-    return next_unverified(token, day, episode, state) is not None
+    return next_unverified(token, day, episode, state) in SURFACES
 
 
 def detect_video_ready(episode: str, day: date) -> None:
@@ -238,6 +240,8 @@ def process(token: str, day: date, *, probe: bool, expected_episode: str | None 
 
     state = get_video_state(token, day, episode)
     surface = next_unverified(token, day, episode, state)
+    if surface == WAITING:
+        return
     if surface is None:
         if state and state[0]["phase"] != "ALL_VIDEOS_VERIFIED":
             record = {**state[0], "phase": "ALL_VIDEOS_VERIFIED"}
