@@ -30,7 +30,10 @@ claim and post-publication receipt.
 
 `publisher_config/auto_release.json` is the explicit, versioned standing
 authorization. When `enabled=true`, `.github/workflows/ai-geopolitic-auto-release.yml`
-checks every 15 minutes around the clock (UTC minute offsets 07/22/37/52).
+checks approximately every 55 minutes throughout the day (26 scheduled checks per UTC day,
+with one 65-minute gap across the UTC day boundary). GitHub Actions schedule
+execution is best-effort and may be delayed. This cadence follows the actual
+cron entries in the workflow; it is not a 15-minute poll.
 Immediately after a *verified same-day Instagram publication*, the Instagram
 workflow now invokes `src.auto_release handoff` itself to dispatch Threads.
 The controller's scheduled and `workflow_run` triggers remain independent
