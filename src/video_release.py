@@ -175,11 +175,11 @@ class InstagramVideoGraph:
             raise VideoPublishBlocked("Instagram token does not uniquely target @ai_geopolitic.")
         user_id = matches[0]
         if surface == "instagram-story":
-            # Facebook Login's Stories publishing is Business-only, not Creator.
-            detail = self.transport.request("GET", f"{GRAPH_ROOT}/{user_id}",
-                                            {"fields": "account_type"})
-            if detail.get("account_type") != "BUSINESS":
-                raise VideoPublishBlocked("Instagram Story publishing requires a Business account.")
+            # The IG User Graph schema does not expose account_type on v26.
+            # Do not request unsupported fields: identity above is read-only
+            # and Meta itself enforces the Business-only Stories restriction.
+            # The first Meta POST remains strictly after the durable claim.
+            return user_id
         else:
             recent = self.transport.request("GET", f"{GRAPH_ROOT}/{user_id}/media",
                                             {"fields": "id,caption,media_product_type", "limit": "50"})
