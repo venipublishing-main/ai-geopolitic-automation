@@ -1,0 +1,141 @@
+name: AI Geopolitic — automatic post-carousel videos
+
+on:
+  schedule:
+    # Match the carousel controller: approximately every 55 minutes UTC
+    # (26 checks daily, one 65-minute rollover). GitHub may delay schedules.
+    - cron: '17 0,11,22 * * *'
+    - cron: '12 1,12,23 * * *'
+    - cron: '7 2,13 * * *'
+    - cron: '2 3,14 * * *'
+    - cron: '57 3,14 * * *'
+    - cron: '52 4,15 * * *'
+    - cron: '47 5,16 * * *'
+    - cron: '42 6,17 * * *'
+    - cron: '37 7,18 * * *'
+    - cron: '32 8,19 * * *'
+    - cron: '27 9,20 * * *'
+    - cron: '22 10,21 * * *'
+  workflow_run:
+    workflows:
+      - 'AI Geopolitic Threads — ten-image carousel (human gate)'
+      - 'AI Geopolitic Instagram — Reel video (human gate)'
+      - 'AI Geopolitic Threads — Reel video (human gate)'
+      - 'AI Geopolitic Instagram — Story video (human gate)'
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'publisher_signals/auto-video-probe-*.json'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-geopolitic-auto-video-release.yml'
+      - '.github/workflows/ai-geopolitic-threads-carousel.yml'
+      - '.github/workflows/ai-geopolitic-instagram-reel.yml'
+      - '.github/workflows/ai-geopolitic-threads-video.yml'
+      - '.github/workflows/ai-geopolitic-instagram-story.yml'
+      - 'src/auto_video_release.py'
+      - 'tests/test_auto_video_release.py'
+      - 'publisher_config/auto_video_release.json'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ai-geopolitic-auto-video-release-controller
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    name: Offline video orchestration and at-most-once regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: >-
+          python -m pytest -q tests/test_auto_video_release.py
+          tests/test_auto_release.py tests/test_video_release.py
+
+  release:
+    name: Verified two-carousel gate / sequential one-time video release
+    needs: tests
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.event == 'workflow_dispatch' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROBE: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Cheap policy, carousel receipts and duplicate precheck
+        id: precheck
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PROBE" = true ]; then
+            python -m src.auto_video_release precheck --probe
+          else
+            python -m src.auto_video_release precheck
+          fi
+      - name: Install read-only Drive reader and approved audio verifier
+        if: steps.precheck.outputs.run_detector == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+          python -m pip install Pillow==11.3.0
+      - name: Configure canonical read-only Google Drive archive
+        if: steps.precheck.outputs.run_detector == 'true'
+        env:
+          RCLONE_DRIVE_CLIENT_ID: ${{ secrets.RCLONE_DRIVE_CLIENT_ID }}
+          RCLONE_DRIVE_CLIENT_SECRET: ${{ secrets.RCLONE_DRIVE_CLIENT_SECRET }}
+          RCLONE_DRIVE_TOKEN: ${{ secrets.RCLONE_DRIVE_TOKEN }}
+          AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID: ${{ secrets.AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RCLONE_DRIVE_CLIENT_ID"
+          test -n "$RCLONE_DRIVE_CLIENT_SECRET"
+          test -n "$RCLONE_DRIVE_TOKEN"
+          test -n "$AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID"
+          mkdir -p "$HOME/.config/rclone"
+          chmod 700 "$HOME/.config/rclone"
+          printf '%s\n' \
+            '[ai_geopolitic_drive]' \
+            'type = drive' \
+            "client_id = ${RCLONE_DRIVE_CLIENT_ID}" \
+            "client_secret = ${RCLONE_DRIVE_CLIENT_SECRET}" \
+            'scope = drive' \
+            "token = ${RCLONE_DRIVE_TOKEN}" \
+            "root_folder_id = ${AI_GEOPOLITIC_DRIVE_ROOT_FOLDER_ID}" \
+            > "$HOME/.config/rclone/rclone.conf"
+          chmod 600 "$HOME/.config/rclone/rclone.conf"
+      - name: Verify exact SAST production, approved Reel and dispatch at most once
+        if: steps.precheck.outputs.run_detector == 'true'
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PROBE" = true ]; then
+            python -m src.auto_video_release process --probe
+          else
+            python -m src.auto_video_release process
+          fi
