@@ -1,0 +1,7 @@
+{
+  "purpose": "READ_ONLY_AUTO_RELEASE_PROBE",
+  "episode": "Ep153",
+  "date_sast": "2026-11-21",
+  "publish": false,
+  "context": "Verify refreshed RCLONE_DRIVE_TOKEN and OAuth client secret"
+}
