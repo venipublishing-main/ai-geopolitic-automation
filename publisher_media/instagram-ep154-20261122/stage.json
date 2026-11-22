@@ -1,0 +1,95 @@
+{
+  "ai_info_required": true,
+  "approved_for_publication": false,
+  "archive_folder_id": "1MmQqh1HU2SkRe0if9njYmQ26lNX3kJ8r",
+  "caption_sha256": "65286bad3632d22bb7a90d607068fa00e81d8690ca452e25a8a8ec0347628d06",
+  "date_sast": "2026-11-22",
+  "episode": "Ep154",
+  "media": [
+    {
+      "bytes": 977597,
+      "height": 1350,
+      "name": "Slide01of10.jpg",
+      "sha256": "9acc62fe18846f9aeac45d713e1288255555d272e0b657fc0d64930488c655f8",
+      "source_sha256": "93c037bbd5b1e9810e4d4066831aa326efced383e7b82fe48816ca2b80d10456",
+      "width": 1080
+    },
+    {
+      "bytes": 912822,
+      "height": 1350,
+      "name": "Slide02of10.jpg",
+      "sha256": "b70ff86f7d1d254b2a2c06490610ee2e9f0d42285a8023eb78197232baf9e6b8",
+      "source_sha256": "db98c1860fe9d5131fb5f0561ed6c7d4bc0eefcf962870273077b358d5a34199",
+      "width": 1080
+    },
+    {
+      "bytes": 917998,
+      "height": 1350,
+      "name": "Slide03of10.jpg",
+      "sha256": "0bb4c3c11209d474d677a0cf9360a9d176ba0c58c32bd03224ef9d99b32b1f72",
+      "source_sha256": "cb80bcbba8c699a36e02a8781c419c4e08464cc97a65f9e13bd8b7da5af7d424",
+      "width": 1080
+    },
+    {
+      "bytes": 904104,
+      "height": 1350,
+      "name": "Slide04of10.jpg",
+      "sha256": "9359c7180b7daca5aaf8620395c8c1f50daf0cc13adb719aa3fb9d942fa2fe09",
+      "source_sha256": "64841a7e74373a485e95e43fd70f00dd7e02d63c0085824e1a2a29226b740acd",
+      "width": 1080
+    },
+    {
+      "bytes": 1030950,
+      "height": 1350,
+      "name": "Slide05of10.jpg",
+      "sha256": "ffd8ab211588753412c0aab1285438d8e49c9f87ecdc8b15a90f9e2fc3177171",
+      "source_sha256": "4e04a5234cd001633c3705da7ac4a98f7f6f217a3294a39dc7340157bfcabe1b",
+      "width": 1080
+    },
+    {
+      "bytes": 968687,
+      "height": 1350,
+      "name": "Slide06of10.jpg",
+      "sha256": "527e2af4505c63853000b6cb86636b307fbddc1f3d863df5bade415b0dd1f867",
+      "source_sha256": "2a656b4d3601952efc3d2e2e369668f801243ece0e8fdf35eb7d4dae7006d223",
+      "width": 1080
+    },
+    {
+      "bytes": 915805,
+      "height": 1350,
+      "name": "Slide07of10.jpg",
+      "sha256": "f38d7dc07111b3f8744e68b06a2745e7647fd67d0f8897b033ca100548d33ec4",
+      "source_sha256": "4e368a7c650c455262dc1695f09374c6ace0bc2602a7fe4d1049bf1285f14eef",
+      "width": 1080
+    },
+    {
+      "bytes": 934301,
+      "height": 1350,
+      "name": "Slide08of10.jpg",
+      "sha256": "b2976115afc1d44393cdfe1ad5ea5d207f19347a41130614c64d8c4b7ef6b40c",
+      "source_sha256": "4429146def6f6c2924063e8dc412c7924c80a8a076b80ce43b73d1a8fb001d17",
+      "width": 1080
+    },
+    {
+      "bytes": 924791,
+      "height": 1350,
+      "name": "Slide09of10.jpg",
+      "sha256": "c5780bee975e20b16d31dfdb0bf958e029e70409945ad3276259a29d39f50370",
+      "source_sha256": "f5f72831fe913903deb022a62b75e92450e9e2bd1332c6fb2c37c7c571944652",
+      "width": 1080
+    },
+    {
+      "bytes": 964451,
+      "height": 1350,
+      "name": "Slide10of10.jpg",
+      "sha256": "6d310850ee1d3ac89f4284039d6ea797d88c23a4da3aba6758b99320a9b7e1bd",
+      "source_sha256": "1247fc5cbea4fa01d6a551075f530d154a55b4a3dea32861bcd8dd7b9b1e9dfa",
+      "width": 1080
+    }
+  ],
+  "post_target": "INSTAGRAM_CAROUSEL_ONLY",
+  "published": false,
+  "schema": "ai-geopolitic.instagram.stage-receipt.v1",
+  "slide_count": 10,
+  "status": "STAGED_FOR_REVIEW_NOT_PUBLISHED"
+}
