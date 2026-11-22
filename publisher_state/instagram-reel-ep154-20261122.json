@@ -1,6 +1,7 @@
 {
   "account": "ai_geopolitic",
   "account_id": "17841415528251186",
+  "ai_info_verified": true,
   "audio_master_sha256": "3c0824d3af1cba53a60edd1757e95d7ea8b400af5d2e8f13d7dd0da4d7e8c3b3",
   "caption_sent": true,
   "caption_sha256": "cc1daaf286b59991d7a8eee3bed06037236fc9363c089466f23694f98c436a1f",
@@ -8,9 +9,13 @@
   "date_sast": "2026-11-22",
   "episode": "Ep154",
   "github_run_id": "44975924315",
+  "instagram_media_id": "17987050673906215",
+  "instagram_permalink": "https://www.instagram.com/reel/DgBuo4FnOjJ/",
+  "media_product_type_verified": "REELS",
   "public_media_commit": "a92e8bd783fb1e7ebf45f8213de01c4a0899c7a5",
+  "published_utc": "2026-11-22T02:26:39.639385+00:00",
   "schema": "ai-geopolitic.publisher.video-publication-receipt.v1",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_AI_INFO_VERIFIED",
   "surface": "instagram-reel",
   "video_sha256": "9adb211f15598f0009552d06be6a3b0b7092d9a5b8bfb0af0d55aeaade5cf497"
 }
