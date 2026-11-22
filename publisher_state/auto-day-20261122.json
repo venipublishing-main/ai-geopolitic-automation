@@ -3,6 +3,6 @@
   "date_sast": "2026-11-22",
   "episode": "Ep154",
   "instagram_dispatched_utc": "2026-11-22T04:19:15.285101+02:00",
-  "phase": "INSTAGRAM_DISPATCHED",
+  "phase": "THREADS_CLAIMED_BEFORE_DISPATCH",
   "schema": "ai-geopolitic.publisher.automatic-dispatch-day.v1"
 }
