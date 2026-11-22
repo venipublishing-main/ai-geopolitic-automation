@@ -75,8 +75,23 @@ secrets are introduced.
 This approach follows Meta's public-URL requirements for [Instagram Reels](https://www.postman.com/meta/instagram/folder/830j7my/reels-publishing)
 and [Threads videos](https://www.postman.com/meta/threads/request/34203612-a51eb091-5c5e-436a-b4bb-c3d53c8aa901).
 Stories use Instagram's `media_type=STORIES`, which requires a **Business**
-account under Facebook Login. The publisher checks that account type, targets
-only `@ai_geopolitic`, and never passes the Reel caption to Story creation.
+account under Facebook Login. Meta's current IG User Graph schema does not
+expose the older `account_type` field; requesting it fails in the Story
+read-only preflight. The publisher therefore validates the exact assigned
+`@ai_geopolitic` ID and username using supported fields, while Meta enforces
+Business-only eligibility when creating a Story. **Confirm the account is
+Business (not Creator) in Instagram settings before authorizing a live Story**
+to avoid a post-claim rejection. Story creation never receives a Reel caption.
+
+### 21 November 2026: Ep153 Story preflight incident
+
+The Ep153 Story workflow stopped in its pre-publication account checks with a
+generic Meta request error, while the Carousel and Reel publishers succeeded.
+No Story-specific pre-Meta claim or receipt existed on `main`, so the
+publisher did not reach its first Meta POST. A fix removing the unsupported
+field is covered by offline regression tests. Do not assume the Story was
+published; independently check Instagram Stories and Business eligibility
+before an operator explicitly authorizes a live publishing attempt.
 
 ## Safety and manual incident procedure
 

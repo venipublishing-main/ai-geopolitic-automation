@@ -117,8 +117,6 @@ class FakeIGTransport:
             return {"id": "17912345678901234"}
         if url.endswith("/media_publish"):
             return {"id": "18012345678901234"}
-        if params.get("fields") == "account_type":
-            return {"account_type": "BUSINESS"}
         if params.get("fields") == "status_code":
             return {"status_code": "FINISHED"}
         if params.get("fields") == "id,permalink,media_type,media_product_type,is_ai_generated":
@@ -157,15 +155,33 @@ def test_ig_reel_has_caption_and_story_never_sends_caption(monkeypatch, surface,
         assert "instagram_permalink" not in outcome
 
 
-def test_story_nonbusiness_account_fails_before_meta_write():
+def test_story_preflight_does_not_request_unsupported_account_type():
+    graph = vr.InstagramVideoGraph("some-valid-token-text")
+    fake = FakeIGTransport()
+    graph.transport = fake
+    assert graph.account("instagram-story", CAPTION) == "17841400001234567"
+    # The Graph IG User no longer supports account_type. Story eligibility
+    # is enforced by Meta when creating a Story, after the durable claim.
+    assert len(fake.calls) == 1
+    assert fake.calls[0][0] == "GET"
+    assert fake.calls[0][2]["fields"] == "id,username"
+
+
+def test_story_mismatched_account_fails_before_meta_write():
     graph = vr.InstagramVideoGraph("some-valid-token-text")
     fake = FakeIGTransport()
     original = fake.request
-    fake.request = lambda method, url, params: ({"account_type": "CREATOR"}
-        if params.get("fields") == "account_type" else original(method, url, params))
+
+    def wrong_identity(method, url, params):
+        if url.endswith("/me/assigned_instagram_accounts"):
+            return {"data": [{"id": "17841400001234567", "username": "somebody_else"}]}
+        return original(method, url, params)
+
+    fake.request = wrong_identity
     graph.transport = fake
-    with pytest.raises(vr.VideoPublishBlocked, match="Business"):
+    with pytest.raises(vr.VideoPublishBlocked, match="uniquely target"):
         graph.account("instagram-story", CAPTION)
+    assert all(method == "GET" for method, _, _ in fake.calls)
 
 
 def test_threads_video_is_single_video_with_text_not_carousel(monkeypatch):
