@@ -1,0 +1,71 @@
+{
+  "ai_info_required": true,
+  "archive_folder_id": "1MmQqh1HU2SkRe0if9njYmQ26lNX3kJ8r",
+  "audio_master_id": "VS001_AIGeopolitic_C_v04b_HookFocus_18s_MASTER",
+  "audio_master_sha256": "3c0824d3af1cba53a60edd1757e95d7ea8b400af5d2e8f13d7dd0da4d7e8c3b3",
+  "caption_sha256": "cc1daaf286b59991d7a8eee3bed06037236fc9363c089466f23694f98c436a1f",
+  "date_sast": "2026-11-22",
+  "duration_seconds": 18.0,
+  "episode": "Ep154",
+  "frame_count": 6,
+  "post_target": "THREE_INDEPENDENT_VIDEO_PUBLISHERS",
+  "published": false,
+  "schema": "ai-geopolitic.publisher.video-stage.v1",
+  "source_frames": [
+    {
+      "drive_id": "12gh7vF9pS7UUNyLF0Sia4_B2LsH-AKe0",
+      "height": 1920,
+      "name": "ReelFrame01of06.png",
+      "sha256": "a779158cbbe364c9b4716ec3a08599f4e96ded1308b646f4e1577fcfcb83c39e",
+      "width": 1080
+    },
+    {
+      "drive_id": "1DVrneNqXK0tgcvQ2mjuGKROPP_pMqMhe",
+      "height": 1920,
+      "name": "ReelFrame02of06.png",
+      "sha256": "fb5f2bf905997c526d034000b9a13b7be9b1c0ed46896f2cd4f9330f54ee8394",
+      "width": 1080
+    },
+    {
+      "drive_id": "1CARBT9nHL6oelVqfQuqzbPH8xd1a_7Qy",
+      "height": 1920,
+      "name": "ReelFrame03of06.png",
+      "sha256": "c939c171aa32cabd0c3bd5d3d39398c12d584850588bae0d73363365c6641aab",
+      "width": 1080
+    },
+    {
+      "drive_id": "1Yw-psyJE852ULowRK0bmEPV0cD27zE1Q",
+      "height": 1920,
+      "name": "ReelFrame04of06.png",
+      "sha256": "64a8178509e88aa895f535ff28ab73159b325ae3a37f0b9df9fff05f93b2d59c",
+      "width": 1080
+    },
+    {
+      "drive_id": "1Un01F0e4KIimI3Rbm4ReY6iv5XNm1cRF",
+      "height": 1920,
+      "name": "ReelFrame05of06.png",
+      "sha256": "f10bc3c741032f849e0609a2389e5a04d3ac7eacdb6d58bcb21e5a44f1cdadb1",
+      "width": 1080
+    },
+    {
+      "drive_id": "1aPkIm4_IIQlXJq9VxYPTdOnnM1kZEA0h",
+      "height": 1920,
+      "name": "ReelFrame06of06.png",
+      "sha256": "2895b6345c7d3f66e3bea65ccbb763744252aef673250e5cd9337d6fc3943fe4",
+      "width": 1080
+    }
+  ],
+  "status": "STAGED_NOT_PUBLISHED",
+  "video": {
+    "audio_codec": "aac",
+    "bytes": 15362932,
+    "duration_seconds": 18.0,
+    "fps": 30,
+    "height": 1920,
+    "name": "reel.mp4",
+    "sha256": "9adb211f15598f0009552d06be6a3b0b7092d9a5b8bfb0af0d55aeaade5cf497",
+    "video_codec": "h264",
+    "width": 1080
+  },
+  "video_variant": "C_Stronger"
+}
