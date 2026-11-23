@@ -1,0 +1,16 @@
+{
+  "account": "ai_geopolitic",
+  "account_id": "17841415528251186",
+  "audio_master_sha256": "3c0824d3af1cba53a60edd1757e95d7ea8b400af5d2e8f13d7dd0da4d7e8c3b3",
+  "caption_sent": true,
+  "caption_sha256": "e4c4e0bb915eb725927f6677fe0d55bda6e2abb1953afa5189ec2e3016ede4d0",
+  "claimed_utc": "2026-11-23T03:00:01.992444+00:00",
+  "date_sast": "2026-11-23",
+  "episode": "Ep155",
+  "github_run_id": "45103204909",
+  "public_media_commit": "4e685be8ded52d79072dcb7a3211ff55da19fd6a",
+  "schema": "ai-geopolitic.publisher.video-publication-receipt.v1",
+  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "surface": "instagram-reel",
+  "video_sha256": "644d0339d6ee1fda714f0c2e988dc19f7f19adf80755ef70b2876460a64dc502"
+}
