@@ -1,13 +1,19 @@
 {
+  "ai_disclosure_submitted_to_meta": true,
   "caption_sha256": "1d6dd0141ca301575b726b8343b52418670dbafdb6e2e71480e622dd4ecc94a5",
+  "caption_verification": "META_ONE_TOPIC_HASH_REMOVED",
   "carousel_items": 10,
+  "carousel_items_verified": 10,
   "claimed_utc": "2026-11-23T02:57:10.666365+00:00",
   "date_sast": "2026-11-23",
   "episode": "Ep155",
   "github_run_id": "45103006694",
   "public_media_commit": "101120b9eae6256bba3aa8a99e1ca2053af5e0de",
+  "published_utc": "2026-11-23T02:58:11.943032+00:00",
   "schema": "ai-geopolitic.threads.publication-receipt.v1",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_VERIFIED",
   "threads_account": "ai_geopolitic",
+  "threads_media_id": "18657123877044345",
+  "threads_permalink": "https://www.threads.com/@ai_geopolitic/post/DgEXFpvDV5c",
   "threads_user_id": "40667622232822942"
 }
