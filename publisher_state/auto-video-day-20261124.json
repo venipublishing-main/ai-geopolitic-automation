@@ -4,7 +4,8 @@
   "episode": "Ep156",
   "instagram-reel_claimed_utc": "2026-11-24T02:12:14.380486+00:00",
   "instagram-reel_dispatched_utc": "2026-11-24T02:12:16.707653+00:00",
-  "phase": "THREADS_VIDEO_DISPATCHED",
+  "instagram-story_claimed_utc": "2026-11-24T02:16:55.055972+00:00",
+  "phase": "INSTAGRAM_STORY_CLAIMED_BEFORE_DISPATCH",
   "schema": "ai-geopolitic.publisher.automatic-video-day.v1",
   "threads-video_claimed_utc": "2026-11-24T02:14:50.345224+00:00",
   "threads-video_dispatched_utc": "2026-11-24T02:14:52.285457+00:00"
