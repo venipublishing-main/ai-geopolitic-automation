@@ -1,0 +1,14 @@
+{
+  "ai_info_required": true,
+  "caption_sha256": "806ed6813d1a580f3b82b12d0e0d2104ce03412051bf9788160c19b1672e0859",
+  "carousel_items": 10,
+  "claimed_utc": "2026-11-24T02:04:31.749281+00:00",
+  "date_sast": "2026-11-24",
+  "episode": "Ep156",
+  "github_run_id": "45309037584",
+  "instagram_account": "ai_geopolitic",
+  "instagram_user_id": "17841415528251186",
+  "public_media_commit": "c3a94f77b0ed25537385b44f3541aa50f65e263f",
+  "schema": "ai-geopolitic.instagram.publication-receipt.v1",
+  "status": "CLAIMED_NO_AUTOMATIC_RETRY"
+}
