@@ -2,6 +2,7 @@
   "created_utc": "2026-11-24T01:59:20.378592+00:00",
   "date_sast": "2026-11-24",
   "episode": "Ep156",
-  "phase": "INSTAGRAM_CLAIMED_BEFORE_DISPATCH",
+  "instagram_dispatched_utc": "2026-11-24T03:59:22.619077+02:00",
+  "phase": "INSTAGRAM_DISPATCHED",
   "schema": "ai-geopolitic.publisher.automatic-dispatch-day.v1"
 }
