@@ -1,0 +1,216 @@
+name: AI Geopolitic Ep157 — missing Story and Threads video recovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ai-geopolitic-ep157-video-recovery.yml'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: ai-geopolitic-ep157-one-shot-video-recovery
+  cancel-in-progress: false
+jobs:
+  story:
+    name: Dispatch only the missing Ep157 Instagram Story
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Persist exact Story dispatch claim and invoke existing Story workflow
+        env:
+          GH_ACTION_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, time
+          from datetime import date, datetime, timezone
+          from src import auto_release as ar, auto_video_release as av
+          
+          ep, day = "Ep157", date(2026, 11, 25)
+          token = os.environ["GH_ACTION_TOKEN"]
+          def require(ok, msg):
+              if not ok:
+                  raise RuntimeError(msg)
+          require(os.environ["GITHUB_EVENT_NAME"] == "push" and os.environ["GITHUB_REF"] == "refs/heads/main"
+                  and os.environ["GITHUB_REPOSITORY"] == ar.REPO and ar.current_sast_date() == day,
+                  "Wrong recovery event or date")
+          require(av.verified_carousel_episode(token, day) == ep, "Both carousel receipts must be verified")
+          threads = av.read_video_receipt(token, "threads-video", ep, day)
+          reel = av.read_video_receipt(token, "instagram-reel", ep, day)
+          require(threads and threads["status"] == "CLAIMED_NO_AUTOMATIC_RETRY"
+                  and threads["github_run_id"] == "45542066987", "Original Threads failure changed")
+          require(reel and reel["status"] == av.SUCCESS["instagram-reel"]
+                  and reel["public_media_commit"] == "ec527d5c0a1c283b6b0b708dbabf7d0025b0e7ff", "Reel receipt mismatch")
+          require(av.read_video_receipt(token, "instagram-story", ep, day) is None, "Story already has a claim")
+          record, sha = av.get_video_state(token, day, ep)
+          require(record["phase"] == "THREADS_VIDEO_DISPATCHED", "Unexpected controller phase")
+          record["phase"] = "INSTAGRAM_STORY_CLAIMED_BEFORE_DISPATCH"
+          record["instagram-story_claimed_utc"] = datetime.now(timezone.utc).isoformat()
+          record["ep157_manual_story_recovery_run"] = os.environ["GITHUB_RUN_ID"]
+          sha = ar.put_repo_json(av.state_path(day), token, record, sha=sha)
+          av.dispatch("instagram-story", ep, day, token)
+          record["phase"] = "INSTAGRAM_STORY_DISPATCHED"
+          record["instagram-story_dispatched_utc"] = datetime.now(timezone.utc).isoformat()
+          ar.put_repo_json(av.state_path(day), token, record, sha=sha)
+          print("EP157_STORY_DISPATCH_ACCEPTED", flush=True)
+          # Let the independent Story publisher settle before the recovery writes Git receipts.
+          # A failed or delayed Story must not stop the Threads recovery job.
+          for _ in range(36):
+              receipt = av.read_video_receipt(token, "instagram-story", ep, day)
+              if receipt and receipt["status"] != "CLAIMED_NO_AUTOMATIC_RETRY":
+                  print("EP157_STORY_RECEIPT_STATUS", receipt["status"], flush=True)
+                  break
+              time.sleep(10)
+          else:
+              print("Story still unverified; do not repeat its dispatch", flush=True)
+          PY
+  threads:
+    name: Reconcile and recover only the missing Ep157 Threads video
+    needs: story
+    if: always() && github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q tests/test_video_release.py tests/test_threads_release.py tests/test_auto_video_release.py
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Verify immutable stage, check account and recent posts, claim and publish once
+        env:
+          AI_GEO_THREADS_ACCESS_TOKEN: ${{ secrets.AI_GEO_THREADS_ACCESS_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          python - <<'PY'
+          import json, os, re, subprocess, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from src import video_release as vr
+          from src import auto_release as ar
+          from src.threads_release import ThreadsGraph, ThreadsBlocked, caption_match
+          
+          EP, DAY = "Ep157", "2026-11-25"
+          SURFACE = "threads-video"
+          COMMIT = "ec527d5c0a1c283b6b0b708dbabf7d0025b0e7ff"
+          CAPTION = "484c4c38434d4d5d83f9c9ca6501807533e8c56a8c489328870b24353d777388"
+          VIDEO = "8bd8c10e43237cb34610c98d3972822872e899ffac962f1074af06fa463f1f73"
+          ACCOUNT = "40667622232822942"
+          CAROUSEL = "18141165745639045"
+          RUN = os.environ["GITHUB_RUN_ID"]
+          state = vr.state_path(SURFACE, EP, DAY)
+          recovery_path = Path("publisher_state/threads-video-ep157-recovery-20261125.json")
+          
+          def require(ok, msg):
+              if not ok:
+                  raise ThreadsBlocked(msg)
+          
+          class DiagnosticGraph(ThreadsGraph):
+              def wait_ready(self, container_id):
+                  require(str(container_id).isdigit(), "Invalid Threads container ID")
+                  for i in range(24):
+                      response = self.request("GET", f"/{container_id}", {"fields": "id,status,error_message"})
+                      status = response.get("status")
+                      if status == "FINISHED":
+                          return
+                      if status in ("ERROR", "EXPIRED", "PUBLISHED"):
+                          msg = str(response.get("error_message") or "").replace(self.token, "[redacted]")
+                          msg = re.sub(r"https?://\S+", "[url]", msg)[:240]
+                          print(json.dumps({"status": "THREADS_CONTAINER_NOT_READY", "container_status": status,
+                                            "safe_error_message": msg}), flush=True)
+                          raise ThreadsBlocked("Threads container is not publishable; no further write")
+                      if i < 23:
+                          time.sleep(5)
+                  raise ThreadsBlocked("Threads processing timed out; no automatic repeat")
+          
+          def recover():
+              require(os.environ["GITHUB_ACTIONS"] == "true" and os.environ["GITHUB_EVENT_NAME"] == "push"
+                      and os.environ["GITHUB_REF"] == "refs/heads/main"
+                      and os.environ["GITHUB_REPOSITORY"] == "venipublishing-main/ai-geopolitic-automation"
+                      and ar.current_sast_date().isoformat() == DAY and RUN.isdigit()
+                      and vr._git("branch", "--show-current") == "main", "Wrong recovery context")
+              vr._git("pull", "--ff-only", "origin", "main")
+              require(not recovery_path.exists(), "Separate one-shot claim already exists")
+              original = json.loads(state.read_text())
+              expected = {"schema": "ai-geopolitic.publisher.video-publication-receipt.v1",
+                          "surface": SURFACE, "episode": EP, "date_sast": DAY,
+                          "status": "CLAIMED_NO_AUTOMATIC_RETRY", "github_run_id": "45542066987",
+                          "account": "ai_geopolitic", "account_id": ACCOUNT,
+                          "public_media_commit": COMMIT, "caption_sha256": CAPTION, "video_sha256": VIDEO}
+              require(all(original.get(k) == v for k, v in expected.items()), "Original unresolved incident changed")
+              reel = json.loads(vr.state_path("instagram-reel", EP, DAY).read_text())
+              require(reel["status"] == vr.SUCCESS_STATUS["instagram-reel"]
+                      and reel["public_media_commit"] == COMMIT and reel["video_sha256"] == VIDEO
+                      and reel["caption_sha256"] == CAPTION, "Pinned source differs from verified Instagram Reel")
+              folder = vr.output_folder(EP, DAY)
+              folder.mkdir(parents=True, exist_ok=True)
+              vr._git("fetch", "--no-tags", "origin", "refs/heads/video-media-ep157-20261125")
+              require(vr._git("rev-parse", "FETCH_HEAD") == COMMIT, "Immutable stage branch mismatch")
+              for name in ("stage.json", "caption.txt", "reel.mp4"):
+                  data = subprocess.run(["git", "show", f"{COMMIT}:{folder.as_posix()}/{name}"],
+                                        check=True, capture_output=True, timeout=90).stdout
+                  require(0 < len(data) <= vr.MAX_PUBLIC_MP4, "Stage object empty or oversized")
+                  (folder / name).write_bytes(data)
+              staged, caption, url = vr.check_stage(EP, DAY, COMMIT)
+              require(staged["caption_sha256"] == CAPTION and staged["video"]["sha256"] == VIDEO,
+                      "Stage checksum mismatch")
+              vr.verify_public_video(staged, url)
+              graph = DiagnosticGraph(os.environ["AI_GEO_THREADS_ACCESS_TOKEN"])
+              # Authenticated negative reconciliation before any Meta write. The prior
+              # carousel must be in the returned window so that it covers the failed attempt.
+              me = graph.request("GET", "/me", {"fields": "id,username"})
+              require(str(me.get("id")) == ACCOUNT and me.get("username", "").lower() == "ai_geopolitic",
+                      "Threads account does not match the original claim")
+              recent = graph.request("GET", "/me/threads",
+                                     {"fields": "id,text,media_type,permalink", "limit": "50"}).get("data")
+              require(isinstance(recent, list) and all(isinstance(x, dict) and str(x.get("id", "")).isdigit() for x in recent)
+                      and any(str(x["id"]) == CAROUSEL and x.get("media_type") == "CAROUSEL" for x in recent),
+                      "Recent-post window cannot establish coverage of the incident")
+              require(not any(caption_match(caption, x.get("text")) is not None for x in recent),
+                      "Matching caption already exists: stop for read-only reconciliation, never repost")
+              require(graph.check_identity_and_duplicate(caption) == (ACCOUNT, "ai_geopolitic"),
+                      "Second account/duplicate check failed")
+              print("EP157_AUTHENTICATED_NEGATIVE_RECONCILIATION_PASSED", flush=True)
+              vr._git("pull", "--ff-only", "origin", "main")
+              require(not recovery_path.exists() and json.loads(state.read_text()) == original,
+                      "Claim changed concurrently")
+              record = {"schema": "ai-geopolitic.publisher.video-manual-recovery.v1",
+                        "episode": EP, "date_sast": DAY, "surface": SURFACE,
+                        "original_failed_run_id": "45542066987", "recovery_run_id": RUN,
+                        "public_media_commit": COMMIT, "caption_sha256": CAPTION, "video_sha256": VIDEO,
+                        "claimed_utc": datetime.now(timezone.utc).isoformat(),
+                        "status": "RECOVERY_CLAIMED_NO_REPEAT"}
+              vr.save_state(SURFACE, recovery_path, record)
+              print("EP157_ONE_SHOT_RECOVERY_CLAIM_PERSISTED", flush=True)
+              result = vr.publish_threads_video(graph, caption, url)
+              now = datetime.now(timezone.utc).isoformat()
+              updated = dict(original, **result, status="PUBLISHED_VERIFIED", published_utc=now,
+                             recovery_run_id=RUN, recovery_claim=str(recovery_path))
+              vr._git("pull", "--rebase", "origin", "main")
+              require(json.loads(state.read_text()) == original, "Original claim changed after Meta write; reconcile")
+              vr.save_state(SURFACE, state, updated)
+              record.update(result)
+              record.update(status="RECOVERY_PUBLISHED_VERIFIED", published_utc=now)
+              vr._git("pull", "--rebase", "origin", "main")
+              vr.save_state(SURFACE, recovery_path, record)
+              print(json.dumps({"status": "EP157_THREADS_VIDEO_RECOVERED_VERIFIED",
+                                "permalink": result["threads_permalink"]}), flush=True)
+          
+          recover()
+          PY
