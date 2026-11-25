@@ -6,7 +6,8 @@
   "instagram-reel_claimed_utc": "2026-11-25T03:41:33.338004+00:00",
   "instagram-reel_dispatched_utc": "2026-11-25T03:41:35.476948+00:00",
   "instagram-story_claimed_utc": "2026-11-25T04:35:46.611446+00:00",
-  "phase": "INSTAGRAM_STORY_CLAIMED_BEFORE_DISPATCH",
+  "instagram-story_dispatched_utc": "2026-11-25T04:35:49.008830+00:00",
+  "phase": "INSTAGRAM_STORY_DISPATCHED",
   "schema": "ai-geopolitic.publisher.automatic-video-day.v1",
   "threads-video_claimed_utc": "2026-11-25T03:44:38.660497+00:00",
   "threads-video_dispatched_utc": "2026-11-25T03:44:41.478430+00:00"
