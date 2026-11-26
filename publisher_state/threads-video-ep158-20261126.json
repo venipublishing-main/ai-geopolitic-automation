@@ -1,16 +1,22 @@
 {
   "account": "ai_geopolitic",
   "account_id": "40667622232822942",
+  "ai_disclosure_submitted_to_meta": true,
   "audio_master_sha256": "3c0824d3af1cba53a60edd1757e95d7ea8b400af5d2e8f13d7dd0da4d7e8c3b3",
   "caption_sent": true,
   "caption_sha256": "b8d444ac837f6d8fb5ea2251f306f6c39120fa9305eb15e6cdac25f9d1b3f67b",
+  "caption_verification": "META_ONE_TOPIC_HASH_REMOVED",
   "claimed_utc": "2026-11-26T02:32:33.352016+00:00",
   "date_sast": "2026-11-26",
   "episode": "Ep158",
   "github_run_id": "45742974105",
+  "media_type_verified": "VIDEO",
   "public_media_commit": "53d6cba3ca6971bf4931dbf32e8306e949c05d73",
+  "published_utc": "2026-11-26T02:33:07.922094+00:00",
   "schema": "ai-geopolitic.publisher.video-publication-receipt.v1",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_VERIFIED",
   "surface": "threads-video",
+  "threads_media_id": "18116307791232711",
+  "threads_permalink": "https://www.threads.com/@ai_geopolitic/post/DgMCkYIhsSm",
   "video_sha256": "63bdd7c5f88d1557a3fb13d20892e0869ca20995b3d2db8445b6d85cf859bbc2"
 }
