@@ -4,6 +4,7 @@
   "episode": "Ep159",
   "instagram-reel_claimed_utc": "2026-11-27T02:27:17.843280+00:00",
   "instagram-reel_dispatched_utc": "2026-11-27T02:27:19.915746+00:00",
-  "phase": "INSTAGRAM_REEL_DISPATCHED",
-  "schema": "ai-geopolitic.publisher.automatic-video-day.v1"
+  "phase": "THREADS_VIDEO_CLAIMED_BEFORE_DISPATCH",
+  "schema": "ai-geopolitic.publisher.automatic-video-day.v1",
+  "threads-video_claimed_utc": "2026-11-27T02:30:15.387846+00:00"
 }
