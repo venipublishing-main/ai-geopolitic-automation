@@ -1,13 +1,19 @@
 {
+  "ai_disclosure_submitted_to_meta": true,
   "caption_sha256": "57aaebbbdf6f44b1de9538d17ba4aafd07613cf8a72457036835b31bd3897305",
+  "caption_verification": "META_ONE_TOPIC_HASH_REMOVED",
   "carousel_items": 10,
+  "carousel_items_verified": 10,
   "claimed_utc": "2026-11-27T02:25:45.966682+00:00",
   "date_sast": "2026-11-27",
   "episode": "Ep159",
   "github_run_id": "45928155698",
   "public_media_commit": "149eacf4eddd1afdd97bd2e8d367a8162b263989",
+  "published_utc": "2026-11-27T02:27:02.447443+00:00",
   "schema": "ai-geopolitic.threads.publication-receipt.v1",
-  "status": "CLAIMED_NO_AUTOMATIC_RETRY",
+  "status": "PUBLISHED_VERIFIED",
   "threads_account": "ai_geopolitic",
+  "threads_media_id": "17902132029681611",
+  "threads_permalink": "https://www.threads.com/@ai_geopolitic/post/DgOmtTAG-GL",
   "threads_user_id": "40667622232822942"
 }
